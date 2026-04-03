@@ -91,12 +91,12 @@
   .dot-row { display: flex; gap: 3px; margin-bottom: 6px; }
   .dot {
     width: 8px; height: 8px; border-radius: 50%;
-    border: 1px solid var(--border2); background: var(--bg);
+    border: 1px solid #3e3c38; background: #38352f;  /* visible grey baseline */
     flex-shrink: 0;
   }
-  .dot[data-level="1"] { background: #e8b84a; border-color: #c49030; }
-  .dot[data-level="2"] { background: #d85a3a; border-color: #b04030; }
-  .dot[data-level="3"] { background: #8a2010; border-color: #6a1008; }
+  .dot[data-level="1"] { background: #e8b84a; border-color: #c49030; }  /* amber  */
+  .dot[data-level="2"] { background: #d85a3a; border-color: #b04030; }  /* orange-red */
+  .dot[data-level="3"] { background: #8a2010; border-color: #6a1008; }  /* deep red */
   .signal-status { font-size: 12px; font-weight: 500; color: var(--text); }
   .signal-trend  { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
@@ -258,7 +258,7 @@
     <span class="header-topic">Situation tracker</span>
     <span class="header-title" id="h-title">Haiti — fuel price crisis</span>
     <span class="header-meta">
-      Last run: <span id="h-last-run">2026-04-03 09:29</span> ·
+      Last run: <span id="h-last-run">2026-04-03 12:46</span> ·
       Search window: <span id="h-window">Mar 30, 2026 – Apr 3, 2026</span>
     </span>
   </div>
@@ -525,11 +525,11 @@
       <div class="delta-card">
         <div class="card-label">New since last run</div>
         <div id="delta-list">
-          <div class="delta-item is-new">Fuel prices surged up to 40% overnight, affecting all petroleum products.</div>
-          <div class="delta-item is-new">Global context: Oil spikes from US-Iran conflict passed directly to consumers.</div>
-          <div class="delta-item is-new">Economic ripple: Transport fares rising, leading to clashes between drivers and passengers; expected &#39;snowball effect&#39; on food prices and inflation in a landlocked import-dependent economy.</div>
-          <div class="delta-item is-new">Social tensions: Tense situations at gas stations; IDPs and vulnerable fearing worse precarity.</div>
-          <div class="delta-item is-new">Union response: Labeled &#39;suicidal decision,&#39; planning national mobilizations and strikes.</div>
+          <div class="delta-item is-new">Fuel prices hiked 20-40% due to international oil surge from geopolitical tensions (Iran war).</div>
+          <div class="delta-item is-new">Immediate effects: Long queues at pumps, transport fare disputes, black market speculation.</div>
+          <div class="delta-item is-new">Broader impacts: Inflation spiral expected as 80% of goods move by road; food, services prices to rise while salaries freeze.</div>
+          <div class="delta-item is-new">Vulnerability: 6M+ in food insecurity, 60-70% unemployment, IDPs fear worse living costs.</div>
+          <div class="delta-item is-new">Historical warning: Echoes 2018 Jovenel Moïse hike that sparked opposition riots burning Port-au-Prince.</div>
         </div>
       </div>
 
@@ -537,8 +537,8 @@
       <!-- PYTHON: replace the TWEETS array in the script below           -->
       <div class="tweet-card">
         <div class="card-label">Voice of the street</div>
-        <div class="tweet-handle" id="tw-handle">@metropoleHT</div>
-        <div class="tweet-body"   id="tw-body">Due to fuel price hike, internally displaced fear cost of living worsening... families call for urgent state social measures and relocation.</div>
+        <div class="tweet-handle" id="tw-handle">@WFaubius</div>
+        <div class="tweet-body"   id="tw-body">The US-Iran war caused continuous fuel price rises... Some believe leaders are profiting from this at Haitians</div>
         <div class="tweet-date"   id="tw-date">Apr 3, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevTweet()">← prev</button>
@@ -551,12 +551,12 @@
       <!-- PYTHON: replace NEWS_QUOTES array in the script below          -->
       <div class="tweet-card">
         <div class="card-label">Press quotes</div>
-        <div class="tweet-handle" id="nq-outlet">Rezo Nòdwès</div>
-        <div class="tweet-body"   id="nq-body">a population forced to bear alone the weight of a multidimensional crisis, without visible institutional support&#39;.</div>
+        <div class="tweet-handle" id="nq-outlet">HaitiLibre</div>
+        <div class="tweet-body"   id="nq-body">[...] no fuel shortage has been observed on the national market. Petroleum products are available at gas pumps and their distribution is ensured through formally authorized channels. Consequently, any sale of fuel outside these channels, particularly in jerrycans or any other container not compliant with the law, is strictly prohibited throughout the national territory. As such, any individual or legal entity involved in the illegal sale of fuel will be subject to immediate enforcement measures, including the seizure of products, the closure of the sales outlets concerned, and legal proceedings in accordance with applicable laws.&#39; (James Monazard, Minister of Commerce and Industry)</div>
         <div class="tweet-date"   id="nq-date">Apr 3, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevNewsQuote()">← prev</button>
-          <span class="tweet-counter" id="nq-counter">1 / 7</span>
+          <span class="tweet-counter" id="nq-counter">1 / 9</span>
           <button onclick="nextNewsQuote()">next →</button>
         </div>
       </div>
@@ -566,7 +566,7 @@
       <div class="consensus-card">
         <div class="card-label">X / social consensus</div>
         <div class="consensus-text" id="consensus-text">
-          Broad consensus that fuel price hike will trigger severe inflation, erode purchasing power, and heighten social tensions in Haiti&#39;s fragile context (gangs, displacement, poverty). Agreement on historical pattern of fuel increases sparking protests/uprisings (e.g., 2018 riots). Unions and critics unified in calling mobilizations and salary protections; govt claims necessity due to global forces and promises aid, but major disagreement views it as exploitative or incompetent amid crises. No actual protests reported yet (as of April 2), but strong expectation of unrest if no relief.
+          Broad agreement on severe economic pain: hike will cascade into inflation, transport hikes, and deeper poverty, exacerbating gang violence and displacement—no salary adjustments expected. Consensus on high unrest risk, citing 2018 precedent and union mobilizations. Disagreements: Global inevitability (protect vulnerable via subsidies?) vs. govt opportunism/incompetence (profiteering, ignoring past lessons). Emerging: Urgent calls for protests; govt austerity seen as insufficient/too late.
         </div>
       </div>
 
@@ -597,44 +597,44 @@ const OIL_DATA = {
 
 const TWEETS = [
   {
-    "handle": "@metropoleHT",
-    "date": "Apr 3, 2026",
-    "body": "Due to fuel price hike, internally displaced fear cost of living worsening... families call for urgent state social measures and relocation."
-  },
-  {
-    "handle": "@DKMomentum",
-    "date": "Apr 3, 2026",
-    "body": "When fuel prices rise, everything rises in Haiti. But salaries stay the same. Until when?"
-  },
-  {
     "handle": "@WFaubius",
     "date": "Apr 3, 2026",
-    "body": "US-Iran war caused continuous fuel price hikes in several countries including Haiti. Some say leaders profit to raise prices further against the population."
+    "body": "The US-Iran war caused continuous fuel price rises... Some believe leaders are profiting from this at Haitians"
+  },
+  {
+    "handle": "@Equilibrepresse",
+    "date": "Apr 3, 2026",
+    "body": "Historically, fuel price variations have often provoked social tensions in Haiti... could become a factor of additional economic/social instability."
   },
   {
     "handle": "@lequotidien509",
     "date": "Apr 3, 2026",
-    "body": "Fuel prices in #Haiti jumped up to 40% due to global oil tensions. Authorities deny shortage but warn of speculation and black market as queues lengthen."
+    "body": "Fuel prices in #Haiti have jumped up to 40% due to global oil market tensions. Authorities deny shortages but warn against speculation and black market as queues lengthen."
+  },
+  {
+    "handle": "@metropoleHT",
+    "date": "Apr 3, 2026",
+    "body": "Due to the fuel price increase, internally displaced persons fear a worsening of the cost of living... families call on the State for urgent social measures..."
+  },
+  {
+    "handle": "@DKMomentum",
+    "date": "Apr 3, 2026",
+    "body": "When the fuel price increases, everything increases in Haiti. But salaries stay the same. Until when?"
+  },
+  {
+    "handle": "@Florida1sttake",
+    "date": "Apr 3, 2026",
+    "body": "Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP [Port-au-Prince]. The double-digit hike... was part of an agreement with the IMF..."
+  },
+  {
+    "handle": "@johnny_pie6556",
+    "date": "Apr 3, 2026",
+    "body": "+6 million people in food insecurity... They"
   },
   {
     "handle": "@jftheo1963",
     "date": "Apr 3, 2026",
     "body": "The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮"
-  },
-  {
-    "handle": "@Florida1sttake",
-    "date": "Apr 3, 2026",
-    "body": "Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP"
-  },
-  {
-    "handle": "@Equilibrepresse",
-    "date": "Apr 3, 2026",
-    "body": "Historically, fuel price variations have often provoked social tensions in Haiti... could become a factor of additional economic and social instability in a country facing multiple crises."
-  },
-  {
-    "handle": "@metropoleHT",
-    "date": "Apr 3, 2026",
-    "body": "Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum prices... situation remains tense at several capital gas stations."
   },
   {
     "handle": "@REALITEINFO1",
@@ -643,22 +643,32 @@ const TWEETS = [
   },
   {
     "handle": "@metropoleHT",
-    "date": "Apr 2, 2026",
-    "body": "Massacre in Artibonite + fuel increase: Haiti facing a major double crisis"
+    "date": "Apr 3, 2026",
+    "body": "Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum prices... situation remains tense at several capital gas stations."
   },
   {
-    "handle": "@HaitianTimes_",
-    "date": "Apr 2, 2026",
-    "body": "Fuel prices rose up to about 40% in Haiti as global tensions rattle oil markets. Authorities deny shortages but warn against speculation and black market sales across the country as long lines grow."
+    "handle": "@DKMomentum",
+    "date": "Apr 3, 2026",
+    "body": "When fuel prices rise, everything rises in Haiti. But salaries stay the same. Until when?"
   },
   {
-    "handle": "@JeanJacquesDes7",
-    "date": "Apr 2, 2026",
-    "body": "Price of gasoline has gone up 50% in Haiti. Too bad we don"
+    "handle": "@lequotidien509",
+    "date": "Apr 3, 2026",
+    "body": "Fuel prices in #Haiti jumped up to 40% due to global oil tensions. Authorities deny shortage but warn of speculation and black market as queues lengthen."
   }
 ];
 
 const NEWS_QUOTES = [
+  {
+    "outlet": "HaitiLibre",
+    "date": "Apr 3, 2026",
+    "body": "[...] no fuel shortage has been observed on the national market. Petroleum products are available at gas pumps and their distribution is ensured through formally authorized channels. Consequently, any sale of fuel outside these channels, particularly in jerrycans or any other container not compliant with the law, is strictly prohibited throughout the national territory. As such, any individual or legal entity involved in the illegal sale of fuel will be subject to immediate enforcement measures, including the seizure of products, the closure of the sales outlets concerned, and legal proceedings in accordance with applicable laws.' (James Monazard, Minister of Commerce and Industry)"
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 3, 2026",
+    "body": "No additional direct quotes from officials, journalists, or public on protests, unrest, or reactions were found in the covered articles within the date range."
+  },
   {
     "outlet": "Rezo Nòdwès",
     "date": "Apr 3, 2026",
