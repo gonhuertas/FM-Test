@@ -304,6 +304,14 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
            x_consensus: str, news_consensus: str,
            header: dict, wti: dict | None) -> str:
 
+    # ── Timeline "latest" date header → today's date
+    today_str = datetime.now().strftime("%A, %b ") + str(datetime.now().day) + datetime.now().strftime(", %Y")
+    html = re.sub(
+        r'(<div class="tl-date-header">\s*)[\w,\s]+([\r\n\s]*<span class="new-badge">)',
+        lambda m: m.group(1) + today_str + m.group(2),
+        html,
+    )
+
     # ── Header metadata
     if header.get("last_run"):
         html = re.sub(r'id="h-last-run">[^<]*',

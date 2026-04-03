@@ -126,7 +126,7 @@ news_prompt = f"""Search news websites for recent coverage about: "{TOPIC}".
     - consensus: what the news coverage broadly agrees on or disputes
 
     Be thorough. Cite specific outlet names and headlines where possible.
-    Translate any non-English content into English, and do not leave behind the original language, just the translated english. For sources and news_quotes, append the original text in parentheses after the translation.
+    Translate any non-English content into English. Return only the English translation — do not include the original language anywhere.
     """
 
 if MULTI_PASS == 0:
