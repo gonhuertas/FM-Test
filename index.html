@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Haiti Fuel Crisis — Situation Tracker</title>
+<title>Haiti — Oil Price Shock</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -42,92 +42,93 @@
     font-family: var(--sans);
     background: var(--bg);
     color: var(--text);
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
     min-height: 100vh;
   }
 
-  .page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+  .page { max-width: 1440px; margin: 0 auto; padding: 32px 36px 70px; }
 
   /* ── Header ── */
   .header {
     display: flex; align-items: baseline; gap: 16px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 14px; margin-bottom: 22px;
+    padding-bottom: 16px; margin-bottom: 26px;
     flex-wrap: wrap;
   }
+  .header-left { display: flex; flex-direction: column; gap: 3px; }
   .header-topic {
     font-family: var(--mono);
-    font-size: 11px; font-weight: 500;
+    font-size: 13px; font-weight: 500;
     letter-spacing: 0.1em; text-transform: uppercase;
     color: var(--muted);
   }
   .header-title {
-    font-size: 18px; font-weight: 500; color: var(--text);
+    font-size: 22px; font-weight: 500; color: var(--text);
   }
   .header-meta {
-    font-family: var(--mono); font-size: 11px; color: var(--faint);
+    font-family: var(--mono); font-size: 13px; color: var(--faint);
     margin-left: auto;
   }
   .header-meta span { color: var(--muted); }
 
   /* ── Section label ── */
   .slabel {
-    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
     letter-spacing: 0.1em; text-transform: uppercase; color: #c8c4bc;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
 
   /* ── Signal row ── */
   .signal-grid {
     display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
-    gap: 8px; margin-bottom: 20px;
+    gap: 10px; margin-bottom: 24px;
   }
   .signal-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 10px 12px;
+    border-radius: 6px; padding: 13px 15px;
   }
-  .signal-name { font-size: 11px; color: #c8c4bc; margin-bottom: 6px; }
-  .dot-row { display: flex; gap: 3px; margin-bottom: 6px; }
+  .signal-name { font-size: 13px; color: #c8c4bc; margin-bottom: 8px; }
+  .dot-row { display: flex; gap: 4px; margin-bottom: 8px; }
   .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    border: 1px solid #3e3c38; background: #38352f;  /* visible grey baseline */
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 1px solid #3e3c38; background: #38352f;
     flex-shrink: 0;
   }
   .dot[data-level="1"] { background: #5ab47a; border-color: #3a8455; }  /* green  */
   .dot[data-level="2"] { background: #d4c040; border-color: #a09020; }  /* yellow */
   .dot[data-level="3"] { background: #e07830; border-color: #b05020; }  /* orange */
   .dot[data-level="4"] { background: #c03020; border-color: #901808; }  /* red    */
-  .signal-status { font-size: 12px; font-weight: 500; color: var(--text); }
-  .signal-trend  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .signal-status { font-size: 14px; font-weight: 500; color: var(--text); }
+  .signal-trend  { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
   /* ── Oil chart ── */
-  .oil-section { margin-bottom: 24px; }
+  .oil-section { margin-bottom: 28px; }
   .oil-header {
-    display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px;
     flex-wrap: wrap;
   }
-  .oil-price { font-size: 20px; font-weight: 500; font-family: var(--mono); }
-  .oil-change { font-size: 12px; color: var(--red); font-family: var(--mono); }
-  .oil-note { font-size: 11px; color: var(--faint); margin-left: auto; font-family: var(--mono); }
+  .oil-price { font-size: 26px; font-weight: 500; font-family: var(--mono); }
+  .oil-change { font-size: 14px; color: var(--red); font-family: var(--mono); }
+  .oil-note { font-size: 13px; color: var(--faint); margin-left: auto; font-family: var(--mono); }
   .oil-chart-wrap {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 12px 14px;
-    position: relative; height: 140px;
+    border-radius: 6px; padding: 14px 16px;
+    position: relative; height: 190px;
   }
 
-  /* ── Mid row (oil + delta+tweet) and main body — same column template ── */
+  /* ── Main body — two-column layout ── */
   .body-grid {
     display: grid;
-    grid-template-columns: minmax(0,1fr) 248px;
-    gap: 16px; align-items: start;
+    grid-template-columns: minmax(0,1fr) 300px;
+    gap: 20px; align-items: start;
   }
 
   /* ── Timeline ── */
-  .filter-bar { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .fbtn {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
-    text-transform: uppercase; padding: 3px 9px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 4px 11px;
     border-radius: 3px; border: 1px solid var(--border2);
     background: transparent; color: var(--muted); cursor: pointer;
     transition: all .12s;
@@ -142,29 +143,29 @@
   .fbtn.active[data-tag="govt"]     { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
   .fbtn.active[data-tag="media"]    { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
 
-  .tl-group { margin-bottom: 16px; }
+  .tl-group { margin-bottom: 20px; }
   .tl-date-header {
-    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
     border-bottom: 1px solid var(--border);
-    padding-bottom: 5px; margin-bottom: 8px;
+    padding-bottom: 6px; margin-bottom: 10px;
     display: flex; align-items: center; gap: 8px;
   }
   .new-badge {
-    font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
     text-transform: uppercase;
     background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd);
-    border-radius: 3px; padding: 1px 5px;
+    border-radius: 3px; padding: 1px 6px;
   }
   .tl-event {
-    display: flex; gap: 9px; padding: 7px 6px;
-    border-radius: 5px; margin-bottom: 1px; cursor: default;
+    display: flex; gap: 11px; padding: 8px 8px;
+    border-radius: 5px; margin-bottom: 2px; cursor: default;
     transition: background .1s;
   }
   .tl-event:hover { background: var(--gray-bg); }
   .ev-tag {
-    font-family: var(--mono); font-size: 9px; font-weight: 500;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
     letter-spacing: 0.05em; text-transform: uppercase;
-    padding: 2px 6px; border-radius: 3px;
+    padding: 2px 7px; border-radius: 3px;
     white-space: nowrap; flex-shrink: 0; margin-top: 1px;
     border: 1px solid transparent;
   }
@@ -175,74 +176,74 @@
   .tag-govt     { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
   .tag-media    { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
   .ev-body { flex: 1; min-width: 0; }
-  .ev-headline { font-size: 13px; color: var(--text); line-height: 1.4; }
-  .ev-source   { font-family: var(--mono); font-size: 10px; color: var(--faint); margin-top: 2px; }
+  .ev-headline { font-size: 15px; color: var(--text); line-height: 1.4; }
+  .ev-source   { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 3px; }
   .ev-quote {
-    font-size: 12px; color: var(--muted); font-style: italic;
-    margin-top: 5px; padding-left: 9px;
+    font-size: 14px; color: var(--muted); font-style: italic;
+    margin-top: 6px; padding-left: 10px;
     border-left: 2px solid var(--border2);
     line-height: 1.45;
   }
 
   /* ── Right column ── */
-  .right-col { display: flex; flex-direction: column; gap: 12px; }
+  .right-col { display: flex; flex-direction: column; gap: 14px; }
 
   .delta-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 12px 14px;
+    border-radius: 6px; padding: 14px 16px;
   }
   .card-label {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
-    text-transform: uppercase; color: #c8c4bc; margin-bottom: 9px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #c8c4bc; margin-bottom: 11px;
   }
   .delta-item {
-    font-size: 12px; color: var(--text); line-height: 1.45;
-    padding: 3px 0 3px 12px; position: relative;
+    font-size: 14px; color: var(--text); line-height: 1.45;
+    padding: 4px 0 4px 14px; position: relative;
   }
   .delta-item::before {
-    content: ''; position: absolute; left: 0; top: 9px;
-    width: 4px; height: 4px; border-radius: 50%; background: var(--border2);
+    content: ''; position: absolute; left: 0; top: 11px;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--border2);
   }
   .delta-item.is-new::before { background: var(--red); }
   .delta-item.is-new { color: var(--text); }
 
   .tweet-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 12px 14px;
+    border-radius: 6px; padding: 14px 16px;
   }
   .tweet-handle {
-    font-family: var(--mono); font-size: 12px; font-weight: 500;
-    color: var(--text); margin-bottom: 8px;
+    font-family: var(--mono); font-size: 14px; font-weight: 500;
+    color: var(--text); margin-bottom: 10px;
   }
   .tweet-body {
-    font-size: 13px; color: var(--text); line-height: 1.6;
+    font-size: 15px; color: var(--text); line-height: 1.6;
     font-style: italic;
     border-left: 2px solid var(--border2);
-    padding-left: 10px; margin-bottom: 10px;
-    min-height: 80px;
+    padding-left: 12px; margin-bottom: 12px;
+    min-height: 90px;
   }
-  .tweet-date { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+  .tweet-date { font-family: var(--mono); font-size: 12px; color: var(--faint); }
   .tweet-nav {
     display: flex; justify-content: space-between; margin-top: 10px;
-    border-top: 1px solid var(--border); padding-top: 8px;
+    border-top: 1px solid var(--border); padding-top: 9px;
   }
   .tweet-nav button {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted);
     background: none; border: none; cursor: pointer; padding: 2px 4px;
   }
   .tweet-nav button:hover { color: var(--text); }
   .tweet-counter {
-    font-family: var(--mono); font-size: 10px; color: var(--faint);
+    font-family: var(--mono); font-size: 12px; color: var(--faint);
     align-self: center;
   }
 
   .consensus-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 12px 14px;
+    border-radius: 6px; padding: 14px 16px;
   }
   .consensus-text {
-    font-size: 12px; color: var(--muted); line-height: 1.6;
+    font-size: 14px; color: var(--muted); line-height: 1.6;
   }
 
   @media (max-width: 700px) {
@@ -256,8 +257,10 @@
 
   <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
   <div class="header">
-    <span class="header-topic">Situation tracker</span>
-    <span class="header-title" id="h-title">Haiti — fuel price crisis</span>
+    <div class="header-left">
+      <span class="header-title" id="h-title">Haiti — Oil Price Shock</span>
+      <span class="header-topic">Monitoring the situation</span>
+    </div>
     <span class="header-meta">
       Last run: <span id="h-last-run">2026-04-03 12:46</span> ·
       Search window: <span id="h-window">Mar 30, 2026 – Apr 3, 2026</span>

@@ -36,7 +36,7 @@ class WebSearchResult(BaseModel):
 TOPIC = "haiti fuel prices"  # ← change this
 
 FROM_DATE = datetime(2026, 4, 2)
-FROM_DATE_NEWS = datetime(2026, 3, 30)
+FROM_DATE_NEWS = datetime(2026, 4, 2)
 TO_DATE   = datetime(2026, 4, 3)
 
 MODEL      = "grok-4-1-fast"
