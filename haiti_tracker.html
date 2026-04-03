@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haiti Fuel Crisis — Situation Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #191a1b;
+    --surface:  #22252a;
+    --border:   #2e3035;
+    --border2:  #3e4248;
+    --text:     #e8e4dc;
+    --muted:    #8a8680;
+    --faint:    #5a5650;
+    --red:      #e05a4a;
+    --red-bg:   #2a1a18;
+    --red-bd:   #6a2a22;
+    --amber:    #d4940a;
+    --amber-bg: #221a08;
+    --amber-bd: #6a4a10;
+    --blue:     #5a9ad4;
+    --blue-bg:  #0e1e2e;
+    --blue-bd:  #2a4a6a;
+    --green:    #5ab47a;
+    --green-bg: #0e1e16;
+    --green-bd: #2a4a36;
+    --purple:   #9a7ad4;
+    --purple-bg:#1a1226;
+    --purple-bd:#4a3470;
+    --gray-bg:  #242220;
+    --gray-bd:  #3a3830;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  /* ── Header ── */
+  .header {
+    display: flex; align-items: baseline; gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px; margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .header-topic {
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .header-title {
+    font-size: 18px; font-weight: 500; color: var(--text);
+  }
+  .header-meta {
+    font-family: var(--mono); font-size: 11px; color: var(--faint);
+    margin-left: auto;
+  }
+  .header-meta span { color: var(--muted); }
+
+  /* ── Section label ── */
+  .slabel {
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #c8c4bc;
+    margin-bottom: 8px;
+  }
+
+  /* ── Signal row ── */
+  .signal-grid {
+    display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 8px; margin-bottom: 20px;
+  }
+  .signal-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px;
+  }
+  .signal-name { font-size: 11px; color: var(--faint); margin-bottom: 6px; }
+  .dot-row { display: flex; gap: 3px; margin-bottom: 6px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 1px solid var(--border2); background: var(--bg);
+    flex-shrink: 0;
+  }
+  .dot[data-level="1"] { background: #e8b84a; border-color: #c49030; }
+  .dot[data-level="2"] { background: #d85a3a; border-color: #b04030; }
+  .dot[data-level="3"] { background: #8a2010; border-color: #6a1008; }
+  .signal-status { font-size: 12px; font-weight: 500; color: var(--text); }
+  .signal-trend  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  /* ── Oil chart ── */
+  .oil-section { margin-bottom: 24px; }
+  .oil-header {
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .oil-price { font-size: 20px; font-weight: 500; font-family: var(--mono); }
+  .oil-change { font-size: 12px; color: var(--red); font-family: var(--mono); }
+  .oil-note { font-size: 11px; color: var(--faint); margin-left: auto; font-family: var(--mono); }
+  .oil-chart-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 14px;
+    position: relative; height: 140px;
+  }
+
+  /* ── Mid row (oil + delta+tweet) and main body — same column template ── */
+  .body-grid {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 248px;
+    gap: 16px; align-items: start;
+  }
+
+  /* ── Timeline ── */
+  .filter-bar { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+  .fbtn {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 3px 9px;
+    border-radius: 3px; border: 1px solid var(--border2);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all .12s;
+  }
+  .fbtn:hover { border-color: var(--border2); background: var(--gray-bg); }
+  .fbtn.active { font-weight: 500; }
+  .fbtn.active[data-tag="all"]      { background: var(--gray-bg);   color: var(--text);   border-color: var(--border2); }
+  .fbtn.active[data-tag="protest"]  { background: var(--red-bg);    color: var(--red);    border-color: var(--red-bd); }
+  .fbtn.active[data-tag="violence"] { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-bd); }
+  .fbtn.active[data-tag="supply"]   { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-bd); }
+  .fbtn.active[data-tag="economy"]  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-bd); }
+  .fbtn.active[data-tag="govt"]     { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
+  .fbtn.active[data-tag="media"]    { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
+
+  .tl-group { margin-bottom: 16px; }
+  .tl-date-header {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .new-badge {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd);
+    border-radius: 3px; padding: 1px 5px;
+  }
+  .tl-event {
+    display: flex; gap: 9px; padding: 7px 6px;
+    border-radius: 5px; margin-bottom: 1px; cursor: default;
+    transition: background .1s;
+  }
+  .tl-event:hover { background: var(--gray-bg); }
+  .ev-tag {
+    font-family: var(--mono); font-size: 9px; font-weight: 500;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 3px;
+    white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    border: 1px solid transparent;
+  }
+  .tag-protest  { background: var(--red-bg);    color: var(--red);    border-color: var(--red-bd); }
+  .tag-violence { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-bd); }
+  .tag-supply   { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-bd); }
+  .tag-economy  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-bd); }
+  .tag-govt     { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
+  .tag-media    { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
+  .ev-body { flex: 1; min-width: 0; }
+  .ev-headline { font-size: 13px; color: var(--text); line-height: 1.4; }
+  .ev-source   { font-family: var(--mono); font-size: 10px; color: var(--faint); margin-top: 2px; }
+  .ev-quote {
+    font-size: 12px; color: var(--muted); font-style: italic;
+    margin-top: 5px; padding-left: 9px;
+    border-left: 2px solid var(--border2);
+    line-height: 1.45;
+  }
+
+  /* ── Right column ── */
+  .right-col { display: flex; flex-direction: column; gap: 12px; }
+
+  .delta-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 14px;
+  }
+  .card-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #c8c4bc; margin-bottom: 9px;
+  }
+  .delta-item {
+    font-size: 12px; color: var(--text); line-height: 1.45;
+    padding: 3px 0 3px 12px; position: relative;
+  }
+  .delta-item::before {
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 4px; height: 4px; border-radius: 50%; background: var(--border2);
+  }
+  .delta-item.is-new::before { background: var(--red); }
+  .delta-item.is-new { color: var(--text); }
+
+  .tweet-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 14px;
+  }
+  .tweet-handle {
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .tweet-body {
+    font-size: 13px; color: var(--text); line-height: 1.6;
+    font-style: italic;
+    border-left: 2px solid var(--border2);
+    padding-left: 10px; margin-bottom: 10px;
+    min-height: 80px;
+  }
+  .tweet-date { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+  .tweet-nav {
+    display: flex; justify-content: space-between; margin-top: 10px;
+    border-top: 1px solid var(--border); padding-top: 8px;
+  }
+  .tweet-nav button {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+    background: none; border: none; cursor: pointer; padding: 2px 4px;
+  }
+  .tweet-nav button:hover { color: var(--text); }
+  .tweet-counter {
+    font-family: var(--mono); font-size: 10px; color: var(--faint);
+    align-self: center;
+  }
+
+  .consensus-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 14px;
+  }
+  .consensus-text {
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
+
+  @media (max-width: 700px) {
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .body-grid   { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+  <div class="header">
+    <span class="header-topic">Situation tracker</span>
+    <span class="header-title" id="h-title">Haiti — fuel price crisis</span>
+    <span class="header-meta">
+      Last run: <span id="h-last-run">2026-04-03 09:29</span> ·
+      Search window: <span id="h-window">Mar 30, 2026 – Apr 3, 2026</span>
+    </span>
+  </div>
+
+  <!-- ══ SIGNALS ═════════════════════════════════════════════════════════ -->
+  <!-- PYTHON: regenerate .dot[data-level] values and status/trend text    -->
+  <div class="slabel">Situation signals — last 7 days (one dot per day, oldest → newest)</div>
+  <div class="signal-grid" id="signal-grid">
+
+    <div class="signal-card">
+      <div class="signal-name">Protest activity</div>
+      <div class="dot-row" id="sig-protest-dots">
+        <!-- PYTHON: 7 dots, data-level 0–3 -->
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="2"></div>
+      </div>
+      <div class="signal-status" id="sig-protest-status">Calls, no action yet</div>
+      <div class="signal-trend"  id="sig-protest-trend">Language escalating fast</div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-name">Gang / security</div>
+      <div class="dot-row" id="sig-security-dots">
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="2"></div>
+        <div class="dot" data-level="2"></div>
+        <div class="dot" data-level="3"></div>
+        <div class="dot" data-level="3"></div>
+        <div class="dot" data-level="3"></div>
+      </div>
+      <div class="signal-status" id="sig-security-status">High, sustained</div>
+      <div class="signal-trend"  id="sig-security-trend">No change from baseline</div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-name">Supply disruptions</div>
+      <div class="dot-row" id="sig-supply-dots">
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="2"></div>
+        <div class="dot" data-level="2"></div>
+        <div class="dot" data-level="2"></div>
+      </div>
+      <div class="signal-status" id="sig-supply-status">Moderate, localized</div>
+      <div class="signal-trend"  id="sig-supply-trend">Worsening in South</div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-name">Intl media pressure</div>
+      <div class="dot-row" id="sig-media-dots">
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="0"></div>
+        <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="2"></div>
+        <div class="dot" data-level="3"></div>
+      </div>
+      <div class="signal-status" id="sig-media-status">High, growing fast</div>
+      <div class="signal-trend"  id="sig-media-trend">Anadolu Agency pickup</div>
+    </div>
+
+  </div>
+
+  <!-- ══ BODY ════════════════════════════════════════════════════════════ -->
+  <div class="body-grid">
+
+    <!-- ── Left column: oil chart + timeline ─────────────────────────── -->
+    <div>
+
+      <!-- Oil chart -->
+      <!-- PYTHON: update oil-price-val, oil-change-val, oil-note-val,       -->
+      <!--         and the OIL_DATA object in the script below               -->
+      <div class="oil-section">
+        <div class="slabel">WTI crude — 30-day context</div>
+        <div class="oil-header">
+          <span class="oil-price" id="oil-price-val">$113.23</span>
+          <span class="oil-change" id="oil-change-val">+59.2% in 35 days</span>
+          <span class="oil-note"   id="oil-note-val">Apr 2, 2026 · USD/barrel</span>
+        </div>
+        <div class="oil-chart-wrap">
+          <canvas id="oilChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="slabel">Event timeline</div>
+      <div class="filter-bar" id="filter-bar">
+        <button class="fbtn active" data-tag="all"      onclick="filter(this)">All</button>
+        <button class="fbtn"        data-tag="protest"  onclick="filter(this)">Protests</button>
+        <button class="fbtn"        data-tag="violence" onclick="filter(this)">Violence</button>
+        <button class="fbtn"        data-tag="supply"   onclick="filter(this)">Supply</button>
+        <button class="fbtn"        data-tag="economy"  onclick="filter(this)">Economy</button>
+        <button class="fbtn"        data-tag="govt"     onclick="filter(this)">Government</button>
+        <button class="fbtn"        data-tag="media"    onclick="filter(this)">Media</button>
+      </div>
+
+      <!-- PYTHON: inject <div class="tl-group"> blocks here               -->
+      <!-- Each event: data-tags="protest violence supply economy govt media" -->
+      <div id="timeline">
+
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Thursday, Apr 2, 2026
+            <span class="new-badge">latest</span>
+          </div>
+
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-headline">Unions "envisaging protests" — first explicit mobilization signal</div>
+              <div class="ev-source">@Equilibrepresse · X/Twitter</div>
+              <div class="ev-quote">"suscitant des inquiétudes parmi les syndicalistes qui envisagent de protester"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-headline">ASPAEDH (parents' assoc.) calls citizens to "revolt" — denounces govt-union collusion</div>
+              <div class="ev-source">@telegramme360 · X/Twitter</div>
+              <div class="ev-quote">"invite les citoyens à se révolter contre cette mesure jugée injuste"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-headline">DEMAREH: "cynical mercantile policy at the price of blood" — demands security before revenue</div>
+              <div class="ev-source">@DEMAREH1 · X/Twitter</div>
+              <div class="ev-quote">"guidée par un instinct mercantile, refuse d'enrayer cet ordre criminel"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="violence">
+            <span class="ev-tag tag-violence">Violence</span>
+            <div class="ev-body">
+              <div class="ev-headline">Jean-Denis (Artibonite) massacre toll revised to 70+, thousands displaced — Gran Grif gang</div>
+              <div class="ev-source">@metropoleHT · multiple X sources</div>
+              <div class="ev-quote">"Massacre en Artibonite + hausse du carburant : Haïti face à une double crise majeure"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="media">
+            <span class="ev-tag tag-media">Media</span>
+            <div class="ev-body">
+              <div class="ev-headline">Anadolu Agency covers Haiti austerity measures — first significant international wire pickup</div>
+              <div class="ev-source">@anadoluagency · X/Twitter</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="supply">
+            <span class="ev-tag tag-supply">Supply</span>
+            <div class="ev-body">
+              <div class="ev-headline">New prices in effect (725/850/845 HTG) — pre-hike rush at Les Cayes, long lines; MCI inspectors deployed</div>
+              <div class="ev-source">@ONews1ereTV · iciHaiti.com</div>
+              <div class="ev-quote">"ruée vers le carburant avant la hausse, la population à bout"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="media">
+            <span class="ev-tag tag-media">Media</span>
+            <div class="ev-body">
+              <div class="ev-headline">Le Nouvelliste "Hard Times" editorial — frames hike as inevitable but poorly timed</div>
+              <div class="ev-source">Le Nouvelliste · print media</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="tl-group">
+          <div class="tl-date-header">Wednesday, Apr 1, 2026</div>
+
+          <div class="tl-event" data-tags="govt">
+            <span class="ev-tag tag-govt">Government</span>
+            <div class="ev-body">
+              <div class="ev-headline">Ministers Collin (Economy) and Monazard (Commerce) formally announce new prices, citing ME war</div>
+              <div class="ev-source">Le Nouvelliste · HaitiLibre.com · iciHaiti.com</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="govt">
+            <span class="ev-tag tag-govt">Government</span>
+            <div class="ev-body">
+              <div class="ev-headline">Austerity package announced: ban on new vehicle purchases, fuel budgets cut, foreign travel limited</div>
+              <div class="ev-source">@LatamData · @anadoluagency</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="supply">
+            <span class="ev-tag tag-supply">Supply</span>
+            <div class="ev-body">
+              <div class="ev-headline">Carrefour–Port-au-Prince route partially paralyzed — residents blame orchestrated scarcity for black market</div>
+              <div class="ev-source">@TheNancyRoc · @metropoleHT</div>
+              <div class="ev-quote">"Shortage or speculation? Hidden stocks for black market profiteering"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="economy">
+            <span class="ev-tag tag-economy">Economy</span>
+            <div class="ev-body">
+              <div class="ev-headline">Educators' and workers' unions warn of chain reaction: transport → food → essentials inflation</div>
+              <div class="ev-source">@ArnoldjuniorPi2 · X/Twitter</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="tl-group">
+          <div class="tl-date-header">Mon–Tue, Mar 30–31, 2026</div>
+
+          <div class="tl-event" data-tags="violence">
+            <span class="ev-tag tag-violence">Violence</span>
+            <div class="ev-body">
+              <div class="ev-headline">Gran Grif massacre in Jean-Denis, Artibonite: 50+ killed; RN1 and RN2 highways blockaded by gangs</div>
+              <div class="ev-source">@metropoleHT · multiple X sources</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="supply">
+            <span class="ev-tag tag-supply">Supply</span>
+            <div class="ev-body">
+              <div class="ev-headline">Port-au-Prince: stations selling diesel only; Les Cayes: stations setting arbitrary prices, "totally out of control"</div>
+              <div class="ev-source">@ONews1ereTV · @metropoleHT</div>
+              <div class="ev-quote">"Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans limite"</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="supply economy">
+            <span class="ev-tag tag-supply">Supply</span>
+            <div class="ev-body">
+              <div class="ev-headline">"Double toll" narrative emerges: gang extortion on RN1 (65,000 HTG/trip at Montrouis) + imminent state hike</div>
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">"Double toll: The State and Bandits are extorting drivers. At every intersection, men with guns."</div>
+            </div>
+          </div>
+
+          <div class="tl-event" data-tags="govt">
+            <span class="ev-tag tag-govt">Government</span>
+            <div class="ev-body">
+              <div class="ev-headline">Advisory Council installed Mar 29 (unions, govt, oil sector) to formalize upward price adjustment</div>
+              <div class="ev-source">@TheNancyRoc · @lequotidien509E</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- #timeline -->
+    </div>
+
+    <!-- ── Right column: delta + tweet + press quotes + consensus ──── -->
+    <div class="right-col">
+
+      <!-- Delta card -->
+      <!-- PYTHON: replace contents of #delta-list on every run           -->
+      <div class="delta-card">
+        <div class="card-label">New since last run</div>
+        <div id="delta-list">
+          <div class="delta-item is-new">Fuel prices surged up to 40% overnight, affecting all petroleum products.</div>
+          <div class="delta-item is-new">Global context: Oil spikes from US-Iran conflict passed directly to consumers.</div>
+          <div class="delta-item is-new">Economic ripple: Transport fares rising, leading to clashes between drivers and passengers; expected &#39;snowball effect&#39; on food prices and inflation in a landlocked import-dependent economy.</div>
+          <div class="delta-item is-new">Social tensions: Tense situations at gas stations; IDPs and vulnerable fearing worse precarity.</div>
+          <div class="delta-item is-new">Union response: Labeled &#39;suicidal decision,&#39; planning national mobilizations and strikes.</div>
+        </div>
+      </div>
+
+      <!-- Tweet widget -->
+      <!-- PYTHON: replace the TWEETS array in the script below           -->
+      <div class="tweet-card">
+        <div class="card-label">Voice of the street</div>
+        <div class="tweet-handle" id="tw-handle">@metropoleHT</div>
+        <div class="tweet-body"   id="tw-body">Due to fuel price hike, internally displaced fear cost of living worsening... families call for urgent state social measures and relocation.</div>
+        <div class="tweet-date"   id="tw-date">Apr 3, 2026</div>
+        <div class="tweet-nav">
+          <button onclick="prevTweet()">← prev</button>
+          <span class="tweet-counter" id="tw-counter">1 / 12</span>
+          <button onclick="nextTweet()">next →</button>
+        </div>
+      </div>
+
+      <!-- Press quotes widget -->
+      <!-- PYTHON: replace NEWS_QUOTES array in the script below          -->
+      <div class="tweet-card">
+        <div class="card-label">Press quotes</div>
+        <div class="tweet-handle" id="nq-outlet">Rezo Nòdwès</div>
+        <div class="tweet-body"   id="nq-body">a population forced to bear alone the weight of a multidimensional crisis, without visible institutional support&#39;.</div>
+        <div class="tweet-date"   id="nq-date">Apr 3, 2026</div>
+        <div class="tweet-nav">
+          <button onclick="prevNewsQuote()">← prev</button>
+          <span class="tweet-counter" id="nq-counter">1 / 7</span>
+          <button onclick="nextNewsQuote()">next →</button>
+        </div>
+      </div>
+
+      <!-- X/Twitter consensus card -->
+      <!-- PYTHON: replace #consensus-text on every run                   -->
+      <div class="consensus-card">
+        <div class="card-label">X / social consensus</div>
+        <div class="consensus-text" id="consensus-text">
+          Broad consensus that fuel price hike will trigger severe inflation, erode purchasing power, and heighten social tensions in Haiti&#39;s fragile context (gangs, displacement, poverty). Agreement on historical pattern of fuel increases sparking protests/uprisings (e.g., 2018 riots). Unions and critics unified in calling mobilizations and salary protections; govt claims necessity due to global forces and promises aid, but major disagreement views it as exploitative or incompetent amid crises. No actual protests reported yet (as of April 2), but strong expectation of unrest if no relief.
+        </div>
+      </div>
+
+      <!-- News consensus card -->
+      <!-- PYTHON: replace #news-consensus-text on every run              -->
+      <div class="consensus-card">
+        <div class="card-label">Press consensus</div>
+        <div class="consensus-text" id="news-consensus-text">
+          Placeholder — run haiti_dashboard_update.py to populate with news consensus.
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- .body-grid -->
+</div><!-- .page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   DATA LAYER — PYTHON REPLACES THESE OBJECTS ON EVERY RUN
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const OIL_DATA = {
+  labels: ["2 Mar", "3 Mar", "4 Mar", "5 Mar", "6 Mar", "9 Mar", "10 Mar", "11 Mar", "12 Mar", "13 Mar", "16 Mar", "17 Mar", "18 Mar", "19 Mar", "20 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr"],
+  prices: [71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23]
+};
+
+const TWEETS = [
+  {
+    "handle": "@metropoleHT",
+    "date": "Apr 3, 2026",
+    "body": "Due to fuel price hike, internally displaced fear cost of living worsening... families call for urgent state social measures and relocation."
+  },
+  {
+    "handle": "@DKMomentum",
+    "date": "Apr 3, 2026",
+    "body": "When fuel prices rise, everything rises in Haiti. But salaries stay the same. Until when?"
+  },
+  {
+    "handle": "@WFaubius",
+    "date": "Apr 3, 2026",
+    "body": "US-Iran war caused continuous fuel price hikes in several countries including Haiti. Some say leaders profit to raise prices further against the population."
+  },
+  {
+    "handle": "@lequotidien509",
+    "date": "Apr 3, 2026",
+    "body": "Fuel prices in #Haiti jumped up to 40% due to global oil tensions. Authorities deny shortage but warn of speculation and black market as queues lengthen."
+  },
+  {
+    "handle": "@jftheo1963",
+    "date": "Apr 3, 2026",
+    "body": "The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮"
+  },
+  {
+    "handle": "@Florida1sttake",
+    "date": "Apr 3, 2026",
+    "body": "Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP"
+  },
+  {
+    "handle": "@Equilibrepresse",
+    "date": "Apr 3, 2026",
+    "body": "Historically, fuel price variations have often provoked social tensions in Haiti... could become a factor of additional economic and social instability in a country facing multiple crises."
+  },
+  {
+    "handle": "@metropoleHT",
+    "date": "Apr 3, 2026",
+    "body": "Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum prices... situation remains tense at several capital gas stations."
+  },
+  {
+    "handle": "@REALITEINFO1",
+    "date": "Apr 3, 2026",
+    "body": "Brutal increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations"
+  },
+  {
+    "handle": "@metropoleHT",
+    "date": "Apr 2, 2026",
+    "body": "Massacre in Artibonite + fuel increase: Haiti facing a major double crisis"
+  },
+  {
+    "handle": "@HaitianTimes_",
+    "date": "Apr 2, 2026",
+    "body": "Fuel prices rose up to about 40% in Haiti as global tensions rattle oil markets. Authorities deny shortages but warn against speculation and black market sales across the country as long lines grow."
+  },
+  {
+    "handle": "@JeanJacquesDes7",
+    "date": "Apr 2, 2026",
+    "body": "Price of gasoline has gone up 50% in Haiti. Too bad we don"
+  }
+];
+
+const NEWS_QUOTES = [
+  {
+    "outlet": "Rezo Nòdwès",
+    "date": "Apr 3, 2026",
+    "body": "a population forced to bear alone the weight of a multidimensional crisis, without visible institutional support'."
+  },
+  {
+    "outlet": "Rezo Nòdwès",
+    "date": "Apr 3, 2026",
+    "body": "Fuel price increase: between social suffering and authorities' indifference'."
+  },
+  {
+    "outlet": "Le Nouvelliste (Hard Times)",
+    "date": "Apr 2, 2026",
+    "body": "It was inevitable. It was only a matter of days, of weeks. We are now there. Fuel prices were increased on March 31."
+  },
+  {
+    "outlet": "HaitiLibre.com",
+    "date": "Apr 2, 2026",
+    "body": "New fuel prices in effect, with inspectors from the Ministry of Commerce and Industry verifying stored fuel quantities."
+  },
+  {
+    "outlet": "iciHaiti.com",
+    "date": "Apr 2, 2026",
+    "body": "The Haitian government is implementing new fuel prices effective April 2, 2026.' (Zapping Haiti of April 1st reference)"
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 2, 2026",
+    "body": "The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame."
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 2, 2026",
+    "body": "In Carrefour, one of the rare gas stations selling gasoline at the new price."
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PRESENTATION LAYER — do not edit below
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Oil chart */
+const isDark = true;  /* page is always dark-themed */
+new Chart(document.getElementById('oilChart'), {
+  type: 'line',
+  data: {
+    labels: OIL_DATA.labels,
+    datasets: [{
+      data: OIL_DATA.prices,
+      borderColor: isDark ? '#e05a4a' : '#c0392b',
+      borderWidth: 1.5,
+      pointRadius: 2,
+      pointHoverRadius: 5,
+      pointBackgroundColor: isDark ? '#e05a4a' : '#c0392b',
+      pointHoverBackgroundColor: isDark ? '#e05a4a' : '#c0392b',
+      fill: true,
+      backgroundColor: isDark ? 'rgba(224,90,74,0.10)' : 'rgba(192,57,43,0.07)',
+      tension: 0.35,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: ctx => OIL_DATA.labels[ctx[0].dataIndex],
+          label: ctx => '$' + ctx.parsed.y.toFixed(2) + ' /bbl'
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
+                 color: isDark ? '#5a5650' : '#a09d98',
+                 maxRotation: 0, autoSkip: true, maxTicksLimit: 6 },
+        grid: { display: false }, border: { display: false }
+      },
+      y: {
+        min: Math.floor(Math.min(...OIL_DATA.prices) / 5) * 5 - 5,
+        max: Math.ceil( Math.max(...OIL_DATA.prices) / 5) * 5 + 5,
+        ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
+                 color: isDark ? '#5a5650' : '#a09d98',
+                 callback: v => '$' + v, maxTicksLimit: 4 },
+        grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' },
+        border: { display: false }
+      }
+    }
+  }
+});
+
+/* Tweet widget */
+let tIdx = 0;
+function renderTweet() {
+  const t = TWEETS[tIdx];
+  document.getElementById('tw-handle').textContent  = t.handle;
+  document.getElementById('tw-body').textContent    = t.body;
+  document.getElementById('tw-date').textContent    = t.date;
+  document.getElementById('tw-counter').textContent = (tIdx + 1) + ' / ' + TWEETS.length;
+}
+function nextTweet() { tIdx = (tIdx + 1) % TWEETS.length; renderTweet(); }
+function prevTweet() { tIdx = (tIdx - 1 + TWEETS.length) % TWEETS.length; renderTweet(); }
+
+/* Press quotes widget */
+let nIdx = 0;
+function renderNewsQuote() {
+  if (!NEWS_QUOTES.length) return;
+  const q = NEWS_QUOTES[nIdx];
+  document.getElementById('nq-outlet').textContent  = q.outlet;
+  document.getElementById('nq-body').textContent    = q.body;
+  document.getElementById('nq-date').textContent    = q.date;
+  document.getElementById('nq-counter').textContent = (nIdx + 1) + ' / ' + NEWS_QUOTES.length;
+}
+function nextNewsQuote() { nIdx = (nIdx + 1) % NEWS_QUOTES.length; renderNewsQuote(); }
+function prevNewsQuote() { nIdx = (nIdx - 1 + NEWS_QUOTES.length) % NEWS_QUOTES.length; renderNewsQuote(); }
+
+/* Timeline filter */
+function filter(btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const tag = btn.dataset.tag;
+  document.querySelectorAll('.tl-event').forEach(ev => {
+    ev.style.display = (tag === 'all' || (ev.dataset.tags || '').includes(tag)) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.tl-group').forEach(g => {
+    const anyVisible = [...g.querySelectorAll('.tl-event')].some(e => e.style.display !== 'none');
+    g.style.display = anyVisible ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>
