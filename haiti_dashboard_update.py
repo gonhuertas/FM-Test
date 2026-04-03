@@ -243,7 +243,7 @@ def build_header(runs_df: pd.DataFrame, news_runs_df: pd.DataFrame) -> dict:
 
 # ── Fetch WTI from CEIC (optional) ───────────────────────────────────────────
 
-def fetch_wti_fred(days: int = 90) -> dict | None:
+def fetch_wti_fred(days: int = 60) -> dict | None:
     """
     Fetch WTI spot price (Crude Oil: Spot Price: West Texas Intermediate Cushing)
     from CEIC API. Series ID 42651401, SR code SR89421787.
