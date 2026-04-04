@@ -1,8 +1,3 @@
-"""
-Search X/Twitter and news outlets for discussions on a topic using Grok's built-in tools.
-Uses the xai-sdk with x_search (X/Twitter) and web_search (news) tools.
-Results are saved to a structured Excel file with deduplication.
-"""
 
 from datetime import datetime
 from pathlib import Path
@@ -12,7 +7,7 @@ from pydantic import BaseModel
 
 from xai_sdk.sync.client import Client
 from xai_sdk.chat import user
-from xai_sdk.tools import x_search, web_search  # built-in tools for searching X and the web
+from xai_sdk.tools import x_search, web_search
 
 from credentials import grok_token
 
@@ -62,7 +57,7 @@ TOPIC = "haiti fuel prices"  # ← change this
 
 FROM_DATE = datetime(2026, 4, 2)
 FROM_DATE_NEWS = datetime(2026, 4, 2)
-TO_DATE   = datetime(2026, 4, 3)
+TO_DATE   = datetime(2026, 4, 4)
 
 MODEL      = "grok-4-1-fast"
 MULTI_PASS = 0  # 0 = single search (testing); 1 = multiple passes + synthesis
