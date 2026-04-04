@@ -17,19 +17,44 @@ from xai_sdk.tools import x_search, web_search  # built-in tools for searching X
 from credentials import grok_token
 
 
+VALID_TAGS = ["Violence", "Complaints", "Protest", "Government", "Economy", "Media", "Disruptions", "Misc"]
+
+TAG_DEFINITIONS = """
+Assign exactly one tag per quote from the following list:
+- Violence: specific recent violent events (named gangs, named locations, specific incidents)
+- Complaints: general grievances, frustration, condemnation without specific incident detail
+- Protest: existing protests OR explicit calls to protest/march/mobilize/boycott
+- Government: official actions, decrees, advisory bodies, PM decisions
+- Economy: prices, wages, inflation, supply, black market, cost of living
+- Media: factual neutral reporting of developments
+- Disruptions: transport chaos, station lines, operational breakdown
+- Misc: genuinely cross-cutting or unclear
+""".strip()
+
+
+class Quote(BaseModel):
+    text: str   # the quote text, including handle/attribution
+    tag: str    # one of the VALID_TAGS above
+
+
+class NewsQuote(BaseModel):
+    text: str   # the quote text, in format "Outlet: 'quote text'"
+    tag: str    # one of the VALID_TAGS above
+
+
 class XSearchResult(BaseModel):
-    summary: str     # main themes and sentiments
-    highlights: str  # key points being made
-    quotes: str      # direct quotes with handles
-    consensus: str   # agreements or disagreements
+    summary: str          # main themes and sentiments
+    highlights: str       # key points being made
+    quotes: list[Quote]   # direct quotes with handles, each tagged
+    consensus: str        # agreements or disagreements
 
 
 class WebSearchResult(BaseModel):
-    summary: str      # main themes from news coverage
-    highlights: str   # key facts, numbers, or events reported
-    sources: str      # cited outlet articles, in format "Outlet — Headline", one per line
-    news_quotes: str  # notable quotes from articles with outlet attribution, one per line
-    consensus: str    # what news coverage broadly agrees on or disputes
+    summary: str               # main themes from news coverage
+    highlights: str            # key facts, numbers, or events reported
+    sources: str               # cited outlet articles, in format "Outlet — Headline", one per line
+    news_quotes: list[NewsQuote]  # notable quotes from articles, each tagged
+    consensus: str             # what news coverage broadly agrees on or disputes
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -121,16 +146,21 @@ news_context_block = context_block(news_prior, PRIOR_RUNS, "news")
 
 client = Client(api_key=grok_token)
 
-x_prompt = f"""{x_context_block}Search X/Twitter for recent discussions about: "{TOPIC}".
+x_prompt = (
+    x_context_block
+    + f"""Search X/Twitter for recent discussions about: "{TOPIC}".
     Provide:
     - summary: main themes and sentiments in the discussion
     - highlights: key points and notable arguments being made
-    - quotes: direct quotes from notable or representative posts, including handles
+    - quotes: direct quotes from notable or representative posts, including handles; each quote must have a tag
     - consensus: emerging agreements or major points of disagreement
 
     Be thorough and comprehensive. Return as much detail as you find relevant. Return at least 8 (distinct) quotes if possible. Focus especially on the potential for social unrest, uprisings, or protests.
     Translate any non-English content into English. For quotes, append the original text in parentheses after the translation.
+
     """
+    + TAG_DEFINITIONS
+)
 
 if MULTI_PASS == 0:
     print("Single X search pass...")
@@ -160,7 +190,7 @@ else:
         f"Pass {i + 1}:\n"
         f"Summary: {r.summary}\n"
         f"Highlights: {r.highlights}\n"
-        f"Quotes: {r.quotes}\n"
+        f"Quotes:\n" + "\n".join(f"  [{q.tag}] {q.text}" for q in r.quotes) + "\n"
         f"Consensus: {r.consensus}"
         for i, r in enumerate(x_raw_runs)
     )
@@ -181,18 +211,23 @@ else:
 
 # ── News / Web Search ──────────────────────────────────────────────────────────
 
-news_prompt = f"""{news_context_block}Search news websites for recent coverage about: "{TOPIC}".
+news_prompt = (
+    news_context_block
+    + f"""Search news websites for recent coverage about: "{TOPIC}".
     Focus on Haiti-specific journalism from {FROM_DATE_NEWS.strftime('%Y-%m-%d')} to {TO_DATE.strftime('%Y-%m-%d')}.
     Provide:
     - summary: main themes and findings from news reporting
     - highlights: key facts, numbers, or events reported by journalists
     - sources: specific articles cited, in the format "Outlet — Headline", one per line
-    - news_quotes: notable direct quotes from journalists or officials cited in the articles, in the format "Outlet: 'quote text'", one per line. Prioritize quotes that reference protests, unrest, public reaction, or commentary on government fuel policy. At least 5 quotes if possible.
+    - news_quotes: notable direct quotes from journalists or officials cited in the articles, in the format "Outlet: 'quote text'". Prioritize quotes that reference protests, unrest, public reaction, or commentary on government fuel policy. At least 5 quotes if possible. Each quote must have a tag.
     - consensus: what the news coverage broadly agrees on or disputes
 
     Be thorough. Cite specific outlet names and headlines where possible.
     Translate any non-English content into English. Return only the English translation — do not include the original language anywhere.
+
     """
+    + TAG_DEFINITIONS
+)
 
 if MULTI_PASS == 0:
     print("Single news search pass...")
@@ -223,7 +258,7 @@ else:
         f"Summary: {r.summary}\n"
         f"Highlights: {r.highlights}\n"
         f"Sources: {r.sources}\n"
-        f"News Quotes: {r.news_quotes}\n"
+        f"News Quotes:\n" + "\n".join(f"  [{q.tag}] {q.text}" for q in r.news_quotes) + "\n"
         f"Consensus: {r.consensus}"
         for i, r in enumerate(news_raw_runs)
     )
@@ -247,14 +282,16 @@ else:
 print("\n=== X/Twitter ===")
 print(x_final.summary)
 print(x_final.highlights)
-print(x_final.quotes)
+for q in x_final.quotes:
+    print(f"  [{q.tag}] {q.text}")
 print(x_final.consensus)
 
 print("\n=== News ===")
 print(news_final.summary)
 print(news_final.highlights)
 print(news_final.sources)
-print(news_final.news_quotes)
+for q in news_final.news_quotes:
+    print(f"  [{q.tag}] {q.text}")
 print(news_final.consensus)
 
 # ── Save to Excel ──────────────────────────────────────────────────────────────
@@ -283,7 +320,7 @@ if EXCEL_PATH.exists():
     ws_news_sources = get_or_create_sheet(wb, "News Sources",
                           ["Timestamp", "Topic", "Source"])
     ws_news_quotes  = get_or_create_sheet(wb, "News Quotes",
-                          ["Timestamp", "Topic", "Quote"])
+                          ["Timestamp", "Topic", "Quote", "Tag"])
 else:
     wb = openpyxl.Workbook()
 
@@ -293,7 +330,7 @@ else:
                     "Summary", "Highlights", "Consensus"])
 
     ws_quotes = wb.create_sheet("Quotes")
-    ws_quotes.append(["Timestamp", "Topic", "Quote"])
+    ws_quotes.append(["Timestamp", "Topic", "Quote", "Tag"])
 
     ws_news_runs = wb.create_sheet("News Runs")
     ws_news_runs.append(["Timestamp", "Topic", "From Date", "To Date", "Model",
@@ -303,7 +340,7 @@ else:
     ws_news_sources.append(["Timestamp", "Topic", "Source"])
 
     ws_news_quotes = wb.create_sheet("News Quotes")
-    ws_news_quotes.append(["Timestamp", "Topic", "Quote"])
+    ws_news_quotes.append(["Timestamp", "Topic", "Quote", "Tag"])
 
 # ── Runs sheet: one row per run ────────────────────────────────────────────────
 
@@ -329,16 +366,14 @@ existing_quotes = {
     for r in range(2, ws_quotes.max_row + 1)
 }
 
-new_quotes = [q.strip() for q in x_final.quotes.splitlines() if q.strip()]
-
 added_quotes = 0
-for quote in new_quotes:
-    if normalize(quote) not in existing_quotes:
-        ws_quotes.append([timestamp, TOPIC, quote])
-        existing_quotes.add(normalize(quote))
+for quote in x_final.quotes:
+    if normalize(quote.text) not in existing_quotes:
+        ws_quotes.append([timestamp, TOPIC, quote.text, quote.tag])
+        existing_quotes.add(normalize(quote.text))
         added_quotes += 1
 
-print(f"\nX quotes: {added_quotes} new added ({len(new_quotes) - added_quotes} duplicates skipped)")
+print(f"\nX quotes: {added_quotes} new added ({len(x_final.quotes) - added_quotes} duplicates skipped)")
 
 # ── News Runs sheet: one row per run ──────────────────────────────────────────
 
@@ -376,16 +411,14 @@ existing_news_quotes = {
     for r in range(2, ws_news_quotes.max_row + 1)
 }
 
-new_news_quotes = [q.strip() for q in news_final.news_quotes.splitlines() if q.strip()]
-
 added_news_quotes = 0
-for nq in new_news_quotes:
-    if normalize(nq) not in existing_news_quotes:
-        ws_news_quotes.append([timestamp, TOPIC, nq])
-        existing_news_quotes.add(normalize(nq))
+for nq in news_final.news_quotes:
+    if normalize(nq.text) not in existing_news_quotes:
+        ws_news_quotes.append([timestamp, TOPIC, nq.text, nq.tag])
+        existing_news_quotes.add(normalize(nq.text))
         added_news_quotes += 1
 
 wb.save(EXCEL_PATH)
 print(f"News sources: {added_sources} new added ({len(new_sources) - added_sources} duplicates skipped)")
-print(f"News quotes: {added_news_quotes} new added ({len(new_news_quotes) - added_news_quotes} duplicates skipped)")
+print(f"News quotes: {added_news_quotes} new added ({len(news_final.news_quotes) - added_news_quotes} duplicates skipped)")
 print(f"Saved to {EXCEL_PATH}")

@@ -169,12 +169,14 @@
     white-space: nowrap; flex-shrink: 0; margin-top: 1px;
     border: 1px solid transparent;
   }
-  .tag-protest  { background: var(--red-bg);    color: var(--red);    border-color: var(--red-bd); }
-  .tag-violence { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-bd); }
-  .tag-supply   { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-bd); }
-  .tag-economy  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-bd); }
-  .tag-govt     { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
-  .tag-media    { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
+  .tag-protest     { background: var(--red-bg);    color: var(--red);    border-color: var(--red-bd); }
+  .tag-violence    { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-bd); }
+  .tag-disruptions { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-bd); }
+  .tag-economy     { background: var(--green-bg);  color: var(--green);  border-color: var(--green-bd); }
+  .tag-govt        { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
+  .tag-media       { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
+  .tag-complaints  { background: #1e1608;          color: #c8900a;       border-color: #5a3e08; }
+  .tag-misc        { background: var(--gray-bg);   color: var(--faint);  border-color: var(--border); }
   .ev-body { flex: 1; min-width: 0; }
   .ev-headline { font-size: 15px; color: var(--text); line-height: 1.4; }
   .ev-source   { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 3px; }
@@ -262,7 +264,7 @@
       <span class="header-topic">Monitoring the situation</span>
     </div>
     <span class="header-meta">
-      Last run: <span id="h-last-run">2026-04-04 13:14</span> ·
+      Last run: <span id="h-last-run">2026-04-04 14:09</span> ·
       Search window: <span id="h-window">Mar 30, 2026 – Apr 3, 2026</span>
     </span>
   </div>
@@ -362,13 +364,15 @@
       <!-- Timeline -->
       <div class="slabel">Event timeline</div>
       <div class="filter-bar" id="filter-bar">
-        <button class="fbtn active" data-tag="all"      onclick="filter(this)">All</button>
-        <button class="fbtn"        data-tag="protest"  onclick="filter(this)">Protests</button>
-        <button class="fbtn"        data-tag="violence" onclick="filter(this)">Violence</button>
-        <button class="fbtn"        data-tag="supply"   onclick="filter(this)">Supply</button>
-        <button class="fbtn"        data-tag="economy"  onclick="filter(this)">Economy</button>
-        <button class="fbtn"        data-tag="govt"     onclick="filter(this)">Government</button>
-        <button class="fbtn"        data-tag="media"    onclick="filter(this)">Media</button>
+        <button class="fbtn active" data-tag="all"          onclick="filter(this)">All</button>
+        <button class="fbtn"        data-tag="protest"      onclick="filter(this)">Protest</button>
+        <button class="fbtn"        data-tag="violence"     onclick="filter(this)">Violence</button>
+        <button class="fbtn"        data-tag="complaints"   onclick="filter(this)">Complaints</button>
+        <button class="fbtn"        data-tag="disruptions"  onclick="filter(this)">Disruptions</button>
+        <button class="fbtn"        data-tag="economy"      onclick="filter(this)">Economy</button>
+        <button class="fbtn"        data-tag="govt"         onclick="filter(this)">Government</button>
+        <button class="fbtn"        data-tag="media"        onclick="filter(this)">Media</button>
+        <button class="fbtn"        data-tag="misc"         onclick="filter(this)">Misc</button>
       </div>
 
       <!-- PYTHON: inject <div class="tl-group"> blocks here               -->
@@ -377,147 +381,937 @@
 
         <div class="tl-group">
           <div class="tl-date-header">
-            Friday, Apr 3, 2026<span class="new-badge">latest</span>
+            Friday, Apr 3, 2026
+            <span class="new-badge">latest</span>
           </div>
-
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">Unions "envisaging protests" — first explicit mobilization signal</div>
+              <div class="ev-source">@REALITEINFO1 · X/Twitter</div>
+              <div class="ev-quote">Brutal increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum prices... situation remains tense at several capital gas stations.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
               <div class="ev-source">@Equilibrepresse · X/Twitter</div>
-              <div class="ev-quote">"suscitant des inquiétudes parmi les syndicalistes qui envisagent de protester"</div>
+              <div class="ev-quote">Historically, fuel price variations have often provoked social tensions in Haiti... could become a factor of additional economic and social instability in a country facing multiple crises.</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">ASPAEDH (parents' assoc.) calls citizens to "revolt" — denounces govt-union collusion</div>
-              <div class="ev-source">@telegramme360 · X/Twitter</div>
-              <div class="ev-quote">"invite les citoyens à se révolter contre cette mesure jugée injuste"</div>
+              <div class="ev-source">@Florida1sttake · X/Twitter</div>
+              <div class="ev-quote">Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">DEMAREH: "cynical mercantile policy at the price of blood" — demands security before revenue</div>
-              <div class="ev-source">@DEMAREH1 · X/Twitter</div>
-              <div class="ev-quote">"guidée par un instinct mercantile, refuse d'enrayer cet ordre criminel"</div>
+              <div class="ev-source">@jftheo1963 · X/Twitter</div>
+              <div class="ev-quote">The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="violence">
-            <span class="ev-tag tag-violence">Violence</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">Jean-Denis (Artibonite) massacre toll revised to 70+, thousands displaced — Gran Grif gang</div>
-              <div class="ev-source">@metropoleHT · multiple X sources</div>
-              <div class="ev-quote">"Massacre en Artibonite + hausse du carburant : Haïti face à une double crise majeure"</div>
+              <div class="ev-source">@lequotidien509 · X/Twitter</div>
+              <div class="ev-quote">Fuel prices in #Haiti jumped up to 40% due to global oil tensions. Authorities deny shortage but warn of speculation and black market as queues lengthen.</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">Anadolu Agency covers Haiti austerity measures — first significant international wire pickup</div>
-              <div class="ev-source">@anadoluagency · X/Twitter</div>
+              <div class="ev-source">@WFaubius · X/Twitter</div>
+              <div class="ev-quote">US-Iran war caused continuous fuel price hikes in several countries including Haiti. Some say leaders profit to raise prices further against the population.</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="supply">
-            <span class="ev-tag tag-supply">Supply</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">New prices in effect (725/850/845 HTG) — pre-hike rush at Les Cayes, long lines; MCI inspectors deployed</div>
-              <div class="ev-source">@ONews1ereTV · iciHaiti.com</div>
-              <div class="ev-quote">"ruée vers le carburant avant la hausse, la population à bout"</div>
+              <div class="ev-source">@DKMomentum · X/Twitter</div>
+              <div class="ev-quote">When fuel prices rise, everything rises in Haiti. But salaries stay the same. Until when?</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">Le Nouvelliste "Hard Times" editorial — frames hike as inevitable but poorly timed</div>
-              <div class="ev-source">Le Nouvelliste · print media</div>
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Due to fuel price hike, internally displaced fear cost of living worsening... families call for urgent state social measures and relocation.</div>
             </div>
           </div>
-
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DonaldsonE23069 · X/Twitter</div>
+              <div class="ev-quote">Haiti</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@johnny_pie6556 · X/Twitter</div>
+              <div class="ev-quote">+6 million people in food insecurity... They</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Florida1sttake · X/Twitter</div>
+              <div class="ev-quote">Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP [Port-au-Prince]. The double-digit hike... was part of an agreement with the IMF...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DKMomentum · X/Twitter</div>
+              <div class="ev-quote">When the fuel price increases, everything increases in Haiti. But salaries stay the same. Until when?</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Due to the fuel price increase, internally displaced persons fear a worsening of the cost of living... families call on the State for urgent social measures...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@radiomagik9 · X/Twitter</div>
+              <div class="ev-quote">In Haiti</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lequotidien509 · X/Twitter</div>
+              <div class="ev-quote">Fuel prices in #Haiti have jumped up to 40% due to global oil market tensions. Authorities deny shortages but warn against speculation and black market as queues lengthen.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Equilibrepresse · X/Twitter</div>
+              <div class="ev-quote">Historically, fuel price variations have often provoked social tensions in Haiti... could become a factor of additional economic/social instability.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@WFaubius · X/Twitter</div>
+              <div class="ev-quote">The US-Iran war caused continuous fuel price rises... Some believe leaders are profiting from this at Haitians</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DonaldsonE23069 · X/Twitter</div>
+              <div class="ev-quote">Haiti</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lequotidien509 · X/Twitter</div>
+              <div class="ev-quote">Fuel prices in #Haiti have jumped up to 40% due to tensions on global oil markets. Authorities deny any shortage but warn against speculation and black market, as queues lengthen.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Walder3355 · X/Twitter</div>
+              <div class="ev-quote">Not an April Fool</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum product prices. Gasoline, diesel, kerosene see major hikes. Situation tense at capital stations.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@REALITEINFO1 · X/Twitter</div>
+              <div class="ev-quote">Brutal fuel price hike in Haiti: unions denounce suicidal decision and announce national mobilizations.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Florida1sttake · X/Twitter</div>
+              <div class="ev-quote">Around 2018 Jovnel increased gas prices and the opposition burned down PAP. The double-digit hike... was part of IMF agreement to increase revenue.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@jftheo1963 · X/Twitter</div>
+              <div class="ev-quote">Government raised gas price yesterday in Haiti—we already have gangs on our back and now more economic hardships because arrogant INCOMPETENT FOOLS.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@johnny_pie6556 · X/Twitter</div>
+              <div class="ev-quote">6 million in food insecurity... Raising gas on them... 60-70% unemployed... People desperate... Under Jovenel there were already manifestations.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@cripsextremist · X/Twitter</div>
+              <div class="ev-quote">Haiti imposes austerity measures as #IranWar drives up oil prices and disrupts supplies.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@johnny_pie6556 · X/Twitter</div>
+              <div class="ev-quote">Jovenel raised gas by 50 goud... Now private sector in power raises 200 goud... 200% on gas.. They not killing us.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@AlterNewsOnline · X/Twitter</div>
+              <div class="ev-quote">Haiti-Crisis: govt austerity in public admin... ban new vehicles; reduce fuel budgets... to master public spending.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Florida1sttake · X/Twitter</div>
+              <div class="ev-quote">Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP. The double-digit hike in the price of petrol, diesel and kerosene was part of an agreement with the International Monetary Fund...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@johnny_pie6556 · X/Twitter</div>
+              <div class="ev-quote">+6 million people in food insecurity... We</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@REALITEINFO1 · X/Twitter</div>
+              <div class="ev-quote">Brutal increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lequotidien509 · X/Twitter</div>
+              <div class="ev-quote">Fuel prices in #Haïti have jumped up to 40% due to global oil market tensions. Authorities deny shortages but warn against speculation and black market, as queues lengthen.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DKMomentum · X/Twitter</div>
+              <div class="ev-quote">When fuel prices rise, everything rises in Haiti. But wages stay the same. Until when?</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Equilibrepresse · X/Twitter</div>
+              <div class="ev-quote">Historically, fuel price changes have often provoked social tensions in Haiti... could become a factor of additional economic and social instability.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Due to the fuel price increase, internally displaced persons fear a worsening of living costs... call on the State for urgent social measures.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@WFaubius · X/Twitter</div>
+              <div class="ev-quote">The war between the US and Iran has caused a continuous rise in fuel prices... Some believe leaders are taking advantage to raise prices further at the expense of the Haitian population.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@radiomagik9 · X/Twitter</div>
+              <div class="ev-quote">After the significant increase in petroleum products at the pump, expect an upward spiral. All products and services will be impacted while wages remain frozen.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@johnny_pie6556 · X/Twitter</div>
+              <div class="ev-quote">+6 millions moun nan insécurité alimentaire ...Nap monte Gaz sou yo...+60,70% sans Emploi...Lajan pep la 50% pase nan mange ...15% transport....Pep aux abois...Moun ki ka pâle yo acheté yo...sou jovenel tap gentan manifestations</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@REALITEINFO1 · X/Twitter</div>
+              <div class="ev-quote">Hausse brutale des prix du carburant en Haïti : les syndicats dénoncent une décision suicidaire et annoncent des mobilisations nationales</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@radiomagik9 · X/Twitter</div>
+              <div class="ev-quote">Dans le cas d</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@johnny_pie6556 · X/Twitter</div>
+              <div class="ev-quote">Jovenel te mete 50 goud sou gaz la touyel....Min minm secteur privé sou pouvoir yo mete 200 goud.. pral fè 200% sou gaz la..Yo pa Touye nou..</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">En raison de la hausse des prix du carburant, les déplacés internes redoutent une aggravation du coût de la vie. Installées depuis plus de deux ans dans des conditions précaires, des familles déplacées appellent l</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@cripsextremist · X/Twitter</div>
+              <div class="ev-quote">Haiti 🇭🇹🇹 imposes austerity measures as #IranWar drives up oil prices and disrupts supplies</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lequotidien509 · X/Twitter</div>
+              <div class="ev-quote">Les prix du carburant en #Haïti ont bondi jusqu</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@midebate · X/Twitter</div>
+              <div class="ev-quote">El Gobierno de Haití informó este jueves un incremento significativo en los precios de los combustibles, acompañado de una serie de medidas de austeridad...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮&quot; (@jftheo1963)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Hausse brutale des prix du carburant en Haïti : les syndicats dénoncent une décision suicidaire et annoncent des mobilisations nationales&quot; (&quot;Sharp increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations&quot;) (@REALITEINFO1)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Des tensions opposent chauffeurs et passagers dans les rues de Port-au-Prince depuis l’entrée en vigueur... des nouveaux prix du carburant... Ces hausses... alimentent incompréhensions, contestations et tensions entre usagers et chauffeurs.&quot; (&quot;Tensions oppose drivers and passengers in the streets of Port-au-Prince since the new fuel prices took effect... These hikes fuel misunderstandings, contestations and tensions between users and drivers.&quot;) (@RadioTeleSIGNAL)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;+6 millions moun nan insécurité alimentaire ...Nap monte Gaz sou yo...+60,70% sans Emploi...Lajan pep la 50% pase nan mange ...15% transport....Pep aux abois...Moun ki ka pâle yo acheté yo...sou jovenel tap gentan manifestations&quot; (&quot;+6 million people in food insecurity... Raising gas on them...+60-70% unemployed...People&#39;s money 50% on food...15% transport...People at wits&#39; end...Under Jovenel there were already protests&quot;) (@johnny_pie6556)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP&quot; (@Florida1sttake)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Crise du carburant : de nouveaux tarifs doivent entrer en vigueur dès le 2 avril... La situation reste tendue dans plusieurs stations-service de la capitale.&quot; (&quot;Fuel crisis: new rates effective April 2... The situation remains tense at several gas stations in the capital.&quot;) (@metropoleHT)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Dans le cas d’Haïti, après la hausse significative des prix des produits pétroliers à la pompe, il faut s’attendre à l’enclenchement d’une spirale haussière. Tous les produits et services seront impactés alors que les salaires resteront figés à leur niveau d’avant-guerre&quot; (&quot;In Haiti&#39;s case, after the significant fuel price hike at the pump, expect the triggering of an upward spiral. All products and services will be impacted while salaries remain frozen at pre-war levels&quot;) (@radiomagik9 quoting Frantz Duval)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Hausse du prix du carburant : tension sociale et ralentissement du transport à Port-au-Prince&quot; (&quot;Fuel price increase: social tension and transport slowdown in Port-au-Prince&quot;) (@lequotidien509)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Les prix du carburant en #Haïti ont bondi jusqu’à 40 % sous l’effet des tensions mondiales... démentent toute pénurie mais mettent en garde contre la spéculation et le marché noir&quot; (&quot;Fuel prices in #Haiti have jumped up to 40% due to global tensions... deny any shortage but warn against speculation and the black market&quot;) (@lequotidien509)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;La hausse les nourrit, vous détruit&quot; (&quot;The increase feeds them, destroys you&quot;) (@RealNewsayiti)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">- &quot;Oh ta sanble Jovenel mete 15 goud Sou Gaz LA ! Ti Andre ak Sendika Chofè yo pral LÒk PEYI a.&quot; (&quot;Looks like Jovenel put 15 gourdes on gas! Little Andre and drivers&#39; unions will lock down the country.&quot;) (@Salomonpierre27 replying to @metropoleHT)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP (@Florida1sttake)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">The government rose the price of gaz yesterday in Haïti we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS (@jftheo1963)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">6 million people in food insecurity... raising gas on them... 60-70% unemployed... People&#39;s money 50% on food, 15% transport... People at their wits&#39; end (&#39;pep aux abois&#39;)... Under Jovenel there were already demonstrations (&#39;sou jovenel tap gentan manifestations&#39;) (@johnny_pie6556)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Brutal increase in fuel prices in Haiti: the unions denounce a suicidal decision and announce national mobilizations (&#39;Hausse brutale des prix du carburant en Haïti : les syndicats dénoncent une décision suicidaire et annoncent des mobilisations nationales&#39;) (@REALITEINFO1)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Fuel prices in #Haïti have jumped up to 40% under the effect of global oil market tensions. Authorities deny shortages but warn against speculation and black market, as queues lengthen across the country (&#39;Les prix du carburant en #Haïti ont bondi jusqu’à 40 % ... les files d’attente s’allongent dans le pays&#39;) (@lequotidien509)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Under Jovenel they added 50 goud to gas... but now private sector in power adds 200 goud... going to do 200% on gas... They are not killing us (&#39;Jovenel te mete 50 goud sou gaz la touyel....Min minm secteur privé sou pouvoir yo mete 200 goud.. pral fè 200% sou gaz la..Yo pa Touye nou&#39;) (@johnny_pie6556)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Fuel crisis: new tariffs effective April 2 across the country. Government significantly increases prices of petroleum products. Gasoline, diesel, and kerosene record significant hikes. The situation remains tense in several gas stations in the capital (&#39;Crise du carburant : de nouveaux tarifs doivent entrer en vigueur dès le 2 avril ... La situation reste tendue dans plusieurs stations-service de la capitale&#39;) (@metropoleHT)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">In the case of Haiti, after the significant increase in petroleum product prices at the pump, expect the triggering of an upward spiral. All products and services will be impacted while salaries remain frozen at pre-war levels (&#39;Dans le cas d’Haïti, après la hausse significative des prix des produits pétroliers à la pompe, il faut s’attendre à l’enclenchement d’une spirale haussière...&#39;) (@radiomagik9)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Haiti (NEW) ~$5.90/gal compared to neighbors like Dominican Republic ~$4.77/gal, Jamaica ~$3.67/gal. Does @citoyendidier &amp; @PrimatureHT not care about the people? (&#39;Eske @citoyendidier &amp; @PrimatureHT genle nou pa pou pep la vre..&#39;) (@Prez_Aya42)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">The Government of Haiti informed of a significant increase in fuel prices, accompanied by austerity measures to face the escalation of international petroleum costs (&#39;El Gobierno de Haití informó este jueves un incremento significativo en los precios de los combustibles, acompañado de una serie de medidas de austeridad...&#39;) (@midebate)</div>
+            </div>
+          </div>
         </div>
 
         <div class="tl-group">
-          <div class="tl-date-header">Wednesday, Apr 1, 2026</div>
-
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
-            <div class="ev-body">
-              <div class="ev-headline">Ministers Collin (Economy) and Monazard (Commerce) formally announce new prices, citing ME war</div>
-              <div class="ev-source">Le Nouvelliste · HaitiLibre.com · iciHaiti.com</div>
-            </div>
+          <div class="tl-date-header">
+            Thursday, Apr 2, 2026
           </div>
-
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">Austerity package announced: ban on new vehicle purchases, fuel budgets cut, foreign travel limited</div>
-              <div class="ev-source">@LatamData · @anadoluagency</div>
-            </div>
-          </div>
-
-          <div class="tl-event" data-tags="supply">
-            <span class="ev-tag tag-supply">Supply</span>
-            <div class="ev-body">
-              <div class="ev-headline">Carrefour–Port-au-Prince route partially paralyzed — residents blame orchestrated scarcity for black market</div>
-              <div class="ev-source">@TheNancyRoc · @metropoleHT</div>
-              <div class="ev-quote">"Shortage or speculation? Hidden stocks for black market profiteering"</div>
-            </div>
-          </div>
-
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-headline">Educators' and workers' unions warn of chain reaction: transport → food → essentials inflation</div>
-              <div class="ev-source">@ArnoldjuniorPi2 · X/Twitter</div>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="tl-group">
-          <div class="tl-date-header">Mon–Tue, Mar 30–31, 2026</div>
-
-          <div class="tl-event" data-tags="violence">
-            <span class="ev-tag tag-violence">Violence</span>
-            <div class="ev-body">
-              <div class="ev-headline">Gran Grif massacre in Jean-Denis, Artibonite: 50+ killed; RN1 and RN2 highways blockaded by gangs</div>
-              <div class="ev-source">@metropoleHT · multiple X sources</div>
-            </div>
-          </div>
-
-          <div class="tl-event" data-tags="supply">
-            <span class="ev-tag tag-supply">Supply</span>
-            <div class="ev-body">
-              <div class="ev-headline">Port-au-Prince: stations selling diesel only; Les Cayes: stations setting arbitrary prices, "totally out of control"</div>
-              <div class="ev-source">@ONews1ereTV · @metropoleHT</div>
-              <div class="ev-quote">"Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans limite"</div>
-            </div>
-          </div>
-
-          <div class="tl-event" data-tags="supply economy">
-            <span class="ev-tag tag-supply">Supply</span>
-            <div class="ev-body">
-              <div class="ev-headline">"Double toll" narrative emerges: gang extortion on RN1 (65,000 HTG/trip at Montrouis) + imminent state hike</div>
               <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
-              <div class="ev-quote">"Double toll: The State and Bandits are extorting drivers. At every intersection, men with guns."</div>
+              <div class="ev-quote">The State Prefers Gas Money to a Life of Misery: A Government That Is Deaf to the Blood That Is Shedding... Where is the State when gangs are massacring civilians in Jean Denis? If the gas negotiations reach their end without the government saying anything about the security ... this will be the final proof that they are not interested in people</div>
             </div>
           </div>
-
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
             <div class="ev-body">
-              <div class="ev-headline">Advisory Council installed Mar 29 (unions, govt, oil sector) to formalize upward price adjustment</div>
-              <div class="ev-source">@TheNancyRoc · @lequotidien509E</div>
+              <div class="ev-source">@HaitianTimes_ · X/Twitter</div>
+              <div class="ev-quote">Fuel prices rose up to about 40% in Haiti as global tensions rattle oil markets. Authorities deny shortages but warn against speculation and black market sales ... as long lines grow.</div>
             </div>
           </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DEMAREH1 · X/Twitter</div>
+              <div class="ev-quote">L</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@telegramme360 · X/Twitter</div>
+              <div class="ev-quote">Hausse des prix de l</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">En raison de la hausse des prix du carburant, les déplacés internes redoutent une aggravation du coût de la vie ... appellent l</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@LeFacteurHaiti · X/Twitter</div>
+              <div class="ev-quote">Carburant : nouvelle augmentation de tarifs en Haïti au prix du sang.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@UniFm1027 · X/Twitter</div>
+              <div class="ev-quote">La hausse du carburant en Haïti n</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Frantzduval · X/Twitter</div>
+              <div class="ev-quote">Les temps difficiles sont à l</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Antenne_509 · X/Twitter</div>
+              <div class="ev-quote">Augmentation des prix des produits pétroliers ... une flambée des prix du carburant très malveillante.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@PresseInfos1 · X/Twitter</div>
+              <div class="ev-quote">Haïti : à partir du 2 avril 2026, les prix à la pompe sont : Gazoline : 725 G, Diesel : 850 G, Kérosène : 845 G.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@JeanJacquesDes7 · X/Twitter</div>
+              <div class="ev-quote">Price of gasoline has gone up 50% in Haiti. Too bad we don</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DEMAREH1 · X/Twitter</div>
+              <div class="ev-quote">The political organization DEMA REH learns with pain the government</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@telegramme360 · X/Twitter</div>
+              <div class="ev-quote">Haiti parents</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Due to the rise in fuel prices, internally displaced persons fear an aggravation of the cost of living... families displaced call on the State to take urgent social measures.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">For this government, it seems that the lives of the people of Jean Denis are not worth even a gallon of gasoline... the people are asking for justice and security... stop to the politics of leaders who are only interested in money while the people are dying.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@LeFacteurHaiti · X/Twitter</div>
+              <div class="ev-quote">Fuel: new increase in tariffs in Haiti at the price of blood.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@JeanJacquesDes7 · X/Twitter</div>
+              <div class="ev-quote">Price of gasoline has gone up 50% in Haiti. Too bad we don</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@GazetteHaiti · X/Twitter</div>
+              <div class="ev-quote">[The increase] is the direct consequence of the war between the USA and Iran... prices will be reviewed downwards once the war... is over.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@ONews1ereTV · X/Twitter</div>
+              <div class="ev-quote">Les Cayes: rush for fuel before the increase, the population at the end of their rope.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@PresseInfos1 · X/Twitter</div>
+              <div class="ev-quote">ROSPO judges the fuel price increase reasonable... to avoid shortages and black market.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@FdedNews · X/Twitter</div>
+              <div class="ev-quote">Massacres, famine, unsanitary conditions... and now a new fuel price hike. The population, already exhausted, is forced to take it... everything suggests the government turns its back on citizens.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitianTimes_ · X/Twitter</div>
+              <div class="ev-quote">Fuel prices rose up to about 40% in Haiti as global tensions rattle oil markets. Authorities deny shortages but warn against speculation and black market sales across the country as long lines grow.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@JeanJacquesDes7 · X/Twitter</div>
+              <div class="ev-quote">Price of gasoline has gone up 50% in Haiti. Too bad we don</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@FdedNews · X/Twitter</div>
+              <div class="ev-quote">Another hard blow for the Haitian people. Diesel: 850 gourdes, Gasoline: 725 gourdes. Massacres, famine, unsanitary conditions… and now, a new fuel price increase. The population, already at its limit, is forced to take it.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@DEMAREH1 · X/Twitter</div>
+              <div class="ev-quote">[Govt] takes measures to increase its revenues further while powerless to protect the population... This latest massacre shows... criminal groups act seriously by spilling the blood of the population.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@telegramme360 · X/Twitter</div>
+              <div class="ev-quote">Hike in gasoline prices: the Haitian Parents</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Due to the fuel price increase, internally displaced people fear a worsening cost of living... call on the State for urgent social measures and accelerated relocation.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@ONews1ereTV · X/Twitter</div>
+              <div class="ev-quote">Les Cayes: rush for fuel before the hike, the population at its limit.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@GazetteHaiti · X/Twitter</div>
+              <div class="ev-quote">[Unionist] explains that the new prices were decided by the Advisory Council itself after analyses... prices will be reviewed downward once the Middle East war ends.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Equilibrepresse · X/Twitter</div>
+              <div class="ev-quote">Fuel prices hike... sparking concerns among unionists who envisage protesting.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">For the government this is an</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitianTimes_ · X/Twitter</div>
+              <div class="ev-quote">Fuel prices rose up to about 40% in Haiti as global tensions rattle oil markets. Authorities deny shortages but warn against speculation and black market sales across the country as long lines grow.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@JeanJacquesDes7 · X/Twitter</div>
+              <div class="ev-quote">Price of gasoline has gone up 50% in Haiti. Too bad we don</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">If for the government this is an</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@FdedNews · X/Twitter</div>
+              <div class="ev-quote">Another hard blow for the Haitian people. Diesel: 850 gourdes, Kerosene: 845 gourdes, Gasoline: 725 gourdes. Massacres, famine, unsanitary conditions… and now, a new increase in fuel prices. The population, already at the end of their rope, is forced to take it.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@anadoluagency · X/Twitter</div>
+              <div class="ev-quote">Haiti announced austerity measures Tuesday amid ongoing Middle East escalation 🚫 Government banned purchasing new vehicles and limited official travel abroad ⛽ Fuel budgets for public institutions were reduced to cut spending</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Massacre in Artibonite + fuel increase: Haiti facing a major double crisis</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@infospartagesos · X/Twitter</div>
+              <div class="ev-quote">Gasoline: 560 ➝ 829.3 HTG (+269.3 HTG | +48.09%), Diesel: 620 ➝ 1149.6 HTG (+529.6 HTG | +85.43%), Kerosene: 615 ➝ 1262.84 HTG (+647.84 HTG | +105.34%)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Petrus_Lerice · X/Twitter</div>
+              <div class="ev-quote">With the new measures of the Haitian government aimed at increasing fuel prices at the pump on April 2, 2026, I demand immediate support measures for the most vulnerable employees and consumers.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">What is the logic behind a government asking the people to pay more for gas, when it cannot guarantee the safety of this gas even circulating on the roads?</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@newsreporter759 · X/Twitter</div>
+              <div class="ev-quote">Rising global oil prices and supply chain breaks caused by the Middle East conflict are hitting developing economies hardest. #FuelShortage</div>
+            </div>
+          </div>
+        </div>
 
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Wednesday, Apr 1, 2026
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Nova24haiti · X/Twitter</div>
+              <div class="ev-quote">🚨 Flash Info: 725 gourdes: that</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Fuel product prices will be adjusted soon due to the prevailing situation in the Middle East. The price of the gasoline gallon will be set at 725 HTG.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@grandsudhaiti · X/Twitter</div>
+              <div class="ev-quote">#URGENT❌ While more than 6.7 million people struggle to feed themselves, the State unscrupulously plans to raise fuel to 950 gourdes. Overwhelmed on its own roads, it abandons the field to armed groups, then bills the people the price of its impotence...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@NamHaiti · X/Twitter</div>
+              <div class="ev-quote">“Fuel influences everything, the transport of goods, production, market prices. A pump increase will trigger a chain reaction on food products and essentials,</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@ArnoldjuniorPi2 · X/Twitter</div>
+              <div class="ev-quote">Several unions, including the National Union of Normalians/Educators of Haiti and the Autonomous Central of Haitian Workers, denounce a possible fuel price increase. They alert to the risk of worsening poverty and hunger in the country.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@TheNancyRoc · X/Twitter</div>
+              <div class="ev-quote">#Haiti The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame. ⛽ Shortage or speculation? According to drivers and residents, fuel scarcity is orchestrated: hidden stocks to resell more expensive or feed black market before price hike. 👉 A manufactured crisis?</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@LatamData · X/Twitter</div>
+              <div class="ev-quote">HAITI | Government imposes austerity measures including banning new vehicle purchases and limiting fuel use and foreign travel as Iran war disrupts oil supplies, with gangs controlling an estimated 90% of Port-au-Prince. (AP News)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Radio_Metronome · X/Twitter</div>
+              <div class="ev-quote">...the Prime Minister could proceed as early as this week to a fuel price adjustment... up to 950 gourdes. ... The Prime Minister shows indifference toward the population</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@vantbefinfo · X/Twitter</div>
+              <div class="ev-quote">A fuel price hike could take effect as early as this Tuesday evening in Haiti, with a ceiling planned at 950 gourdes at the pump...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lereliefhaiti · X/Twitter</div>
+              <div class="ev-quote">In conclusion, the current fuel situation in Haiti is at the crossroads of two realities: inevitable international pressure and necessary national reform... The real issue today is not just the fuel price, but setting up a system to avoid repetitive crises, budget imbalances, and social tensions.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Tuesday, Mar 31, 2026
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">As gas stations start to have high wires, and the population is panicking... When a government chooses to raise the cost of living at a time when people are dying from bullets... this is... a total lack of sensitivity.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@icmedia509 · X/Twitter</div>
+              <div class="ev-quote">Le roi Fils-Aimé ne jure que par l</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@jrelie · X/Twitter</div>
+              <div class="ev-quote">Qd les prix sont gelés trop longtemps, toute tentative d</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@ONews1ereTV · X/Twitter</div>
+              <div class="ev-quote">Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans limite.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">A Port-au-Prince, plusieurs stations-service ne proposent que du diesel et les chauffeurs peinent à s</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@TME202 · X/Twitter</div>
+              <div class="ev-quote">Le prix du gazoline est passé de 570 à 750 gourdes... Une hausse soudaine dénoncée par plusieurs consommateurs, qui évoquent un possible complot.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">Double toll: The State and Bandits are extorting drivers... Bandit Toll: At every intersection, men with guns... State Tolls: Now, Alix Didier Fils-Aimé wants to add</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@Radio_Metronome · X/Twitter</div>
+              <div class="ev-quote">Si les autorités augmentent le prix du carburant, ce sera un véritable coup dur... Le peuple doit-il toujours être la principale victime?</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lequotidien509E · X/Twitter</div>
+              <div class="ev-quote">Haitian authorities confirm no fuel shortage nationwide. Petroleum products remain available; illegal sales will face sanctions.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@TheNancyRoc · X/Twitter</div>
+              <div class="ev-quote">Les prix des carburants sont à l</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@lequotidien509E · X/Twitter</div>
+              <div class="ev-quote">Haiti installs new advisory council to regulate fuel prices, bringing together government, transport unions, oil companies &amp; distributors.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="misc">
+            <span class="ev-tag tag-misc">Misc</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Les prix des produits pétroliers risquent d</div>
+            </div>
+          </div>
         </div>
 
       </div><!-- #timeline -->
@@ -531,11 +1325,11 @@
       <div class="delta-card">
         <div class="card-label">New since last run</div>
         <div id="delta-list">
-          <div class="delta-item is-new">Fuel prices surged 20-40% overnight (gasoline +29%, diesel +37%, kerosene +37%) due to international oil surge (barrel &gt;$100 from US-Iran war/Trump speech); government blames global factors, denies shortages, warns of speculation.</div>
-          <div class="delta-item is-new">Transport impacts: fares immediately raised (e.g., 50G→75G Delmas-PVP, 100G→125G Clercine-Frères), leading to street arguments, contestations between chauffeurs/passengers, and some transport slowdowns from fuel access issues.</div>
-          <div class="delta-item is-new">Economic ripple: Expected inflation on all goods (80% road-transported), cost-of-living crisis exacerbating poverty; salaries frozen pre-war levels.</div>
-          <div class="delta-item is-new">Union response: Labeled &#39;suicidal,&#39; planning nationwide mobilizations/protests.</div>
-          <div class="delta-item is-new">Social tensions: Tense stations in capital, black market thriving (private markups 200%), public outrage at government &#39;arrogance/incompetence.&#39;</div>
+          <div class="delta-item is-new">Fuel prices hiked 20-40% overnight (specifics referenced in context: gasoline to 725 gourdes, diesel to 850, kerosene to 845), blamed on international oil prices exceeding $100/barrel due to US-Iran conflict; government denies shortages but warns against speculation.</div>
+          <div class="delta-item is-new">Immediate disruptions: long queues at pumps, tense situations in capital stations, transport fare increases sparking arguments between drivers and passengers, black market thriving with 200% markups by private sectors.</div>
+          <div class="delta-item is-new">Economic fallout: Households spend 50% income on food and 15% on transport; expected inflationary spiral on all goods (80% road-transported), salaries frozen at pre-war levels, deepening poverty and cost-of-living crisis.</div>
+          <div class="delta-item is-new">Union response: Denounce hike as &#39;suicidal decision,&#39; announce nationwide mobilizations and protests.</div>
+          <div class="delta-item is-new">Public frustration: Accusations of government arrogance and incompetence; people &#39;at wits&#39; end&#39; amid gangs, unemployment, food insecurity.</div>
         </div>
       </div>
 
@@ -544,7 +1338,7 @@
       <div class="tweet-card">
         <div class="card-label">Voice of the street</div>
         <div class="tweet-handle" id="tw-handle">Unknown</div>
-        <div class="tweet-body"   id="tw-body">&quot;Oh ta sanble Jovenel mete 15 goud Sou Gaz LA ! Ti Andre ak Sendika Chofè yo pral LÒk PEYI a.&quot; (&quot;Looks like Jovenel put 15 gourdes on gas! Little Andre and drivers&#39; unions will lock down the country.&quot;) (@Salomonpierre27 replying to @metropoleHT)</div>
+        <div class="tweet-body"   id="tw-body">The Government of Haiti informed of a significant increase in fuel prices, accompanied by austerity measures to face the escalation of international petroleum costs (&#39;El Gobierno de Haití informó este jueves un incremento significativo en los precios de los combustibles, acompañado de una serie de m</div>
         <div class="tweet-date"   id="tw-date">Apr 4, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevTweet()">← prev</button>
@@ -557,8 +1351,8 @@
       <!-- PYTHON: replace NEWS_QUOTES array in the script below          -->
       <div class="tweet-card">
         <div class="card-label">Press quotes</div>
-        <div class="tweet-handle" id="nq-outlet">Rezo Nòdwès</div>
-        <div class="tweet-body"   id="nq-body">Fuel expenditure credits for public institutions will be revised downward, even if it means limiting travel.</div>
+        <div class="tweet-handle" id="nq-outlet">Le Nouvelliste</div>
+        <div class="tweet-body"   id="nq-body">Merchants in Les Cayes Set Gasoline at 800 Gourdes per Gallon and Diesel at 900 Gourdes.</div>
         <div class="tweet-date"   id="nq-date">Apr 4, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevNewsQuote()">← prev</button>
@@ -572,7 +1366,7 @@
       <div class="consensus-card">
         <div class="card-label">X / social consensus</div>
         <div class="consensus-text" id="consensus-text">
-          Strong consensus that the fuel price hike is a &#39;suicidal&#39; misstep by the government, exacerbating Haiti&#39;s multi-layered crises (gangs, poverty, inflation, food/transport costs) and pushing people &#39;at breaking point&#39; toward protests or uprisings akin to 2018 PetroChallenge events that burned parts of PAP. Unions&#39; national mobilizations signal imminent action, with transport tensions already manifesting. Agreement on inevitable economic spiral without protections; minor notes that global oil crisis necessitates hikes (affecting region), but dominant view condemns full pass-through to vulnerable population without subsidies/safeguards as arrogant/incompetent, heightening unrest risks—no actual protests reported yet, but expectations high.
+          Overwhelming consensus that the fuel price hike is exacerbating Haiti&#39;s profound crises—poverty, inflation, transport/food costs, gang violence, unemployment, and food insecurity—without mitigations like subsidies or wage increases, pushing the population &#39;at their wits&#39; end&#39; toward potential unrest or uprisings similar to the 2018 PetroChallenge protests that burned parts of Port-au-Prince. High agreement on unions&#39; &#39;suicidal decision&#39; label and their announced national mobilizations as harbingers of protests; government austerity criticized as arrogant pass-through of global costs. Minor views acknowledge global inevitability but stress need for protections; no reports of actual protests or violence, but pervasive warnings of breaking point and social explosion risks.
         </div>
       </div>
 
@@ -605,27 +1399,52 @@ const TWEETS = [
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "\"Oh ta sanble Jovenel mete 15 goud Sou Gaz LA ! Ti Andre ak Sendika Chofè yo pral LÒk PEYI a.\" (\"Looks like Jovenel put 15 gourdes on gas! Little Andre and drivers' unions will lock down the country.\") (@Salomonpierre27 replying to @metropoleHT)"
+    "body": "The Government of Haiti informed of a significant increase in fuel prices, accompanied by austerity measures to face the escalation of international petroleum costs ('El Gobierno de Haití informó este jueves un incremento significativo en los precios de los combustibles, acompañado de una serie de m"
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "\"La hausse les nourrit, vous détruit\" (\"The increase feeds them, destroys you\") (@RealNewsayiti)"
+    "body": "Haiti (NEW) ~$5.90/gal compared to neighbors like Dominican Republic ~$4.77/gal, Jamaica ~$3.67/gal. Does @citoyendidier & @PrimatureHT not care about the people? ('Eske @citoyendidier & @PrimatureHT genle nou pa pou pep la vre..') (@Prez_Aya42)"
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "\"Les prix du carburant en #Haïti ont bondi jusqu’à 40 % sous l’effet des tensions mondiales... démentent toute pénurie mais mettent en garde contre la spéculation et le marché noir\" (\"Fuel prices in #Haiti have jumped up to 40% due to global tensions... deny any shortage but warn against speculation"
+    "body": "In the case of Haiti, after the significant increase in petroleum product prices at the pump, expect the triggering of an upward spiral. All products and services will be impacted while salaries remain frozen at pre-war levels ('Dans le cas d’Haïti, après la hausse significative des prix des produit"
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "\"Hausse du prix du carburant : tension sociale et ralentissement du transport à Port-au-Prince\" (\"Fuel price increase: social tension and transport slowdown in Port-au-Prince\") (@lequotidien509)"
+    "body": "Fuel crisis: new tariffs effective April 2 across the country. Government significantly increases prices of petroleum products. Gasoline, diesel, and kerosene record significant hikes. The situation remains tense in several gas stations in the capital ('Crise du carburant : de nouveaux tarifs doiven"
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "\"Dans le cas d’Haïti, après la hausse significative des prix des produits pétroliers à la pompe, il faut s’attendre à l’enclenchement d’une spirale haussière. Tous les produits et services seront impactés alors que les salaires resteront figés à leur niveau d’avant-guerre\" (\"In Haiti's case, after t"
+    "body": "Under Jovenel they added 50 goud to gas... but now private sector in power adds 200 goud... going to do 200% on gas... They are not killing us ('Jovenel te mete 50 goud sou gaz la touyel....Min minm secteur privé sou pouvoir yo mete 200 goud.. pral fè 200% sou gaz la..Yo pa Touye nou') (@johnny_pie6"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Fuel prices in #Haïti have jumped up to 40% under the effect of global oil market tensions. Authorities deny shortages but warn against speculation and black market, as queues lengthen across the country ('Les prix du carburant en #Haïti ont bondi jusqu’à 40 % ... les files d’attente s’allongent dan"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Brutal increase in fuel prices in Haiti: the unions denounce a suicidal decision and announce national mobilizations ('Hausse brutale des prix du carburant en Haïti : les syndicats dénoncent une décision suicidaire et annoncent des mobilisations nationales') (@REALITEINFO1)"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "million people in food insecurity... raising gas on them... 60-70% unemployed... People's money 50% on food, 15% transport... People at their wits' end ('pep aux abois')... Under Jovenel there were already demonstrations ('sou jovenel tap gentan manifestations') (@johnny_pie6556)"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "The government rose the price of gaz yesterday in Haïti we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS (@jftheo1963)"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP (@Florida1sttake)"
   },
   {
     "handle": "Unknown",
@@ -635,36 +1454,36 @@ const TWEETS = [
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "\"Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP\" (@Florida1sttake)"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "\"+6 millions moun nan insécurité alimentaire ...Nap monte Gaz sou yo...+60,70% sans Emploi...Lajan pep la 50% pase nan mange ...15% transport....Pep aux abois...Moun ki ka pâle yo acheté yo...sou jovenel tap gentan manifestations\" (\"+6 million people in food insecurity... Raising gas on them...+60-7"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "\"Des tensions opposent chauffeurs et passagers dans les rues de Port-au-Prince depuis l’entrée en vigueur... des nouveaux prix du carburant... Ces hausses... alimentent incompréhensions, contestations et tensions entre usagers et chauffeurs.\" (\"Tensions oppose drivers and passengers in the streets o"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "\"Hausse brutale des prix du carburant en Haïti : les syndicats dénoncent une décision suicidaire et annoncent des mobilisations nationales\" (\"Sharp increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations\") (@REALITEINFO1)"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
     "body": "\"The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮\" (@jftheo1963)"
-  },
-  {
-    "handle": "@metropoleHT",
-    "date": "Apr 4, 2026",
-    "body": "En raison de la hausse des prix du carburant, les déplacés internes redoutent une aggravation du coût de la vie. Installées depuis plus de deux ans dans des conditions précaires, des familles déplacées appellent l"
   }
 ];
 
 const NEWS_QUOTES = [
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 4, 2026",
+    "body": "Merchants in Les Cayes Set Gasoline at 800 Gourdes per Gallon and Diesel at 900 Gourdes."
+  },
+  {
+    "outlet": "HaitiLibre.com",
+    "date": "Apr 4, 2026",
+    "body": "Inspectors from the Ministry of Commerce and Industry (MCI) have verified and validated stored fuel quantities at service stations, requiring owners to sell off inspected stocks."
+  },
+  {
+    "outlet": "HaitiLibre.com",
+    "date": "Apr 4, 2026",
+    "body": "Taking into account the terms and percentage adjustment of fuel prices at the pump; namely, 29% for gasoline and 37% for diesel."
+  },
+  {
+    "outlet": "HaitiLibre.com",
+    "date": "Apr 4, 2026",
+    "body": "The international situation has seen significant developments in recent weeks, notably marked by the accelerated increase in petroleum product prices on the world market and the potential risks of supply disruptions that this is likely to generate... To address this situation, the Government has no choice but to further reduce state spending."
+  },
+  {
+    "outlet": "iciHaiti.com",
+    "date": "Apr 4, 2026",
+    "body": "inform the general public, and importers, distributors, and consumers of petroleum products in particular, that the pump prices in effect throughout the national territory are set as follows."
+  },
   {
     "outlet": "Rezo Nòdwès",
     "date": "Apr 4, 2026",
@@ -689,31 +1508,6 @@ const NEWS_QUOTES = [
     "outlet": "Rezo Nòdwès",
     "date": "Apr 4, 2026",
     "body": "While the population remains exposed to insecurity and deprivation, the stand-in power in place decrees a substantial increase in fuel prices, directly affecting ordinary living conditions."
-  },
-  {
-    "outlet": "HaitiLibre",
-    "date": "Apr 4, 2026",
-    "body": "Having regard to Joint Notice 25-26/001 from the Ministries of Economy and Finance, Commerce, and Industry setting the prices of petroleum products in effect throughout the country as of April 2nd, 2026;"
-  },
-  {
-    "outlet": "Le Nouvelliste",
-    "date": "Apr 4, 2026",
-    "body": "Merchants in Les Cayes proposing an upward adjustment to 800 gourdes per gallon for gasoline and 900 gourdes for diesel."
-  },
-  {
-    "outlet": "Le Nouvelliste",
-    "date": "Apr 4, 2026",
-    "body": "Official prices set by the Ministries of Economy and Finance (MEF) and Trade and Industry (MCI) at 725 gourdes per gallon of gasoline, 850 gourdes for diesel, and 845 gourdes for kerosene."
-  },
-  {
-    "outlet": "HaitiLibre",
-    "date": "Apr 4, 2026",
-    "body": "Considering that public transport fares should be adjusted in line with the new fuel prices; Taking into account the terms and percentage adjustment of fuel prices at the pump; namely, 29% for gasoline and 37% for diesel."
-  },
-  {
-    "outlet": "iciHaiti",
-    "date": "Apr 4, 2026",
-    "body": "Serge Gabriel Collin, Minister of Economy and Finance, and James Monazard, Minister of Commerce and Industry, acting on the recommendations of the Advisory Council dated March 31, 2026, inform the general public..."
   }
 ];
 

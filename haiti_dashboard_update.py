@@ -39,6 +39,7 @@ OUTPUT_PATH   = Path(__file__).parent / "index.html"  # overwrites in place
 
 MAX_TWEETS      = 12   # max X/Twitter quotes in the tweet widget
 MAX_NEWS_QUOTES = 10   # max press quotes in the news widget
+MAX_TIMELINE_DAYS = 10  # max days shown in the event timeline
 MAX_DELTA       = 5    # max items in the "new since last run" card
 
 
@@ -212,6 +213,116 @@ def build_news_consensus(news_runs_df: pd.DataFrame) -> str:
     return str(latest.get("Consensus", "")).strip()
 
 
+# ── Build event timeline ─────────────────────────────────────────────────────
+
+# Maps Grok tag → (CSS class suffix, display label)
+_TAG_CSS = {
+    "Violence":    ("violence",    "Violence"),
+    "Complaints":  ("complaints",  "Complaints"),
+    "Protest":     ("protest",     "Protest"),
+    "Government":  ("govt",        "Government"),
+    "Economy":     ("economy",     "Economy"),
+    "Media":       ("media",       "Media"),
+    "Disruptions": ("disruptions", "Disruptions"),
+    "Misc":        ("misc",        "Misc"),
+}
+
+
+def build_timeline(sheets: dict) -> str:
+    """
+    Build the full #timeline HTML from Quotes and News Quotes sheets,
+    joined to their Runs sheets to get the to_date coverage date per entry.
+    Entries are grouped by date, newest first.
+    """
+
+    def get_ts_to_date(runs: pd.DataFrame) -> pd.Series:
+        """Return a Series mapping run Timestamp → To Date."""
+        if runs.empty or "Timestamp" not in runs.columns or "To Date" not in runs.columns:
+            return pd.Series(dtype="datetime64[ns]")
+        r = runs.copy()
+        r["Timestamp"] = pd.to_datetime(r["Timestamp"])
+        r["To Date"]   = pd.to_datetime(r["To Date"])
+        return r.drop_duplicates("Timestamp").set_index("Timestamp")["To Date"]
+
+    def parse_source_body(raw: str, source_type: str) -> tuple[str, str]:
+        """Split a raw quote string into (source_label, body_text)."""
+        if source_type == "x":
+            # Expected: "@handle: 'text'" or similar
+            m = re.search(
+                r"@(\w+)[^:]*:\s*[\"'\u2018\u2019\u201c\u201d](.+?)[\"'\u2018\u2019\u201c\u201d]",
+                raw, re.S,
+            )
+            if m:
+                return "@" + m.group(1) + " · X/Twitter", m.group(2).strip()
+            return "X/Twitter", raw
+        else:
+            # Expected: "Outlet: 'text'"
+            m = re.match(
+                r"^([^:'\"—\u2014]{2,50})[:\u2014—]\s*[\"'\u2018\u2019\u201c\u201d]?(.+?)[\"'\u2018\u2019\u201c\u201d]?\s*$",
+                raw, re.S,
+            )
+            if m:
+                return m.group(1).strip(), m.group(2).strip()
+            return "Press", raw
+
+    def render_group(date: pd.Timestamp, entries: list[dict], is_latest: bool) -> str:
+        day_str = date.strftime("%A, %b ") + str(date.day) + date.strftime(", %Y")
+        badge   = '\n            <span class="new-badge">latest</span>' if is_latest else ""
+        lines   = [f'\n        <div class="tl-group">',
+                   f'          <div class="tl-date-header">\n            {day_str}{badge}\n          </div>']
+        for e in entries:
+            css_cls, label = _TAG_CSS.get(e["tag"], ("misc", "Misc"))
+            lines.append(
+                f'          <div class="tl-event" data-tags="{css_cls}">\n'
+                f'            <span class="ev-tag tag-{css_cls}">{label}</span>\n'
+                f'            <div class="ev-body">\n'
+                f'              <div class="ev-source">{html_escape(e["source"])}</div>\n'
+                f'              <div class="ev-quote">{html_escape(e["body"])}</div>\n'
+                f'            </div>\n'
+                f'          </div>'
+            )
+        lines.append(f'        </div>')
+        return "\n".join(lines)
+
+    # Collect all entries from both sources
+    all_entries: list[dict] = []
+    for sheet_q, sheet_r, stype in [
+        ("Quotes",      "Runs",      "x"),
+        ("News Quotes", "News Runs", "news"),
+    ]:
+        df   = sheets.get(sheet_q, pd.DataFrame())
+        runs = sheets.get(sheet_r, pd.DataFrame())
+        if df.empty or "Quote" not in df.columns:
+            continue
+        ts_map = get_ts_to_date(runs)
+        df = df.copy()
+        df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+        df["to_date"]   = pd.to_datetime(df["Timestamp"].map(ts_map)).dt.normalize()
+        df = df.dropna(subset=["to_date"])
+        tag_col = "Tag" if "Tag" in df.columns else None
+        for _, row in df.iterrows():
+            raw = str(row["Quote"]).strip()
+            if not raw or raw.lower() == "nan":
+                continue
+            tag    = str(row[tag_col]).strip() if tag_col else "Misc"
+            source, body = parse_source_body(raw, stype)
+            all_entries.append({"to_date": row["to_date"], "tag": tag,
+                                 "source": source, "body": body})
+
+    if not all_entries:
+        return ""
+
+    df_all = pd.DataFrame(all_entries)
+    dates  = sorted(df_all["to_date"].unique(), reverse=True)[:MAX_TIMELINE_DAYS]
+
+    groups = []
+    for i, d in enumerate(dates):
+        day_rows = df_all[df_all["to_date"] == d].to_dict("records")
+        groups.append(render_group(pd.Timestamp(d), day_rows, is_latest=(i == 0)))
+
+    return "\n".join(groups)
+
+
 # ── Build header metadata ─────────────────────────────────────────────────────
 
 def build_header(runs_df: pd.DataFrame, news_runs_df: pd.DataFrame) -> dict:
@@ -303,16 +414,14 @@ def fetch_wti_fred(days: int = 60) -> dict | None:
 
 def inject(html: str, tweets: list, news_quotes: list, delta: list,
            x_consensus: str, news_consensus: str,
-           header: dict, wti: dict | None) -> str:
+           header: dict, wti: dict | None, timeline: str = "") -> str:
 
-    # ── Timeline "latest" date header → to_date of the most recent search run
-    if header.get("latest_to"):
-        d = header["latest_to"]
-        latest_to_str = d.strftime("%A, %b ") + str(d.day) + d.strftime(", %Y")
+    # ── Event timeline (full replacement)
+    if timeline:
         html = re.sub(
-            r'(<div class="tl-date-header">\s*)[\w,\s]+([\r\n\s]*<span class="new-badge">)',
-            lambda m: m.group(1) + latest_to_str + m.group(2),
-            html,
+            r'(<div id="timeline">).*?(</div><!-- #timeline -->)',
+            lambda m: m.group(1) + "\n" + timeline + "\n\n      " + m.group(2),
+            html, flags=re.S,
         )
 
     # ── Header metadata
@@ -428,18 +537,21 @@ def main(excel_path: str):
     news_consensus = build_news_consensus(news_runs_df)
     header        = build_header(runs_df, news_runs_df)
 
-    print("[5/6] Fetching WTI oil prices ...")
+    print("[5/6] Building event timeline ...")
+    timeline = build_timeline(sheets)
+    print(f"      → {len(pd.DataFrame(sheets.get('Quotes', pd.DataFrame())).dropna()) + len(pd.DataFrame(sheets.get('News Quotes', pd.DataFrame())).dropna())} entries across {timeline.count('tl-group')} date groups")
+
+    print("[6/7] Fetching WTI oil prices ...")
     wti = fetch_wti_fred()
     if wti:
         print(f"      → latest WTI: {wti['price_val']}")
     else:
-        print("      → FRED_API_KEY not set; keeping placeholder chart data")
-        print("        (set FRED_API_KEY env var for live prices)")
+        print("      → CEIC fetch failed; keeping placeholder chart data")
 
-    print("[6/6] Injecting into HTML ...")
+    print("[7/7] Injecting into HTML ...")
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     updated  = inject(template, tweets, news_quotes, delta,
-                      x_consensus, news_consensus, header, wti)
+                      x_consensus, news_consensus, header, wti, timeline)
     OUTPUT_PATH.write_text(updated, encoding="utf-8")
 
     print(f"\nDone. Open: {OUTPUT_PATH.resolve()}")
