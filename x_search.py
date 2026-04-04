@@ -43,6 +43,10 @@ MODEL      = "grok-4-1-fast"
 MULTI_PASS = 0  # 0 = single search (testing); 1 = multiple passes + synthesis
 N_RUNS     = 2  # number of passes when MULTI_PASS = 1
 
+PRIOR_RUNS = 3  # how many past runs to load as context for Grok
+
+EXCEL_PATH = Path("output/x_search_log.xlsx")
+
 # Domains to search for news coverage
 NEWS_DOMAINS = [
     "lenouvelliste.com",
@@ -52,11 +56,72 @@ NEWS_DOMAINS = [
     "ayibopost.com",
 ]
 
+# ── Load prior context from Excel ─────────────────────────────────────────────
+
+def load_prior_context(excel_path: Path, n: int) -> tuple[str, str]:
+    """
+    Read the last n rows from the Runs and News Runs sheets and format them
+    as context strings to prepend to the Grok prompts.
+    Returns (x_context, news_context); either may be "" if no history exists.
+    """
+    if not excel_path.exists():
+        return "", ""
+
+    wb = openpyxl.load_workbook(excel_path, read_only=True, data_only=True)
+
+    def read_last(sheet_name: str) -> list[dict]:
+        if sheet_name not in wb.sheetnames:
+            return []
+        ws = wb[sheet_name]
+        # columns: Timestamp, Topic, From Date, To Date, Model, Summary, Highlights, Consensus
+        rows = [r for r in ws.iter_rows(min_row=2, values_only=True) if any(r)]
+        rows = rows[-n:]
+        return [
+            {"timestamp": r[0], "from_date": r[2], "to_date": r[3],
+             "summary": r[5], "highlights": r[6], "consensus": r[7]}
+            for r in rows
+        ]
+
+    def fmt(rows: list[dict]) -> str:
+        parts = []
+        for r in rows:
+            parts.append(
+                f"[{r['timestamp']} | {r['from_date']} to {r['to_date']}]\n"
+                f"Summary: {r['summary']}\n"
+                f"Highlights: {r['highlights']}\n"
+                f"Consensus: {r['consensus']}"
+            )
+        return "\n\n".join(parts)
+
+    x_ctx   = fmt(read_last("Runs"))
+    news_ctx = fmt(read_last("News Runs"))
+    wb.close()
+    return x_ctx, news_ctx
+
+
+x_prior, news_prior = load_prior_context(EXCEL_PATH, PRIOR_RUNS)
+
+# Preamble injected into prompts when prior history exists
+def context_block(prior: str, n: int, source: str) -> str:
+    if not prior:
+        return ""
+    return (
+        f"PRIOR RESEARCH CONTEXT — last {n} {source} runs already logged.\n"
+        f"Do not characterize anything as a 'first', 'unprecedented', or 'new development' "
+        f"if it appears in this record. Only flag something as new if it genuinely does not "
+        f"appear below.\n\n"
+        f"{prior}\n\n"
+        f"---\n\n"
+    )
+
+x_context_block    = context_block(x_prior,    PRIOR_RUNS, "X/Twitter")
+news_context_block = context_block(news_prior, PRIOR_RUNS, "news")
+
 # ── X/Twitter Search ───────────────────────────────────────────────────────────
 
 client = Client(api_key=grok_token)
 
-x_prompt = f"""Search X/Twitter for recent discussions about: "{TOPIC}".
+x_prompt = f"""{x_context_block}Search X/Twitter for recent discussions about: "{TOPIC}".
     Provide:
     - summary: main themes and sentiments in the discussion
     - highlights: key points and notable arguments being made
@@ -116,7 +181,7 @@ else:
 
 # ── News / Web Search ──────────────────────────────────────────────────────────
 
-news_prompt = f"""Search news websites for recent coverage about: "{TOPIC}".
+news_prompt = f"""{news_context_block}Search news websites for recent coverage about: "{TOPIC}".
     Focus on Haiti-specific journalism from {FROM_DATE_NEWS.strftime('%Y-%m-%d')} to {TO_DATE.strftime('%Y-%m-%d')}.
     Provide:
     - summary: main themes and findings from news reporting
@@ -194,7 +259,6 @@ print(news_final.consensus)
 
 # ── Save to Excel ──────────────────────────────────────────────────────────────
 
-EXCEL_PATH = Path("output/x_search_log.xlsx")
 EXCEL_PATH.parent.mkdir(exist_ok=True)
 
 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
