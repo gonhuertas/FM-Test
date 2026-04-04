@@ -236,8 +236,9 @@ def build_header(runs_df: pd.DataFrame, news_runs_df: pd.DataFrame) -> dict:
 
     latest_ts = max(all_timestamps)
     return {
-        "last_run": latest_ts.strftime("%Y-%m-%d %H:%M"),
-        "window":   fmt_date(earliest_fr) + " – " + fmt_date(latest_to),
+        "last_run":  latest_ts.strftime("%Y-%m-%d %H:%M"),
+        "window":    fmt_date(earliest_fr) + " – " + fmt_date(latest_to),
+        "latest_to": latest_to,  # used to label the "latest" group in the event timeline
     }
 
 
@@ -304,13 +305,15 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
            x_consensus: str, news_consensus: str,
            header: dict, wti: dict | None) -> str:
 
-    # ── Timeline "latest" date header → today's date
-    today_str = datetime.now().strftime("%A, %b ") + str(datetime.now().day) + datetime.now().strftime(", %Y")
-    html = re.sub(
-        r'(<div class="tl-date-header">\s*)[\w,\s]+([\r\n\s]*<span class="new-badge">)',
-        lambda m: m.group(1) + today_str + m.group(2),
-        html,
-    )
+    # ── Timeline "latest" date header → to_date of the most recent search run
+    if header.get("latest_to"):
+        d = header["latest_to"]
+        latest_to_str = d.strftime("%A, %b ") + str(d.day) + d.strftime(", %Y")
+        html = re.sub(
+            r'(<div class="tl-date-header">\s*)[\w,\s]+([\r\n\s]*<span class="new-badge">)',
+            lambda m: m.group(1) + latest_to_str + m.group(2),
+            html,
+        )
 
     # ── Header metadata
     if header.get("last_run"):
