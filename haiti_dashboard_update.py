@@ -1,25 +1,14 @@
 """
-haiti_dashboard_update.py
-─────────────────────────
 Reads the xAI search log Excel and regenerates haiti_tracker.html with
 the latest data injected into the DATA LAYER section.
 
 Run without arguments: auto-locates output/x_search_log.xlsx next to this script.
 Run with argument:     python haiti_dashboard_update.py path/to/x_search_log.xlsx
 
-Requirements:
-    pip install pandas openpyxl
-
 Optional (for live WTI prices):
     pip install fredapi
     Set env var FRED_API_KEY (free key at https://fred.stlouisfed.org/docs/api/api_key.html)
 
-Sheets expected in the Excel file (produced by x_search.py):
-    Runs          — X/Twitter run summaries
-    Quotes        — X/Twitter quotes, one per row
-    News Runs     — news search run summaries
-    News Sources  — news article citations, one per row
-    News Quotes   — news article quotes, one per row
 """
 
 import sys
@@ -222,10 +211,21 @@ def build_consensus(runs_df: pd.DataFrame) -> str:
 
 def build_news_consensus(news_runs_df: pd.DataFrame) -> str:
     """News/press consensus from the most recent news run."""
-    if news_runs_df.empty or "Timestamp" not in news_runs_df.columns:
+    if news_runs_df.empty:
         return ""
     df = news_runs_df.copy()
-    df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+    _NEWS_RUNS_COLS = ["Timestamp", "Topic", "From Date", "To Date", "Model",
+                       "Summary", "Highlights", "Consensus"]
+    # If the header row was never written, pandas uses the first data row as
+    # column names — detect this and assign the correct names.
+    if "Consensus" not in df.columns and df.shape[1] == len(_NEWS_RUNS_COLS):
+        df.columns = _NEWS_RUNS_COLS
+    if "Timestamp" not in df.columns:
+        return ""
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+    df = df.dropna(subset=["Timestamp"])
+    if df.empty:
+        return ""
     latest = df.sort_values("Timestamp", ascending=False).iloc[0]
     return str(latest.get("Consensus", "")).strip()
 
