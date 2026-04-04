@@ -512,14 +512,10 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
             f'{html_escape(d["text"])}</div>'
             for d in delta
         )
-        # Match the full delta-list div: opening tag, then all flat child divs
-        # (each item is <div>text</div> with no nested HTML), then the closing tag.
-        # The non-greedy .*? would stop at the first </div> inside an item, so we
-        # match child divs explicitly with (?:\s*<div[^>]*>[^<]*</div>)* instead.
         html = re.sub(
-            r'(<div id="delta-list">)(?:\s*<div[^>]*>[^<]*</div>)*\s*(</div>)',
+            r'(<div id="delta-list">)[\s\S]*?(</div><!-- #delta-list -->)',
             lambda m: m.group(1) + "\n" + items_html + "\n        " + m.group(2),
-            html, flags=re.S
+            html, flags=re.S,
         )
 
     # ── X/Twitter consensus
@@ -562,6 +558,10 @@ def main(excel_path: str):
 
     print("[4/6] Building delta and consensus ...")
     delta         = build_delta(runs_df)
+    print(f"      → {len(delta)} delta items (is_new: {sum(d['is_new'] for d in delta)})")
+    if not delta:
+        print(f"      [WARN] Runs sheet rows: {len(runs_df)}, "
+              f"Highlights sample: {str(runs_df.iloc[0].get('Highlights','<empty>') if not runs_df.empty else '<no rows>')[:80]}")
     x_consensus   = build_consensus(runs_df)
     news_consensus = build_news_consensus(news_runs_df)
     header        = build_header(runs_df, news_runs_df)
