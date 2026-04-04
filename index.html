@@ -264,7 +264,7 @@
       <span class="header-topic">Monitoring the situation</span>
     </div>
     <span class="header-meta">
-      Last run: <span id="h-last-run">2026-04-04 14:32</span> ·
+      Last run: <span id="h-last-run">2026-04-04 14:52</span> ·
       Search window: <span id="h-window">Mar 30, 2026 – Apr 3, 2026</span>
     </span>
   </div>
@@ -701,11 +701,11 @@
       <div class="delta-card">
         <div class="card-label">New since last run</div>
         <div id="delta-list">
-          <div class="delta-item is-new">Fuel prices increased 20-40% overnight due to international oil prices over $100/barrel from US-Iran conflict; government blames global factors, implements austerity (no new public vehicles, reduced allocations) but criticized for passing full costs to citizens.</div>
-          <div class="delta-item is-new">Immediate impacts: transport fares raised (e.g., Delmas-Pétion-Ville 50G to 75G), arguments between drivers/passengers, long tense queues at capital stations, black market speculation with 200% private sector markups.</div>
-          <div class="delta-item is-new">Economic pressures: Households allocate 50% income to food, 15% to transport; expected inflation spiral affects all goods (80% road-transported), salaries frozen at pre-war levels, worsening poverty and cost-of-living crisis for IDPs and vulnerable.</div>
-          <div class="delta-item is-new">Union response: Condemn as &#39;suicidal decision,&#39; planning nationwide mobilizations and protests.</div>
-          <div class="delta-item is-new">Public outrage: Government labeled arrogant, incompetent; people &#39;aux abois&#39; amid gangs, unemployment, insecurity.</div>
+          <div class="delta-item is-new">Fuel hikes of 20-40% blamed on global oil crisis; government denies shortages, warns vs speculation/black market thriving with 200% private markups.</div>
+          <div class="delta-item is-new">Transport disruptions: fare increases (e.g., 50G to 75G routes), driver-passenger arguments, tense queues at capital stations.</div>
+          <div class="delta-item is-new">Economic ripple: inflation on all goods expected, households 50% income on food/15% transport, frozen pre-war salaries worsening poverty for IDPs.</div>
+          <div class="delta-item is-new">Union action: &#39;suicidal decision&#39; label, national mobilizations/protests announced.</div>
+          <div class="delta-item is-new">Public outrage: government incompetent/arrogant amid gangs, insecurity; people &#39;aux abois&#39;.</div>
         </div>
       </div>
 
@@ -714,7 +714,7 @@
       <div class="tweet-card">
         <div class="card-label">Voice of the street</div>
         <div class="tweet-handle" id="tw-handle">Unknown</div>
-        <div class="tweet-body"   id="tw-body">The Government of Haiti reported a significant increase in fuel prices, accompanied by austerity measures to face international oil cost escalation, in a context of growing insecurity in rural areas. (El Gobierno de Haití informó... un incremento significativo en los precios de los combustibles, aco</div>
+        <div class="tweet-body"   id="tw-body">Fuel hike: snowball effect on already fragile economy. In country where &gt;80% goods road-transported, any energy cost variation immediately impacts entire economic chain.</div>
         <div class="tweet-date"   id="tw-date">Apr 4, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevTweet()">← prev</button>
@@ -727,8 +727,8 @@
       <!-- PYTHON: replace NEWS_QUOTES array in the script below          -->
       <div class="tweet-card">
         <div class="card-label">Press quotes</div>
-        <div class="tweet-handle" id="nq-outlet">Press</div>
-        <div class="tweet-body"   id="nq-body">Taking into account the terms and percentage adjustment of the pump fuel price; namely a percentage of 29% for gasoline and 37% for diesel.</div>
+        <div class="tweet-handle" id="nq-outlet">Rezo Nòdwès</div>
+        <div class="tweet-body"   id="nq-body">Les inspecteurs dans le Nord-Est veillent à ce que les stocks soient vendus aux nouveaux prix.</div>
         <div class="tweet-date"   id="nq-date">Apr 4, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevNewsQuote()">← prev</button>
@@ -742,7 +742,7 @@
       <div class="consensus-card">
         <div class="card-label">X / social consensus</div>
         <div class="consensus-text" id="consensus-text">
-          Strong consensus that the fuel price hikes are deepening Haiti&#39;s crises of poverty, inflation, gang violence, unemployment, and food insecurity, pushing people &#39;at wits&#39; end&#39; toward potential unrest akin to 2018 PetroChallenge protests without mitigations like subsidies. Unions&#39; denunciation as &#39;suicidal&#39; and national mobilization announcements heighten expectations of protests, with transport tensions already evident. Agreement that government fully passing global costs amid fragility is incompetent/arrogant; minor acknowledgment of inevitability due to oil crisis but stress on need for protections. No reports of actual protests, uprisings, or violence yet, but warnings of imminent social explosion pervasive.
+          Overwhelming agreement that fuel price hikes exacerbate Haiti&#39;s crises (gangs, poverty, unemployment, food insecurity, inflation, transport costs), pushing population &#39;at wits&#39; end&#39; toward potential unrest like 2018 PetroChallenge riots without subsidies/safeguards. Unions&#39; &#39;suicidal&#39; label and national mobilization announcements viewed as imminent protest triggers; government austerity decried as arrogant full pass-through of global costs. Minor recognition of oil crisis inevitability/need for hikes regionally, but dominant condemnation for lacking protections amid fragility. No reports of actual protests/violence, but consensus on high risks of social explosion as tensions (queues, fare disputes) already evident.
         </div>
       </div>
 
@@ -775,22 +775,52 @@ const TWEETS = [
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "The Government of Haiti reported a significant increase in fuel prices, accompanied by austerity measures to face international oil cost escalation, in a context of growing insecurity in rural areas. (El Gobierno de Haití informó... un incremento significativo en los precios de los combustibles, aco"
+    "body": "Fuel hike: snowball effect on already fragile economy. In country where >80% goods road-transported, any energy cost variation immediately impacts entire economic chain."
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "Jovenel put 50 gourdes on gas... but private sector in power put 200 gourdes, 200% on gas.. They didn't kill us. (Jovenel te mete 50 goud sou gaz la touyel....Min minm secteur privé sou pouvoir yo mete 200 goud.. pral fè 200% sou gaz la..Yo pa Touye nou..)"
+    "body": "Due to fuel price increase, internally displaced fear worsening cost of living. Families displaced for over two years in precarious conditions call on State for urgent social measures and faster relocation."
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "Due to the fuel price increase, internally displaced persons fear worsening cost of living... calling on the State for urgent social measures and accelerated relocation. (En raison de la hausse des prix du carburant, les déplacés internes redoutent une aggravation du coût de la vie... appellent l’Ét"
+    "body": "Jovenel added 50 goud on gas...But same private sector in power adds 200 goud.. will make 200% on gas..They not killing us.. (original Kreyòl)"
   },
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "After the significant increase in petroleum product prices, expect an upward spiral. All products and services will be impacted while salaries remain frozen at pre-war levels. (\"Dans le cas d’Haïti, après la hausse significative des prix des produits pétroliers à la pompe, il faut s’attendre à l’enc"
+    "body": "+6 million people in food insecurity... Raising gas on them...+60-70% unemployed...People's money 50% on food...15% transport....People at wits' end... Those who can speak bought them...under Jovenel there were already manifestations. (original Kreyòl)"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "\"In Haiti's case, after the significant rise in petroleum product prices at the pump, expect an upward spiral. All products and services impacted while salaries frozen at pre-war levels,\" worries Frantz Duval. (original French)"
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "The government rose the price of gaz yesterday in Haïti we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS."
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum product prices. Gasoline, diesel, kerosene see major hikes. Situation tense in several capital service stations."
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP. The double-digit hike... part of IMF agreement."
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Fuel prices in #Haiti have jumped up to 40% due to global oil market tensions. Authorities deny shortages but warn against speculation and black market, as queues lengthen across the country."
+  },
+  {
+    "handle": "Unknown",
+    "date": "Apr 4, 2026",
+    "body": "Brutal increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations."
   },
   {
     "handle": "Unknown",
@@ -800,50 +830,40 @@ const TWEETS = [
   {
     "handle": "Unknown",
     "date": "Apr 4, 2026",
-    "body": "Fuel crisis: new tariffs effective April 2 nationwide... significant increases in gasoline, diesel, kerosene. Situation remains tense in several service stations in the capital. (Crise du carburant : de nouveaux tarifs doivent entrer en vigueur dès le 2 avril... hausses significatives. La situation "
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "Sharp increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations. (Hausse brutale des prix du carburant en Haïti : les syndicats dénoncent une décision suicidaire et annoncent des mobilisations nationales)"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
     "body": "million people in food insecurity... We're raising gas on them...60,70% unemployment... People's money 50% on food, 15% transport... People at wits' end ('Pep aux abois')... under Jovenel there were already manifestations. (+6 millions moun nan insécurité alimentaire ...Nap monte Gaz sou yo...+60,70"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP. The double-digit hike... part of an agreement with the IMF..."
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "Under Jovenel they added 50 goud to gas... but now private sector in power adds 200 goud... going to do 200% on gas... They are not killing us ('Jovenel te mete 50 goud sou gaz la touyel....Min minm secteur privé sou pouvoir yo mete 200 goud.. pral fè 200% sou gaz la..Yo pa Touye nou') (@johnny_pie6"
-  },
-  {
-    "handle": "Unknown",
-    "date": "Apr 4, 2026",
-    "body": "The government rose the price of gaz yesterday in Haïti we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS (@jftheo1963)"
   }
 ];
 
 const NEWS_QUOTES = [
   {
-    "outlet": "Press",
+    "outlet": "Rezo Nòdwès",
     "date": "Apr 4, 2026",
-    "body": "Taking into account the terms and percentage adjustment of the pump fuel price; namely a percentage of 29% for gasoline and 37% for diesel."
+    "body": "Les inspecteurs dans le Nord-Est veillent à ce que les stocks soient vendus aux nouveaux prix."
   },
   {
-    "outlet": "Press",
+    "outlet": "AyiboPost",
     "date": "Apr 4, 2026",
-    "body": "We are not going to sit with our arms crossed while the population suffers. We call for a general mobilization to defend the rights of the Haitian people."
+    "body": "COSHARCO-1987 dénonce cette hausse comme une provocation et appelle à la mobilisation à partir du 7 avril."
+  },
+  {
+    "outlet": "Metropole Haiti",
+    "date": "Apr 4, 2026",
+    "body": "Le Premier ministre Fils-Aimé annonce des mesures d’austérité : réduction des budgets carburant et interdiction d’achat de nouveaux véhicules."
+  },
+  {
+    "outlet": "Radio Vision 2000",
+    "date": "Apr 4, 2026",
+    "body": "À Les Cayes, des marchands vendent l'essence à 800 gourdes et le diesel à 900 gourdes, dépassant les prix officiels."
+  },
+  {
+    "outlet": "Haiti Libre",
+    "date": "Apr 4, 2026",
+    "body": "Les fareurs de transport public ont ajusté leurs tarifs conformément à l'augmentation de 29% pour l'essence et 37% pour le diesel."
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 4, 2026",
+    "body": "Les nouveaux prix sont entrés en vigueur le 2 avril 2026, suite à la décision des ministres Collin et Monazard."
   },
   {
     "outlet": "Press",
@@ -853,37 +873,17 @@ const NEWS_QUOTES = [
   {
     "outlet": "Press",
     "date": "Apr 4, 2026",
+    "body": "In a context marked by insecurity, high cost of living, and unemployment, this decision constitutes a provocation."
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 4, 2026",
     "body": "The government is placing the weight of the crisis on the shoulders of the people, without proposing real accompanying measures."
   },
   {
     "outlet": "Press",
     "date": "Apr 4, 2026",
-    "body": "In a context marked by insecurity, high cost of living, and unemployment, this decision constitutes a provocation."
-  },
-  {
-    "outlet": "Le Nouvelliste",
-    "date": "Apr 4, 2026",
-    "body": "Merchants in Les Cayes Set Gasoline at 800 Gourdes per Gallon and Diesel at 900 Gourdes."
-  },
-  {
-    "outlet": "HaitiLibre.com",
-    "date": "Apr 4, 2026",
-    "body": "Inspectors from the Ministry of Commerce and Industry (MCI) have verified and validated stored fuel quantities at service stations, requiring owners to sell off inspected stocks."
-  },
-  {
-    "outlet": "HaitiLibre.com",
-    "date": "Apr 4, 2026",
-    "body": "Taking into account the terms and percentage adjustment of fuel prices at the pump; namely, 29% for gasoline and 37% for diesel."
-  },
-  {
-    "outlet": "HaitiLibre.com",
-    "date": "Apr 4, 2026",
-    "body": "The international situation has seen significant developments in recent weeks, notably marked by the accelerated increase in petroleum product prices on the world market and the potential risks of supply disruptions that this is likely to generate... To address this situation, the Government has no choice but to further reduce state spending."
-  },
-  {
-    "outlet": "iciHaiti.com",
-    "date": "Apr 4, 2026",
-    "body": "inform the general public, and importers, distributors, and consumers of petroleum products in particular, that the pump prices in effect throughout the national territory are set as follows."
+    "body": "We are not going to sit with our arms crossed while the population suffers. We call for a general mobilization to defend the rights of the Haitian people."
   }
 ];
 

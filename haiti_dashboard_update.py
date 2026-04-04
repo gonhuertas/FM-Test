@@ -167,8 +167,8 @@ def extract_news_quotes(news_quotes_df: pd.DataFrame, max_n: int = MAX_NEWS_QUOT
 
 def build_delta(runs_df: pd.DataFrame, max_n: int = MAX_DELTA) -> list[dict]:
     """
-    Takes highlights from the latest X/Twitter run and marks them as new.
-    When you have multi-day data this can diff against the previous run.
+    Shows highlights from the latest X/Twitter run.
+    Marks each as 'new' if it doesn't appear (first 6 words) in the previous run.
     """
     if runs_df.empty or "Timestamp" not in runs_df.columns:
         return []
@@ -177,15 +177,31 @@ def build_delta(runs_df: pd.DataFrame, max_n: int = MAX_DELTA) -> list[dict]:
     df["Timestamp"] = pd.to_datetime(df["Timestamp"])
     df = df.sort_values("Timestamp", ascending=False)
 
-    latest = df.iloc[0]
-    highlights_raw = str(latest.get("Highlights", ""))
+    def parse_highlights(raw: str) -> list[str]:
+        # Grok sometimes uses \n\n between bullets, sometimes \n — handle both
+        lines = []
+        for line in re.split(r"\n+", raw):
+            line = strip_bullet(line)
+            if len(line) >= 15:
+                lines.append(line)
+        return lines
+
+    latest_lines = parse_highlights(str(df.iloc[0].get("Highlights", "")))
+
+    # Build a reference string from the previous run to detect what's genuinely new
+    prev_text = ""
+    if len(df) > 1:
+        prev_text = str(df.iloc[1].get("Highlights", "")).lower()
 
     items = []
-    for line in highlights_raw.split("\n"):
-        line = strip_bullet(line)
-        if len(line) < 15:
-            continue
-        items.append({"text": line, "is_new": True})
+    for line in latest_lines:
+        words = line.lower().split()
+        if prev_text and len(words) >= 6:
+            # "New" if the first 6 words don't appear in the previous highlights
+            is_new = " ".join(words[:6]) not in prev_text
+        else:
+            is_new = line.lower() not in prev_text if prev_text else True
+        items.append({"text": line, "is_new": is_new})
         if len(items) >= max_n:
             break
 
@@ -502,7 +518,7 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
         # match child divs explicitly with (?:\s*<div[^>]*>[^<]*</div>)* instead.
         html = re.sub(
             r'(<div id="delta-list">)(?:\s*<div[^>]*>[^<]*</div>)*\s*(</div>)',
-            f'\\1\n{items_html}\n        \\2',
+            lambda m: m.group(1) + "\n" + items_html + "\n        " + m.group(2),
             html, flags=re.S
         )
 
