@@ -40,6 +40,7 @@ OUTPUT_PATH   = Path(__file__).parent / "index.html"  # overwrites in place
 MAX_TWEETS      = 12   # max X/Twitter quotes in the tweet widget
 MAX_NEWS_QUOTES = 10   # max press quotes in the news widget
 MAX_TIMELINE_DAYS = 10  # max days shown in the event timeline
+MAX_TIMELINE_PER_DAY = 8  # max entries shown per day
 MAX_DELTA       = 5    # max items in the "new since last run" card
 
 
@@ -298,13 +299,25 @@ def build_timeline(sheets: dict) -> str:
         df = df.copy()
         df["Timestamp"] = pd.to_datetime(df["Timestamp"])
         df["to_date"]   = pd.to_datetime(df["Timestamp"].map(ts_map)).dt.normalize()
+        # Fall back: if Runs join fails (timestamp precision mismatch), use the
+        # quote's own run timestamp date rather than silently dropping rows.
+        unmatched = df["to_date"].isna()
+        if unmatched.any():
+            df.loc[unmatched, "to_date"] = df.loc[unmatched, "Timestamp"].dt.normalize()
         df = df.dropna(subset=["to_date"])
-        tag_col = "Tag" if "Tag" in df.columns else None
+        # Case-insensitive column lookup (handles "Tag", "tag", "TAG", etc.)
+        tag_col = next((c for c in df.columns if c.lower() == "tag"), None)
         for _, row in df.iterrows():
             raw = str(row["Quote"]).strip()
             if not raw or raw.lower() == "nan":
                 continue
-            tag    = str(row[tag_col]).strip() if tag_col else "Misc"
+            tag_raw = str(row[tag_col]).strip() if tag_col else "Misc"
+            # Normalize: handle NaN and case differences (Grok may return lowercase)
+            if tag_raw.lower() in ("nan", "", "none"):
+                tag = "Misc"
+            else:
+                tag_normalized = tag_raw.title()  # "violence" → "Violence"
+                tag = tag_normalized if tag_normalized in _TAG_CSS else "Misc"
             source, body = parse_source_body(raw, stype)
             all_entries.append({"to_date": row["to_date"], "tag": tag,
                                  "source": source, "body": body})
@@ -317,7 +330,7 @@ def build_timeline(sheets: dict) -> str:
 
     groups = []
     for i, d in enumerate(dates):
-        day_rows = df_all[df_all["to_date"] == d].to_dict("records")
+        day_rows = df_all[df_all["to_date"] == d].to_dict("records")[:MAX_TIMELINE_PER_DAY]
         groups.append(render_group(pd.Timestamp(d), day_rows, is_latest=(i == 0)))
 
     return "\n".join(groups)
