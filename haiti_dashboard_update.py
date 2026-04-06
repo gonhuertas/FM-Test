@@ -79,13 +79,15 @@ def extract_tweets(quotes_df: pd.DataFrame, max_n: int = MAX_TWEETS) -> list[dic
         raw = str(row["Quote"]).strip()
         ts  = row["Timestamp"]
 
-        # Standard format: "• @handle: 'text'" or "- @handle: \"text\""
+        # Standard format: "@handle: 'text'" or "• @handle: \"text\""
         m = re.search(r"@(\w+)[^:]*:\s*[\"'\u2018\u2019\u201c\u201d](.+?)[\"'\u2018\u2019\u201c\u201d]", raw, re.S)
         if m:
             handle = "@" + m.group(1)
             body   = m.group(2).strip()
         else:
-            handle = "Unknown"
+            # Fallback: grab any @handle anywhere in the text
+            h = re.search(r"@(\w+)", raw)
+            handle = "@" + h.group(1) if h else "X user"
             body   = re.sub(r"^[\u2022\-\*\d\.]\s*", "", raw)[:300]
 
         key = body[:60].lower()

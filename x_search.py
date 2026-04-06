@@ -28,7 +28,7 @@ Assign exactly one tag per quote from the following list:
 
 
 class Quote(BaseModel):
-    text: str   # the quote text, including handle/attribution
+    text: str   # MUST be formatted as: "@handle: 'quote text'" — always include the @handle
     tag: str    # one of the VALID_TAGS above
 
 
@@ -147,7 +147,7 @@ x_prompt = (
     Provide:
     - summary: main themes and sentiments in the discussion
     - highlights: key points and notable arguments being made
-    - quotes: direct quotes from notable or representative posts, including handles; each quote must have a tag
+    - quotes: direct quotes from notable or representative posts. Each quote MUST be formatted as "@handle: 'quote text'" — the @handle is required. Each quote must also have a tag.
     - consensus: emerging agreements or major points of disagreement
 
     Be thorough and comprehensive. Return as much detail as you find relevant. Return at least 8 (distinct) quotes if possible. Focus especially on the potential for social unrest, uprisings, or protests.
