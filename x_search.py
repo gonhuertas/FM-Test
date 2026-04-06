@@ -55,9 +55,9 @@ class WebSearchResult(BaseModel):
 
 TOPIC = "haiti fuel prices"  # ← change this
 
-FROM_DATE = datetime(2026, 4, 2)
-FROM_DATE_NEWS = datetime(2026, 4, 2)
-TO_DATE   = datetime(2026, 4, 4)
+FROM_DATE = datetime(2026, 4, 4)
+FROM_DATE_NEWS = datetime(2026, 4, 4)
+TO_DATE   = datetime(2026, 4, 5)
 
 MODEL      = "grok-4-1-fast"
 MULTI_PASS = 0  # 0 = single search (testing); 1 = multiple passes + synthesis
