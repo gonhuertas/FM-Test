@@ -37,6 +37,17 @@ class NewsQuote(BaseModel):
     tag: str    # one of the VALID_TAGS above
 
 
+class SignalCard(BaseModel):
+    level: int   # 0=none, 1=low, 2=moderate, 3=high, 4=critical
+    status: str  # short phrase (≤6 words) describing current state
+    trend: str   # short phrase (≤6 words) describing direction or change
+
+class SignalAssessment(BaseModel):
+    protest: SignalCard   # protest activity level
+    security: SignalCard  # gang / security level
+    supply: SignalCard    # supply disruption level
+    media: SignalCard     # international media pressure level
+
 class XSearchResult(BaseModel):
     summary: str          # main themes and sentiments
     highlights: str       # key points being made
@@ -289,6 +300,47 @@ for q in news_final.news_quotes:
     print(f"  [{q.tag}] {q.text}")
 print(news_final.consensus)
 
+# ── Signal Assessment ──────────────────────────────────────────────────────────
+
+signal_prompt = f"""Based on the following X/Twitter and news research about "{TOPIC}", assess four situation signals.
+
+X/Twitter findings:
+{x_final.summary}
+{x_final.highlights}
+
+News findings:
+{news_final.summary}
+{news_final.highlights}
+
+Rate each signal on a 0–4 scale:
+  0 = none / no evidence
+  1 = low / minor
+  2 = moderate / notable
+  3 = high / serious
+  4 = critical / acute
+
+For each signal provide:
+- level: integer 0–4
+- status: a short phrase (≤6 words) describing the current state (e.g. "Calls, no action yet")
+- trend: a short phrase (≤6 words) describing the direction (e.g. "Escalating fast")
+
+Signals to assess:
+- protest: likelihood and intensity of protests, strikes, or public mobilization
+- security: gang activity, violence, and general security deterioration
+- supply: fuel or goods supply disruptions, shortages, black markets
+- media: international news coverage and pressure from foreign media
+"""
+
+print("\nAssessing situation signals...")
+signal_chat = client.chat.create(model=MODEL)
+signal_chat.append(user(signal_prompt))
+_, signals = signal_chat.parse(SignalAssessment)
+
+print(f"  Protest:  [{signals.protest.level}] {signals.protest.status} / {signals.protest.trend}")
+print(f"  Security: [{signals.security.level}] {signals.security.status} / {signals.security.trend}")
+print(f"  Supply:   [{signals.supply.level}] {signals.supply.status} / {signals.supply.trend}")
+print(f"  Media:    [{signals.media.level}] {signals.media.status} / {signals.media.trend}")
+
 # ── Save to Excel ──────────────────────────────────────────────────────────────
 
 EXCEL_PATH.parent.mkdir(exist_ok=True)
@@ -316,6 +368,12 @@ if EXCEL_PATH.exists():
                           ["Timestamp", "Topic", "Source"])
     ws_news_quotes  = get_or_create_sheet(wb, "News Quotes",
                           ["Timestamp", "Topic", "Quote", "Tag"])
+    ws_signals      = get_or_create_sheet(wb, "Signals",
+                          ["Timestamp", "Topic",
+                           "protest_level", "protest_status", "protest_trend",
+                           "security_level", "security_status", "security_trend",
+                           "supply_level",   "supply_status",   "supply_trend",
+                           "media_level",    "media_status",    "media_trend"])
 else:
     wb = openpyxl.Workbook()
 
@@ -336,6 +394,13 @@ else:
 
     ws_news_quotes = wb.create_sheet("News Quotes")
     ws_news_quotes.append(["Timestamp", "Topic", "Quote", "Tag"])
+
+    ws_signals = wb.create_sheet("Signals")
+    ws_signals.append(["Timestamp", "Topic",
+                        "protest_level", "protest_status", "protest_trend",
+                        "security_level", "security_status", "security_trend",
+                        "supply_level",   "supply_status",   "supply_trend",
+                        "media_level",    "media_status",    "media_trend"])
 
 # ── Runs sheet: one row per run ────────────────────────────────────────────────
 
@@ -412,6 +477,16 @@ for nq in news_final.news_quotes:
         ws_news_quotes.append([timestamp, TOPIC, nq.text, nq.tag])
         existing_news_quotes.add(normalize(nq.text))
         added_news_quotes += 1
+
+# ── Signals sheet: one row per run ────────────────────────────────────────────
+
+ws_signals.append([
+    timestamp, TOPIC,
+    signals.protest.level,  signals.protest.status,  signals.protest.trend,
+    signals.security.level, signals.security.status, signals.security.trend,
+    signals.supply.level,   signals.supply.status,   signals.supply.trend,
+    signals.media.level,    signals.media.status,    signals.media.trend,
+])
 
 wb.save(EXCEL_PATH)
 print(f"News sources: {added_sources} new added ({len(new_sources) - added_sources} duplicates skipped)")

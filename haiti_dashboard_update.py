@@ -233,6 +233,50 @@ def build_news_consensus(news_runs_df: pd.DataFrame) -> str:
     return str(latest.get("Consensus", "")).strip()
 
 
+# ── Build situation signals ──────────────────────────────────────────────────
+
+_SIGNALS_COLS = [
+    "Timestamp", "Topic",
+    "protest_level", "protest_status", "protest_trend",
+    "security_level", "security_status", "security_trend",
+    "supply_level",   "supply_status",   "supply_trend",
+    "media_level",    "media_status",    "media_trend",
+]
+
+def build_signals(signals_df: pd.DataFrame) -> dict | None:
+    """
+    Return signal data for all 4 panels.
+    Each entry has: dots (list of 7 ints, oldest→newest), status, trend.
+    Returns None if the sheet is missing or empty.
+    """
+    if signals_df.empty:
+        return None
+    df = signals_df.copy()
+    # Handle missing header row (same issue as News Runs sheet)
+    if "Timestamp" not in df.columns and df.shape[1] == len(_SIGNALS_COLS):
+        df.columns = _SIGNALS_COLS
+    if "Timestamp" not in df.columns:
+        return None
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+    df = df.dropna(subset=["Timestamp"]).sort_values("Timestamp", ascending=False)
+    if df.empty:
+        return None
+
+    result = {}
+    for sig in ["protest", "security", "supply", "media"]:
+        # Last 7 runs, oldest first → that's the dot order (oldest left)
+        levels = df[f"{sig}_level"].tolist()[:7][::-1]
+        while len(levels) < 7:
+            levels = [0] + levels  # pad left with 0 if fewer than 7 runs
+        latest = df.iloc[0]
+        result[sig] = {
+            "dots":   [int(lvl) for lvl in levels],
+            "status": str(latest.get(f"{sig}_status", "")).strip(),
+            "trend":  str(latest.get(f"{sig}_trend",  "")).strip(),
+        }
+    return result
+
+
 # ── Build event timeline ─────────────────────────────────────────────────────
 
 # Maps Grok tag → (CSS class suffix, display label)
@@ -450,7 +494,8 @@ def fetch_wti_fred(days: int = 60) -> dict | None:
 
 def inject(html: str, tweets: list, news_quotes: list, delta: list,
            x_consensus: str, news_consensus: str,
-           header: dict, wti: dict | None, timeline: str = "") -> str:
+           header: dict, wti: dict | None, timeline: str = "",
+           signals: dict | None = None) -> str:
 
     # ── Event timeline (full replacement)
     if timeline:
@@ -541,6 +586,30 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
             html, flags=re.S
         )
 
+    # ── Situation signals
+    if signals:
+        for sig, data in signals.items():
+            # Replace the 7 dot data-level values for this signal
+            dots_html = "\n".join(
+                f'        <div class="dot" data-level="{lvl}"></div>'
+                for lvl in data["dots"]
+            )
+            html = re.sub(
+                rf'(<div class="dot-row" id="sig-{sig}-dots">)[\s\S]*?(</div>)',
+                lambda m, d=dots_html: m.group(1) + "\n" + d + "\n        " + m.group(2),
+                html,
+            )
+            html = re.sub(
+                rf'id="sig-{sig}-status">[^<]*',
+                f'id="sig-{sig}-status">{html_escape(data["status"])}',
+                html,
+            )
+            html = re.sub(
+                rf'id="sig-{sig}-trend">[^<]*',
+                f'id="sig-{sig}-trend">{html_escape(data["trend"])}',
+                html,
+            )
+
     return html
 
 
@@ -554,6 +623,7 @@ def main(excel_path: str):
     quotes_df      = sheets.get("Quotes",      pd.DataFrame())
     news_runs_df   = sheets.get("News Runs",   pd.DataFrame())
     news_quotes_df = sheets.get("News Quotes", pd.DataFrame())
+    signals_df     = sheets.get("Signals",     pd.DataFrame())
 
     print("[2/6] Extracting X/Twitter quotes ...")
     tweets = extract_tweets(quotes_df)
@@ -573,6 +643,9 @@ def main(excel_path: str):
     news_consensus = build_news_consensus(news_runs_df)
     header        = build_header(runs_df, news_runs_df)
 
+    signals = build_signals(signals_df)
+    print(f"      → signals: {'loaded' if signals else 'none (run x_search.py first)'}")
+
     print("[5/6] Building event timeline ...")
     timeline = build_timeline(sheets)
     print(f"      → {len(pd.DataFrame(sheets.get('Quotes', pd.DataFrame())).dropna()) + len(pd.DataFrame(sheets.get('News Quotes', pd.DataFrame())).dropna())} entries across {timeline.count('tl-group')} date groups")
@@ -587,7 +660,7 @@ def main(excel_path: str):
     print("[7/7] Injecting into HTML ...")
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     updated  = inject(template, tweets, news_quotes, delta,
-                      x_consensus, news_consensus, header, wti, timeline)
+                      x_consensus, news_consensus, header, wti, timeline, signals)
     OUTPUT_PATH.write_text(updated, encoding="utf-8")
 
     print(f"\nDone. Open: {OUTPUT_PATH.resolve()}")
