@@ -57,7 +57,7 @@ TOPIC = "haiti fuel prices"  # ← change this
 
 FROM_DATE = datetime(2026, 4, 4)
 FROM_DATE_NEWS = datetime(2026, 4, 4)
-TO_DATE   = datetime(2026, 4, 5)
+TO_DATE   = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
 
 MODEL      = "grok-4-1-fast"
 MULTI_PASS = 0  # 0 = single search (testing); 1 = multiple passes + synthesis
@@ -151,7 +151,7 @@ x_prompt = (
     - consensus: emerging agreements or major points of disagreement
 
     Be thorough and comprehensive. Return as much detail as you find relevant. Return at least 8 (distinct) quotes if possible. Focus especially on the potential for social unrest, uprisings, or protests.
-    Translate any non-English content into English. For quotes, append the original text in parentheses after the translation.
+    Translate any non-English content into English. Return only the English translation — do not include the original language text anywhere.
 
     """
     + TAG_DEFINITIONS
@@ -213,8 +213,8 @@ news_prompt = (
     Provide:
     - summary: main themes and findings from news reporting
     - highlights: key facts, numbers, or events reported by journalists
-    - sources: specific articles cited, in the format "Outlet — Headline", one per line
-    - news_quotes: notable direct quotes from journalists or officials cited in the articles, in the format "Outlet: 'quote text'". Prioritize quotes that reference protests, unrest, public reaction, or commentary on government fuel policy. At least 5 quotes if possible. Each quote must have a tag.
+    - sources: specific articles cited, in the format "Outlet — Headline", one outlet per line
+    - news_quotes: notable direct quotes from journalists or officials cited in the articles, in the format "Outlet: 'quote text'". Prioritize quotes that reference protests, unrest, public reaction, or commentary on government fuel policy. At least 5 quotes if possible. Each quote must have a tag. No more than one quote per news outlet.
     - consensus: what the news coverage broadly agrees on or disputes
 
     Be thorough. Cite specific outlet names and headlines where possible.

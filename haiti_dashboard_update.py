@@ -28,8 +28,9 @@ OUTPUT_PATH   = Path(__file__).parent / "index.html"  # overwrites in place
 
 MAX_TWEETS      = 12   # max X/Twitter quotes in the tweet widget
 MAX_NEWS_QUOTES = 10   # max press quotes in the news widget
-MAX_TIMELINE_DAYS = 10  # max days shown in the event timeline
-MAX_TIMELINE_PER_DAY = 8  # max entries shown per day
+MAX_TIMELINE_DAYS = 10     # max days shown in the event timeline
+MAX_TIMELINE_PER_DAY = 8   # max entries shown per day
+MAX_NEWS_PER_DAY = 2       # max news-source entries per day (rest filled by X quotes)
 MAX_DELTA       = 5    # max items in the "new since last run" card
 
 
@@ -338,7 +339,7 @@ def build_timeline(sheets: dict) -> str:
                 tag = tag_normalized if tag_normalized in _TAG_CSS else "Misc"
             source, body = parse_source_body(raw, stype)
             all_entries.append({"to_date": row["to_date"], "tag": tag,
-                                 "source": source, "body": body})
+                                 "source": source, "body": body, "stype": stype})
 
     if not all_entries:
         return ""
@@ -348,7 +349,11 @@ def build_timeline(sheets: dict) -> str:
 
     groups = []
     for i, d in enumerate(dates):
-        day_rows = df_all[df_all["to_date"] == d].to_dict("records")[:MAX_TIMELINE_PER_DAY]
+        day = df_all[df_all["to_date"] == d].to_dict("records")
+        # Cap news entries, then fill remaining slots with X quotes
+        news_rows = [r for r in day if r["stype"] == "news"][:MAX_NEWS_PER_DAY]
+        x_rows    = [r for r in day if r["stype"] == "x"][:MAX_TIMELINE_PER_DAY - len(news_rows)]
+        day_rows  = x_rows + news_rows  # X first, news appended at bottom
         groups.append(render_group(pd.Timestamp(d), day_rows, is_latest=(i == 0)))
 
     return "\n".join(groups)
