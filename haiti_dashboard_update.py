@@ -5,7 +5,7 @@ the latest data injected into the DATA LAYER section.
 Run without arguments: auto-locates output/x_search_log.xlsx next to this script.
 Run with argument:     python haiti_dashboard_update.py path/to/x_search_log.xlsx
 
-Optional (for live WTI prices):
+Optional, for live WTI prices:
     pip install fredapi
     Set env var FRED_API_KEY (free key at https://fred.stlouisfed.org/docs/api/api_key.html)
 
