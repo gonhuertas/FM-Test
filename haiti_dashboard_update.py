@@ -589,14 +589,15 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
     # ── Situation signals
     if signals:
         for sig, data in signals.items():
-            # Replace the 7 dot data-level values for this signal
             dots_html = "\n".join(
                 f'        <div class="dot" data-level="{lvl}"></div>'
                 for lvl in data["dots"]
             )
+            # Use comment markers (same pattern as timeline/delta-list) to avoid
+            # matching the first inner </div> instead of the dot-row closing tag.
             html = re.sub(
-                rf'(<div class="dot-row" id="sig-{sig}-dots">)[\s\S]*?(</div>)',
-                lambda m, d=dots_html: m.group(1) + "\n" + d + "\n        " + m.group(2),
+                rf'(<div class="dot-row" id="sig-{sig}-dots">)[\s\S]*?(</div><!-- #sig-{sig}-dots -->)',
+                lambda m, d=dots_html: m.group(1) + "\n" + d + "\n      " + m.group(2),
                 html,
             )
             html = re.sub(
