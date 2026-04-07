@@ -123,6 +123,28 @@
     position: relative; height: 190px;
   }
 
+  /* ── Location map ── */
+  .map-section { margin-top: 32px; }
+  #haiti-map { height: 440px; border-radius: 8px; border: 1px solid var(--border); }
+  /* Override Leaflet popup/tooltip for dark theme */
+  .leaflet-tooltip {
+    background: var(--surface); border: 1px solid var(--border2);
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    box-shadow: none; padding: 5px 9px;
+  }
+  .leaflet-tooltip::before { border-top-color: var(--border2); }
+  .leaflet-bar a, .leaflet-bar a:hover {
+    background: var(--surface); color: var(--text); border-color: var(--border2);
+  }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border2); box-shadow: none;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .leaflet-popup-content { margin: 10px 12px; }
+  .leaflet-popup-content ul { margin: 6px 0 0; padding-left: 14px; max-width: 260px; }
+  .leaflet-popup-content li { margin-bottom: 5px; font-size: 11px; line-height: 1.4; color: var(--muted); }
+
   /* ── Main body — two-column layout ── */
   .body-grid {
     display: grid;
@@ -259,6 +281,7 @@
     .body-grid   { grid-template-columns: 1fr; }
   }
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
 <div class="page">
@@ -270,7 +293,7 @@
       <span class="header-topic">Monitoring the situation</span>
     </div>
     <span class="header-meta">
-      Last run: <span id="h-last-run">2026-04-07 15:52</span> ·
+      Last run: <span id="h-last-run">2026-04-07 16:39</span> ·
       Search window: <span id="h-window">Mar 30, 2026 – Apr 7, 2026</span>
     </span>
   </div>
@@ -286,13 +309,13 @@
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
         <div class="dot" data-level="3"></div>
         <div class="dot" data-level="2"></div>
         <div class="dot" data-level="2"></div>
+        <div class="dot" data-level="2"></div>
       </div><!-- #sig-protest-dots -->
-      <div class="signal-status" id="sig-protest-status">Localized driver protests</div>
-      <div class="signal-trend"  id="sig-protest-trend">Mobilizations planned</div>
+      <div class="signal-status" id="sig-protest-status">Localized transport protests</div>
+      <div class="signal-trend"  id="sig-protest-trend">Ongoing, potential spread</div>
     </div>
 
     <div class="signal-card">
@@ -301,8 +324,8 @@
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
         <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
       </div><!-- #sig-security-dots -->
@@ -316,13 +339,13 @@
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
         <div class="dot" data-level="3"></div>
         <div class="dot" data-level="1"></div>
         <div class="dot" data-level="1"></div>
+        <div class="dot" data-level="2"></div>
       </div><!-- #sig-supply-dots -->
-      <div class="signal-status" id="sig-supply-status">Black markets persist</div>
-      <div class="signal-trend"  id="sig-supply-trend">Queues ongoing</div>
+      <div class="signal-status" id="sig-supply-status">Black market active</div>
+      <div class="signal-trend"  id="sig-supply-trend">Persistent overpricing</div>
     </div>
 
     <div class="signal-card">
@@ -336,8 +359,8 @@
         <div class="dot" data-level="0"></div>
         <div class="dot" data-level="0"></div>
       </div><!-- #sig-media-dots -->
-      <div class="signal-status" id="sig-media-status">Local coverage only</div>
-      <div class="signal-trend"  id="sig-media-trend">No foreign pressure</div>
+      <div class="signal-status" id="sig-media-status">No intl coverage</div>
+      <div class="signal-trend"  id="sig-media-trend">Local only</div>
     </div>
 
   </div>
@@ -354,9 +377,9 @@
       <div class="oil-section">
         <div class="slabel">WTI crude — 60-day context</div>
         <div class="oil-header">
-          <span class="oil-price" id="oil-price-val">$113.23</span>
-          <span class="oil-change" id="oil-change-val">+75.5% in 60 days</span>
-          <span class="oil-note"   id="oil-note-val">Apr 2, 2026 · USD/barrel</span>
+          <span class="oil-price" id="oil-price-val">$114.01</span>
+          <span class="oil-change" id="oil-change-val">+76.7% in 60 days</span>
+          <span class="oil-note"   id="oil-note-val">Apr 6, 2026 · USD/barrel</span>
         </div>
         <div class="oil-legend">
           <span class="leg-ceic">&#9644; EIA spot (CEIC)</span>
@@ -418,20 +441,6 @@
               <div class="ev-quote">A vast protest movement broke out in Port-au-Prince on Monday April 6, 2026 to denounce the fuel price hike. In the capital, numerous motorcycle drivers blocked roads to express their anger.</div>
             </div>
           </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">@rtvgalaxie · X/Twitter</div>
-              <div class="ev-quote">Public transport drivers started this Monday April 6 a protest movement demanding the government officially set fares following the petroleum product price hikes to avoid passenger conflicts and ease tensions.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">@haiti_boiii · X/Twitter</div>
-              <div class="ev-quote">Taxi and motorcycle drivers are protesting in the streets of Haiti. The government raised gas prices but didn’t provide guidance on how much drivers should charge passengers. Each driver sets fares based on their gas costs, leading to inconsistencies.</div>
-            </div>
-          </div>
           <div class="tl-event" data-tags="complaints">
             <span class="ev-tag tag-complaints">Complaints</span>
             <div class="ev-body">
@@ -480,20 +489,6 @@
               <div class="ev-quote">Masly Dorcely ... denounced a decision which he described as &quot;serious&quot; and ... &quot;suicidal&quot; for the economy and the working class.</div>
             </div>
           </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
-              <div class="ev-quote">Yvel Admettre ... warned that ... protest movements could be triggered as early as Monday morning, particularly in industrial parks.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
-              <div class="ev-quote">Point Final Movement ... describes this measure as ... &quot;economic massacre&quot; ... warns of the risks of social unrest and food riots.</div>
-            </div>
-          </div>
           <div class="tl-event" data-tags="complaints">
             <span class="ev-tag tag-complaints">Complaints</span>
             <div class="ev-body">
@@ -540,20 +535,6 @@
             <div class="ev-body">
               <div class="ev-source">X/Twitter</div>
               <div class="ev-quote">He announced that COSHARCO... was calling for a national mobilization starting the following Monday.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-source">X/Twitter</div>
-              <div class="ev-quote">Yvel Admettre... believes that this increase risks exacerbating poverty... Increased transport costs; Increased difficulties for students to get to school; Increased cost of living for families; Increased pressure on already underpaid workers.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">X/Twitter</div>
-              <div class="ev-quote">He warned that, if the measure is not withdrawn, protest movements could be triggered as early as Monday morning, particularly in industrial parks.</div>
             </div>
           </div>
           <div class="tl-event" data-tags="complaints">
@@ -607,20 +588,6 @@
           <div class="tl-event" data-tags="govt">
             <span class="ev-tag tag-govt">Government</span>
             <div class="ev-body">
-              <div class="ev-source">X/Twitter</div>
-              <div class="ev-quote">South out of control: more expensive fuel, separate rules… the State defied? (@ONews1ereTV)</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
-            <div class="ev-body">
-              <div class="ev-source">X/Twitter</div>
-              <div class="ev-quote">Fuel price increase in Haiti: the Ministry of Social Affairs and Labor announced new transport tariffs, notably in the capital. (@josephlunieOFF)</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
-            <div class="ev-body">
               <div class="ev-source">iciHaiti</div>
               <div class="ev-quote">Serge Gabriel Collin, Minister of Economy and Finance, and James Monazard, Minister of Commerce and Industry, acting on the recommendations of the Advisory Council dated March 31, 2026, inform the general public...</div>
             </div>
@@ -630,254 +597,6 @@
             <div class="ev-body">
               <div class="ev-source">HaitiLibre</div>
               <div class="ev-quote">Having regard to Joint Notice 25-26/001 from the Ministries of Economy and Finance, Commerce, and Industry setting the prices of petroleum products in effect throughout the country as of April 2nd, 2026;</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tl-group">
-          <div class="tl-date-header">
-            Friday, Apr 3, 2026
-          </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">@REALITEINFO1 · X/Twitter</div>
-              <div class="ev-quote">Brutal increase in fuel prices in Haiti: unions denounce a suicidal decision and announce national mobilizations</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
-            <div class="ev-body">
-              <div class="ev-source">@metropoleHT · X/Twitter</div>
-              <div class="ev-quote">Fuel crisis: new tariffs effective April 2 nationwide. Government significantly increased petroleum prices... situation remains tense at several capital gas stations.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-source">@Equilibrepresse · X/Twitter</div>
-              <div class="ev-quote">Historically, fuel price variations have often provoked social tensions in Haiti... could become a factor of additional economic and social instability in a country facing multiple crises.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="violence">
-            <span class="ev-tag tag-violence">Violence</span>
-            <div class="ev-body">
-              <div class="ev-source">@Florida1sttake · X/Twitter</div>
-              <div class="ev-quote">Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@jftheo1963 · X/Twitter</div>
-              <div class="ev-quote">The government rose the price of gaz yesterday in Haïti 🇭🇹 we already have the gangs on our back and now we have to endure more economic hardships because you are a bunch of arrogant INCOMPETENT FOOLS 🤮</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
-            <div class="ev-body">
-              <div class="ev-source">@lequotidien509 · X/Twitter</div>
-              <div class="ev-quote">Fuel prices in #Haiti jumped up to 40% due to global oil tensions. Authorities deny shortage but warn of speculation and black market as queues lengthen.&#39; (Les prix du carburant en #Haïti ont bondi jusqu’à 40 % sous l’effet des tensions mondiales... alors que les files d’attente s</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">Rezo Nòdwès</div>
-              <div class="ev-quote">a population forced to bear alone the weight of a multidimensional crisis, without visible institutional support&#39;.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">Rezo Nòdwès</div>
-              <div class="ev-quote">Fuel price increase: between social suffering and authorities&#39; indifference&#39;.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tl-group">
-          <div class="tl-date-header">
-            Thursday, Apr 2, 2026
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
-              <div class="ev-quote">The State Prefers Gas Money to a Life of Misery: A Government That Is Deaf to the Blood That Is Shedding... Where is the State when gangs are massacring civilians in Jean Denis? If the gas negotiations reach their end without the government saying anything about the security ... this will be the final proof that they are not interested in people&#39;s lives, but in the money at the pump.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
-            <div class="ev-body">
-              <div class="ev-source">@HaitianTimes_ · X/Twitter</div>
-              <div class="ev-quote">Fuel prices rose up to about 40% in Haiti as global tensions rattle oil markets. Authorities deny shortages but warn against speculation and black market sales ... as long lines grow.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@DEMAREH1 · X/Twitter</div>
-              <div class="ev-quote">L’organisation politique ... apprend avec douleur la décision du gouvernement d’Alix Didier Fils-Aimé de réviser à la hausse le prix du carburant ... impuissant à protéger la population. C&#39;en est trop. DEMAREH dénonce avec la plus grande rigueur cette politique témoignant d’un cynisme inouï qui, guidée par un instinct mercantile, refuse d&#39;enrayer cet ordre criminel.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">@telegramme360 · X/Twitter</div>
-              <div class="ev-quote">Hausse des prix de l&#39;essence: l&#39;Association des parents d&#39;élèves d&#39;Haïti dénonce la connivence entre le gouvernement et des syndicalistes du secteur du transport en commun et invite les citoyens à se révolter contre cette mesure jugée injuste.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@metropoleHT · X/Twitter</div>
-              <div class="ev-quote">En raison de la hausse des prix du carburant, les déplacés internes redoutent une aggravation du coût de la vie ... appellent l’État à prendre des mesures sociales urgentes.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@LeFacteurHaiti · X/Twitter</div>
-              <div class="ev-quote">Carburant : nouvelle augmentation de tarifs en Haïti au prix du sang.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-source">Le Nouvelliste (Hard Times)</div>
-              <div class="ev-quote">It was inevitable. It was only a matter of days, of weeks. We are now there. Fuel prices were increased on March 31.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
-            <div class="ev-body">
-              <div class="ev-source">HaitiLibre.com</div>
-              <div class="ev-quote">New fuel prices in effect, with inspectors from the Ministry of Commerce and Industry verifying stored fuel quantities.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tl-group">
-          <div class="tl-date-header">
-            Wednesday, Apr 1, 2026
-          </div>
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
-            <div class="ev-body">
-              <div class="ev-source">@Nova24haiti · X/Twitter</div>
-              <div class="ev-quote">🚨 Flash Info: 725 gourdes: that’s the new price of gasoline in Haiti. The new pricing grid should be published tonight. Stay tuned, the impacts on transport and cost of living could be heavy.&quot; (🚨 Flash Info 725 gourdes : c’est le nouveau prix de la gazoline en Haïti. La nouvelle grille tarifaire devrait être publiée ce soir. Restez connectés, les impacts sur le transport et le coût de la vie risquent d</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
-            <div class="ev-body">
-              <div class="ev-source">@metropoleHT · X/Twitter</div>
-              <div class="ev-quote">Fuel product prices will be adjusted soon due to the prevailing situation in the Middle East. The price of the gasoline gallon will be set at 725 HTG.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@grandsudhaiti · X/Twitter</div>
-              <div class="ev-quote">#URGENT❌ While more than 6.7 million people struggle to feed themselves, the State unscrupulously plans to raise fuel to 950 gourdes. Overwhelmed on its own roads, it abandons the field to armed groups, then bills the people the price of its impotence...&quot; (#URGENT❌ Alors que plus de 6,7 millions de personnes luttent pour se nourrir, l</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-source">@NamHaiti · X/Twitter</div>
-              <div class="ev-quote">“Fuel influences everything, the transport of goods, production, market prices. A pump increase will trigger a chain reaction on food products and essentials,” warns a merchant. Transporters and population man the battlements.</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="protest">
-            <span class="ev-tag tag-protest">Protest</span>
-            <div class="ev-body">
-              <div class="ev-source">@ArnoldjuniorPi2 · X/Twitter</div>
-              <div class="ev-quote">Several unions, including the National Union of Normalians/Educators of Haiti and the Autonomous Central of Haitian Workers, denounce a possible fuel price increase. They alert to the risk of worsening poverty and hunger in the country.&quot; (Plusieurs syndicats, dont l’Union Nationale des Normaliens/nes et Éducateurs/trices d’Haïti et la Centrale Autonome des Travailleurs Haïtiens, dénoncent une éventuelle hausse du prix du carburant. Ils alertent sur le risque d</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="disruptions">
-            <span class="ev-tag tag-disruptions">Disruptions</span>
-            <div class="ev-body">
-              <div class="ev-source">@TheNancyRoc · X/Twitter</div>
-              <div class="ev-quote">#Haiti The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame. ⛽ Shortage or speculation? According to drivers and residents, fuel scarcity is orchestrated: hidden stocks to resell more expensive or feed black market before price hike. 👉 A manufactured crisis?</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="media">
-            <span class="ev-tag tag-media">Media</span>
-            <div class="ev-body">
-              <div class="ev-source">@LatamData · X/Twitter</div>
-              <div class="ev-quote">HAITI | Government imposes austerity measures including banning new vehicle purchases and limiting fuel use and foreign travel as Iran war disrupts oil supplies, with gangs controlling an estimated 90% of Port-au-Prince. (AP News)</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="govt">
-            <span class="ev-tag tag-govt">Government</span>
-            <div class="ev-body">
-              <div class="ev-source">@Radio_Metronome · X/Twitter</div>
-              <div class="ev-quote">...the Prime Minister could proceed as early as this week to a fuel price adjustment... up to 950 gourdes. ... The Prime Minister shows indifference toward the population&#39;s misery by deciding to increase fuel prices.&quot; (Malgré la situation difficile... le Premier ministre pourrait procéder dès cette semaine à un ajustement du prix du carburant... Le prix à la pompe pourrait ainsi grimper jusqu’à 950 gourdes. ... Le Premier ministre fait preuve d’indifférence à l</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tl-group">
-          <div class="tl-date-header">
-            Tuesday, Mar 31, 2026
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
-              <div class="ev-quote">As gas stations start to have high wires, and the population is panicking... When a government chooses to raise the cost of living at a time when people are dying from bullets... this is... a total lack of sensitivity.&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="violence">
-            <span class="ev-tag tag-violence">Violence</span>
-            <div class="ev-body">
-              <div class="ev-source">@icmedia509 · X/Twitter</div>
-              <div class="ev-quote">Le roi Fils-Aimé ne jure que par l’augmentation du prix du carburant en Haïti, alors qu’un massacre vient de se perpétrer à Jean-Denis (plus de 50 morts)&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-source">@jrelie · X/Twitter</div>
-              <div class="ev-quote">Qd les prix sont gelés trop longtemps, toute tentative d’aug. devient politiquement explosive. Le Gvt repousse les décisions nécessaires... la crise s’aggrave jusqu’à devenir incontrôlable. C le choc brutal pour la pop.&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="disruptions">
-            <span class="ev-tag tag-disruptions">Disruptions</span>
-            <div class="ev-body">
-              <div class="ev-source">@ONews1ereTV · X/Twitter</div>
-              <div class="ev-quote">Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans limite.&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="disruptions">
-            <span class="ev-tag tag-disruptions">Disruptions</span>
-            <div class="ev-body">
-              <div class="ev-source">@metropoleHT · X/Twitter</div>
-              <div class="ev-quote">A Port-au-Prince, plusieurs stations-service ne proposent que du diesel et les chauffeurs peinent à s’approvisionner en gazoline. Par ailleurs, la revente illégale de carburant à prix élevé se développe.&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="economy">
-            <span class="ev-tag tag-economy">Economy</span>
-            <div class="ev-body">
-              <div class="ev-source">@TME202 · X/Twitter</div>
-              <div class="ev-quote">Le prix du gazoline est passé de 570 à 750 gourdes... Une hausse soudaine dénoncée par plusieurs consommateurs, qui évoquent un possible complot.&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="violence">
-            <span class="ev-tag tag-violence">Violence</span>
-            <div class="ev-body">
-              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
-              <div class="ev-quote">Double toll: The State and Bandits are extorting drivers... Bandit Toll: At every intersection, men with guns... State Tolls: Now, Alix Didier Fils-Aimé wants to add &#39;his own tax&#39;.&quot;</div>
-            </div>
-          </div>
-          <div class="tl-event" data-tags="complaints">
-            <span class="ev-tag tag-complaints">Complaints</span>
-            <div class="ev-body">
-              <div class="ev-source">@Radio_Metronome · X/Twitter</div>
-              <div class="ev-quote">Si les autorités augmentent le prix du carburant, ce sera un véritable coup dur... Le peuple doit-il toujours être la principale victime?&quot;</div>
             </div>
           </div>
         </div>
@@ -893,11 +612,11 @@
       <div class="delta-card">
         <div class="card-label">New since last run</div>
         <div id="delta-list">
-          <div class="delta-item is-new">Protests on April 6 in Delmas 33/83/32/75, Route de Frères: drivers burn tires, erect barricades near National TV, block roads/stations, halt tap-taps/minibuses to Pétion-Ville/Delmas, abandon passengers; Route de Frères protesters prevent vans/minibuses uphill.</div>
-          <div class="delta-item is-new">Disruptions: traffic paralysis, slowed capital, absent transport lines, potential spread to Nippes/Miragoâne.</div>
-          <div class="delta-item is-new">Demands: fuel price reversal, official fare settings to end chaos/passenger disputes, wage increases; accusations PM Alix Didier Fils-Aimé favors private sector amid misery.</div>
-          <div class="delta-item is-new">Economic strain: daily wages insufficient vs 725G gallon; inconsistent station prices lead to variable fares, drivers unprofitable, passengers walking.</div>
-          <div class="delta-item is-new">Broader condemnations: EDE alarms; parallels to past unrest; IMF notes revenue gain but public fury.</div>
+          <div class="delta-item is-new">April 6 protests in Delmas 33/32/75/83, Route de Frères: drivers burn tires, barricades near National TV, block roads/stations, halt tap-taps to Pétion-Ville, force passengers to walk; potential movements in Miragoâne/Nippes.</div>
+          <div class="delta-item is-new">Economic disparities: fuel gallon exceeds daily wages (350-770G vs 725-850G); DR contrast (295 pesos gas/801 min wage); inconsistent station prices lead to variable fares, unprofitable drivers.</div>
+          <div class="delta-item is-new">Demands: price reversal, official fare guidelines, wage increases, MCI inspections on black market/organized shortages (&#39;yellow gallons&#39; 2-3x prices at intersections).</div>
+          <div class="delta-item is-new">Broader condemnations: RHAJAC calls peaceful mobilization; IMF notes revenue recovery but public prioritizes survival; risks of explosion/social tensions.</div>
+          <div class="delta-item is-new">Disruptions: traffic paralysis, absent transport lines, slowed activities; no violence but &#39;sensitive&#39; issue amid cost of living crisis.</div>
         </div><!-- #delta-list -->
       </div>
 
@@ -905,8 +624,8 @@
       <!-- PYTHON: replace the TWEETS array in the script below           -->
       <div class="tweet-card">
         <div class="card-label">Voice of the street</div>
-        <div class="tweet-handle" id="tw-handle">@Radio_Metronome</div>
-        <div class="tweet-body"   id="tw-body">In Delmas, the mobilization of public transport drivers and motorcyclists continues. In Delmas 32, 33, 75 and 83, burning tires and barricades have been observed.</div>
+        <div class="tweet-handle" id="tw-handle">@REALITEINFO1</div>
+        <div class="tweet-body"   id="tw-body">The fuel price surge in Haiti has reached an alarming level... the cost of a gallon of fuel now exceeds the daily wage of thousands of workers... working a full day is no longer enough to buy 3.8 liters of fuel.</div>
         <div class="tweet-date"   id="tw-date">Apr 7, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevTweet()">← prev</button>
@@ -919,8 +638,8 @@
       <!-- PYTHON: replace NEWS_QUOTES array in the script below          -->
       <div class="tweet-card">
         <div class="card-label">Press quotes</div>
-        <div class="tweet-handle" id="nq-outlet">Le Nouvelliste</div>
-        <div class="tweet-body"   id="nq-body">in Nord-Est, a gallon of gasoline is sold at 850 gourdes and diesel at 950 gourdes</div>
+        <div class="tweet-handle" id="nq-outlet">Press</div>
+        <div class="tweet-body"   id="nq-body">Fuel prices were increased on March 31. The official prices reflect global tensions.</div>
         <div class="tweet-date"   id="nq-date">Apr 7, 2026</div>
         <div class="tweet-nav">
           <button onclick="prevNewsQuote()">← prev</button>
@@ -934,7 +653,7 @@
       <div class="consensus-card">
         <div class="card-label">X / social consensus</div>
         <div class="consensus-text" id="consensus-text">
-          Strong consensus condemns fuel hikes as unbearable amid economic misery, low wages, inflation, gangs, demanding immediate reversal, fare regulations, wage hikes; April 6 Delmas/Route de Frères protests by drivers (tires burned, blockades, station closures) viewed as justified response to govt arrogance/incompetence favoring private sector, causing disruptions but remaining localized/non-violent; high agreement on risks of escalation to nationwide unrest/food riots/economic paralysis like 2018 if unaddressed, with calls for broader mobilization; govt subsidies/fare tweaks dismissed as insufficient without consultation; minor notes on IMF revenue logic but public prioritizes survival over fiscal gains.
+          Overwhelming agreement condemns fuel price hikes as exacerbating Haiti&#39;s crises (low wages insufficient for fuel, inflation, poverty, gangs) without adequate wage increases, fare regulations, or anti-black market enforcement, despite government subsidies; April 6 transport protests (burning tires, blockades in Delmas areas, potential Miragoâne) seen as justified but localized responses to economic injustice, with calls for peaceful broader mobilization; consensus on high risks of escalation to 2018-style nationwide unrest, riots, paralysis if unaddressed, though no violence or spread reported; minor acknowledgment of fiscal necessities (IMF) but public demands prioritize reversal and protections over revenue gains.
         </div>
       </div>
 
@@ -943,13 +662,21 @@
       <div class="consensus-card">
         <div class="card-label">Press consensus</div>
         <div class="consensus-text" id="news-consensus-text">
-          Outlets consistently link April 2 fuel price hikes (gasoline 725 HTG, diesel/kerosene 850/845 HTG) to Middle East oil shocks, report COSHARCO-1987 criticism as insensitive amid crises, planned April 7 mobilizations, emergence of protests in Delmas, regional overpricing, transport impacts, and a government cushioning decree; no disagreements on facts, no violence or shortages noted.
+          Outlets agree on April 2 fuel price hikes (gasoline 725 HTG, diesel 850 HTG, kerosene 845 HTG) due to Middle East-driven global oil shocks, COSHARCO-1987&#39;s criticism highlighting socioeconomic strains, emergence of protests in Delmas and Port-au-Prince on April 7, transport fare surges, limited regional overpricing and impacts, and government mitigative decree; uniform reporting with no violence, shortages, or disputes on facts.
         </div>
       </div>
 
     </div>
 
   </div><!-- .body-grid -->
+
+  <!-- Location mention map -->
+  <!-- PYTHON: inject MAP_DATA on every run -->
+  <div class="map-section">
+    <div class="slabel">Locations mentioned</div>
+    <div id="haiti-map"></div>
+  </div>
+
 </div><!-- .page -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -960,60 +687,55 @@
 
 const OIL_DATA = {
   labels:  ["9 Feb", "10 Feb", "11 Feb", "12 Feb", "13 Feb", "17 Feb", "18 Feb", "19 Feb", "20 Feb", "23 Feb", "24 Feb", "25 Feb", "26 Feb", "27 Feb", "2 Mar", "3 Mar", "4 Mar", "5 Mar", "6 Mar", "9 Mar", "10 Mar", "11 Mar", "12 Mar", "13 Mar", "16 Mar", "17 Mar", "18 Mar", "19 Mar", "20 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr", "6 Apr", "7 Apr"],
-  prices:  [64.53, 64.2, 64.8, 63.08, 63.05, 62.53, 65.33, 66.66, 66.69, 66.36, 65.62, 65.3, 65.1, 66.96, 71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23, null, null],
-  futures: [64.36, 63.96, 64.63, 62.84, 62.89, 62.33, 65.19, 66.43, 66.39, 66.31, 65.63, 65.42, 65.21, 67.02, 71.23, 74.56, 74.66, 81.01, 90.9, 94.77, 83.45, 87.25, 95.73, 98.71, 93.5, 96.21, 96.32, 96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 112.21]
+  prices:  [64.53, 64.2, 64.8, 63.08, 63.05, 62.53, 65.33, 66.66, 66.69, 66.36, 65.62, 65.3, 65.1, 66.96, 71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23, 114.01, null],
+  futures: [64.36, 63.96, 64.63, 62.84, 62.89, 62.33, 65.19, 66.43, 66.39, 66.31, 65.63, 65.42, 65.21, 67.02, 71.23, 74.56, 74.66, 81.01, 90.9, 94.77, 83.45, 87.25, 95.73, 98.71, 93.5, 96.21, 96.32, 96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 111.3]
 };
 
 const TWEETS = [
   {
-    "handle": "@Radio_Metronome",
+    "handle": "@REALITEINFO1",
     "date": "Apr 7, 2026",
-    "body": "In Delmas, the mobilization of public transport drivers and motorcyclists continues. In Delmas 32, 33, 75 and 83, burning tires and barricades have been observed."
+    "body": "The fuel price surge in Haiti has reached an alarming level... the cost of a gallon of fuel now exceeds the daily wage of thousands of workers... working a full day is no longer enough to buy 3.8 liters of fuel."
   },
   {
-    "handle": "@haiti_boiii",
+    "handle": "@mbduvalier",
     "date": "Apr 7, 2026",
-    "body": "Taxi and motorcycle drivers are protesting in the streets of Haiti. The government raised gas prices but didn’t provide guidance on how much drivers should charge passengers. Each driver sets fares based on their gas costs..."
+    "body": "This Easter Monday, we are witnessing scenes of violence and serious disruptions in Delmas 33, Port-au-Prince, where bus drivers are protesting against the fuel price increase in Haiti. It is a very sensitive issue, especially as the cost of living rises in the country."
   },
   {
-    "handle": "@SkandalNews",
+    "handle": "@richardsenecal",
     "date": "Apr 7, 2026",
-    "body": "Delmas 33 paralyzed: bus drivers protest against the fuel price increase (gasoline: 725 gdes, diesel: 850 gdes, kerosene: 845 gdes). Burning tires and blockades denounce the de facto government's incompetence."
-  },
-  {
-    "handle": "@LentilleInfo",
-    "date": "Apr 7, 2026",
-    "body": "Public transport drivers do not want to swallow the petroleum products increase. They are protesting vigorously in Delmas and other points in the Port-au-Prince metropolitan area to demand that the government backtrack."
-  },
-  {
-    "handle": "@HCI_ht",
-    "date": "Apr 7, 2026",
-    "body": "Protests against the fuel price increase have disrupted traffic in Delmas and various areas of the capital this Monday April 6, 2026. Tap-taps serving Pétion-Ville – Delmas are almost absent."
+    "body": "INFO Haiti: tension in Delmas 33, drivers protest against the fuel increase."
   },
   {
     "handle": "@maghaiti",
     "date": "Apr 7, 2026",
-    "body": "Vivid tensions broke out this Monday April 6 in Delmas 33, where drivers protested against the fuel price increase. The mobilization, marked by burning tires, blocked roads and disrupted traffic, focused near the National Television of Haiti."
+    "body": "Vivid tensions broke out this Monday April 6 in Delmas 33, where drivers protested against the increase in fuel prices... marked by burning tires, blocked roads and disrupted traffic... The demonstrators denounce an unsustainable measure in the face of high living costs and demand its withdrawal."
   },
   {
-    "handle": "@Radio_Metronome",
+    "handle": "@cassendylafond",
     "date": "Apr 7, 2026",
-    "body": "In Delmas, the movement against the fuel price increase is gaining intensity. Motorcyclists have launched an operation to close gas stations. According to them, the fuel price is too high and they cannot cope with this situation."
+    "body": "RD Regular Gasoline 295 pesos, Minimum wage 801 pesos. Haiti Galon gaz 725 goud, Minimum wage 685 goud. It’s not SOH that caused this."
   },
   {
-    "handle": "@Antenne_509",
+    "handle": "@REALITEINFO1",
     "date": "Apr 7, 2026",
-    "body": "Peaceful protest for now against fuel price increase in Delmas and Rte de Frères. The protesters on Rte de Frères do not want minibuses and vans to go to Pétion-Ville."
+    "body": "Tension is rising a notch in Haiti... drivers are preparing to take action in the next few hours in Miragoâne to denounce the new surge in fuel prices... burning tires, blocked roads, paralyzed traffic... this new crisis risks aggravating an already explosive situation."
   },
   {
-    "handle": "@VoixLibreHT",
+    "handle": "@SkandalNews",
     "date": "Apr 7, 2026",
-    "body": "In Delmas 83, tires are set on fire to protest against the fuel price increase in the country."
+    "body": "The @RHAJAC1 denounces: in Haiti, the gallon of fuel exceeds the daily wage (350–770 Gdes). Gasoline 725 Gdes, Diesel 850 Gdes, Kerosene 845 Gdes. The Sec. @DjovanyMICHEL01 calls for a peaceful mobilization to correct this economic injustice."
   },
   {
-    "handle": "@PresseInfos1",
+    "handle": "@johnny_pie6556",
     "date": "Apr 7, 2026",
-    "body": "Drivers demonstrated this April 6 in Delmas against the fuel price increase decided by the government of Alix Didier Fils-Aimé. Gasoline goes from 560 to 725 gourdes."
+    "body": "The Haitian people have not yet digested the fuel price hike. Today, there are many protests in the streets... PM Alix Didier Fils-aimé, the Haitian people await your results..."
+  },
+  {
+    "handle": "@haiti_boiii",
+    "date": "Apr 7, 2026",
+    "body": "Taxi and motorcycle drivers are protesting in the streets of Haiti. The government raised gas prices but didn’t provide guidance on how much drivers should charge passengers... With fares so inconsistent, many drivers struggle to cover food, housing, and other necessities. Some passengers even walk instead of paying higher fares, leaving drivers going home without earning anything."
   },
   {
     "handle": "@CherlineEditor",
@@ -1021,22 +743,47 @@ const TWEETS = [
     "body": "Fuel increase in #Haiti: drivers block several axes in Delmas"
   },
   {
-    "handle": "@rtvgalaxie",
+    "handle": "@PresseInfos1",
     "date": "Apr 7, 2026",
-    "body": "Public transport drivers started this Monday April 6 a protest movement demanding the government officially set fares following the petroleum product price hikes to avoid passenger conflicts and ease tensions."
+    "body": "Drivers demonstrated this April 6 in Delmas against the fuel price increase decided by the government of Alix Didier Fils-Aimé. Gasoline goes from 560 to 725 gourdes."
+  },
+  {
+    "handle": "@VoixLibreHT",
+    "date": "Apr 7, 2026",
+    "body": "In Delmas 83, tires are set on fire to protest against the fuel price increase in the country."
   }
 ];
 
 const NEWS_QUOTES = [
   {
-    "outlet": "Le Nouvelliste",
+    "outlet": "Press",
     "date": "Apr 7, 2026",
-    "body": "in Nord-Est, a gallon of gasoline is sold at 850 gourdes and diesel at 950 gourdes"
+    "body": "Fuel prices were increased on March 31. The official prices reflect global tensions."
   },
   {
-    "outlet": "Le Nouvelliste",
+    "outlet": "Press",
     "date": "Apr 7, 2026",
-    "body": "government issues decree to cushion impact of oil shock without bankrupting the state"
+    "body": "The authorities' decision to increase domestic fuel prices at the pump will reduce foregone revenues."
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 7, 2026",
+    "body": "Protests in Delmas against the rise in petroleum product prices."
+  },
+  {
+    "outlet": "Public transportation fares have sharply increased",
+    "date": "Apr 7, 2026",
+    "body": "by up to 100% for some routes."
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 7, 2026",
+    "body": "The increase in fuel prices, announced by the authorities and in effect since April 2."
+  },
+  {
+    "outlet": "Augmentation du prix du carburant",
+    "date": "Apr 7, 2026",
+    "body": "entre souffrance sociale et indifférence des autorités"
   },
   {
     "outlet": "Le Nouvelliste",
@@ -1046,39 +793,21 @@ const NEWS_QUOTES = [
   {
     "outlet": "Le Nouvelliste",
     "date": "Apr 7, 2026",
+    "body": "insensitive and irresponsible, constituting a provocation"
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 7, 2026",
     "body": "series of mobilization movements starting April 7"
   },
   {
     "outlet": "Le Nouvelliste",
     "date": "Apr 7, 2026",
-    "body": "insensitive and irresponsible, constituting a provocation"
-  },
-  {
-    "outlet": "Press",
-    "date": "Apr 7, 2026",
-    "body": "Public transport fares have skyrocketed following the official list published on April 2."
-  },
-  {
-    "outlet": "Press",
-    "date": "Apr 7, 2026",
-    "body": "The increase in fuel prices is insensitive, irresponsible, and constitutes a provocation in the current context of insecurity and economic hardship."
-  },
-  {
-    "outlet": "Press",
-    "date": "Apr 7, 2026",
-    "body": "We call for a general mobilization starting Monday, April 7, alongside other groups and organizations."
-  },
-  {
-    "outlet": "Press",
-    "date": "Apr 7, 2026",
-    "body": "Gasoline 725 HTG per gallon, up 29%; diesel 850 HTG, up 37%; kerosene 845 HTG, up 37%."
-  },
-  {
-    "outlet": "Press",
-    "date": "Apr 7, 2026",
-    "body": "The government shows indifference to the social suffering of the population."
+    "body": "government issues decree to cushion impact of oil shock without bankrupting the state"
   }
 ];
+
+const MAP_DATA = [{"name": "Les Cayes", "lat": 18.2004, "lon": -73.75, "count": 10, "snippets": ["• '@ONews1ereTV: \"Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans…", "- '@ONews1ereTV: \"Les Cayes: rush for fuel before the increase, the population at the end of their rope.\" (Les…", "- @ONews1ereTV: \"Les Cayes: rush for fuel before the hike, the population at its limit.\" (Les Cayes : ruée ver…", "@lequotidien509: 'In Les Cayes, merchants set the price of the gasoline gallon at 800 gourdes and diesel at 90…", "@lequotidien509: 'In Les Cayes, merchants set the price of gasoline at 800 gourdes and diesel at 900 gourdes,…"]}, {"name": "Cayes", "lat": 18.2004, "lon": -73.75, "count": 12, "snippets": ["• '@ONews1ereTV: \"Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans…", "- '@ONews1ereTV: \"Les Cayes: rush for fuel before the increase, the population at the end of their rope.\" (Les…", "- @ONews1ereTV: \"Les Cayes: rush for fuel before the hike, the population at its limit.\" (Les Cayes : ruée ver…", "Merchants in Cayes set the price of gasoline at 800 gourdes per gallon and diesel at 900 gourdes. (@ahpht)", "Following the government's decision to set official petroleum product prices at 725 gourdes per gallon of gaso…"]}, {"name": "Port-au-Prince", "lat": 18.5944, "lon": -72.3074, "count": 13, "snippets": ["• '@metropoleHT: \"A Port-au-Prince, plusieurs stations-service ne proposent que du diesel et les chauffeurs pe…", "6. @TheNancyRoc: \"#Haiti The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame. ⛽ Shortage or…", "7. @LatamData: \"HAITI | Government imposes austerity measures including banning new vehicle purchases and limi…", "- @Florida1sttake: 'Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP […", "- \"Des tensions opposent chauffeurs et passagers dans les rues de Port-au-Prince depuis l’entrée en vigueur...…"]}, {"name": "Sud", "lat": 18.204, "lon": -73.35, "count": 1, "snippets": ["3. @grandsudhaiti: \"#URGENT❌ While more than 6.7 million people struggle to feed themselves, the State unscrup…"]}, {"name": "Carrefour", "lat": 18.54, "lon": -72.402, "count": 3, "snippets": ["6. @TheNancyRoc: \"#Haiti The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame. ⛽ Shortage or…", "Le Nouvelliste: 'The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame.'", "Le Nouvelliste: 'In Carrefour, one of the rare gas stations selling gasoline at the new price.'"]}, {"name": "Artibonite", "lat": 19.0744, "lon": -72.5366, "count": 1, "snippets": ["- @metropoleHT: \"Massacre in Artibonite + fuel increase: Haiti facing a major double crisis\" (original: \"Massa…"]}, {"name": "Delmas", "lat": 18.5444, "lon": -72.3072, "count": 20, "snippets": ["@Jacquiecharles: 'What we're watching on this Easter Monday: flaming tires and traffic disruptions in Port-au-…", "@metropoleHT: 'Public transport drivers in Delmas protested this Monday April 6 against the fuel increase. Bar…", "@vantbefinfo: 'At Delmas 33, tension rose sharply with angry drivers starting protest movements, burning tires…", "@maghaiti: 'Vivid tensions erupted this Monday April 6 at Delmas 33 where drivers protested fuel price increas…", "@HCI_ht: 'Protest movements against fuel price increases disrupted traffic in Delmas and various capital areas…"]}, {"name": "Delmas 33", "lat": 18.543, "lon": -72.31, "count": 8, "snippets": ["@Jacquiecharles: 'What we're watching on this Easter Monday: flaming tires and traffic disruptions in Port-au-…", "@vantbefinfo: 'At Delmas 33, tension rose sharply with angry drivers starting protest movements, burning tires…", "@maghaiti: 'Vivid tensions erupted this Monday April 6 at Delmas 33 where drivers protested fuel price increas…", "@maghaiti: 'Vivid tensions broke out this Monday April 6 in Delmas 33, where drivers protested against the fue…", "@SkandalNews: 'Delmas 33 paralyzed: bus drivers protest against the fuel price increase (gasoline: 725 gdes, d…"]}, {"name": "Petion-Ville", "lat": 18.5124, "lon": -72.2852, "count": 3, "snippets": ["@HCI_ht: 'Protest movements against fuel price increases disrupted traffic in Delmas and various capital areas…", "@Antenne_509: 'Peaceful protest for now against fuel price increase in Delmas and Rte de Frères. The protester…", "@HCI_ht: 'Protests against the fuel price increase have disrupted traffic in Delmas and various areas of the c…"]}, {"name": "Delmas 83", "lat": 18.552, "lon": -72.296, "count": 1, "snippets": ["@VoixLibreHT: 'In Delmas 83, tires are set on fire to protest against the fuel price increase in the country.'"]}, {"name": "Frères", "lat": 18.53, "lon": -72.29, "count": 1, "snippets": ["@Antenne_509: 'Peaceful protest for now against fuel price increase in Delmas and Rte de Frères. The protester…"]}, {"name": "Delmas 32", "lat": 18.5435, "lon": -72.309, "count": 1, "snippets": ["@Radio_Metronome: 'In Delmas, the mobilization of public transport drivers and motorcyclists continues. In Del…"]}, {"name": "Miragoane", "lat": 18.445, "lon": -73.088, "count": 1, "snippets": ["@REALITEINFO1: 'Tension is rising a notch in Haiti... drivers are preparing to take action in the next few hou…"]}, {"name": "Nord", "lat": 19.7578, "lon": -72.2063, "count": 3, "snippets": ["Rezo Nòdwès: 'Les inspecteurs dans le Nord-Est veillent à ce que les stocks soient vendus aux nouveaux prix.'", "Inspectors from the Ministry of Commerce and Industry (MCI) in Nord-Est verify and validate stored fuel quanti…", "Le Nouvelliste: 'in Nord-Est, a gallon of gasoline is sold at 850 gourdes and diesel at 950 gourdes'"]}, {"name": "Nord-Est", "lat": 19.5597, "lon": -71.8564, "count": 3, "snippets": ["Rezo Nòdwès: 'Les inspecteurs dans le Nord-Est veillent à ce que les stocks soient vendus aux nouveaux prix.'", "Inspectors from the Ministry of Commerce and Industry (MCI) in Nord-Est verify and validate stored fuel quanti…", "Le Nouvelliste: 'in Nord-Est, a gallon of gasoline is sold at 850 gourdes and diesel at 950 gourdes'"]}];  /* HAITI_MAP_DATA */
 
 /* ═══════════════════════════════════════════════════════════════════════
    PRESENTATION LAYER — do not edit below
@@ -1199,6 +928,57 @@ function filter(btn) {
     g.style.display = anyVisible ? 'block' : 'none';
   });
 }
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* Haiti location map */
+(function () {
+  const map = L.map('haiti-map', {
+    center: [18.97, -72.85],
+    zoom: 8,
+    zoomControl: true,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map);
+
+  if (!MAP_DATA || MAP_DATA.length === 0) {
+    /* No data yet — show a placeholder note */
+    document.getElementById('haiti-map').insertAdjacentHTML(
+      'beforeend',
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
+      'color:#5a5650;font-family:var(--mono);font-size:13px;pointer-events:none;z-index:1000;">' +
+      'No location mentions found</div>'
+    );
+    return;
+  }
+
+  MAP_DATA.forEach(loc => {
+    const countLabel = `${loc.count} mention${loc.count !== 1 ? 's' : ''}`;
+
+    // Build popup: header + bulleted snippet list (if any)
+    const snippetHtml = (loc.snippets && loc.snippets.length)
+      ? '<ul>' + loc.snippets.map(s => `<li>${s}</li>`).join('') + '</ul>'
+      : '';
+    const popupHtml = `<b>${loc.name}</b><br><span style="color:var(--muted)">${countLabel}</span>${snippetHtml}`;
+
+    L.circle([loc.lat, loc.lon], {
+      radius:      3000 + loc.count * 1500,
+      color:       '#e05a4a',
+      fillColor:   '#e05a4a',
+      fillOpacity: 0.30,
+      weight:      1,
+    })
+    .bindTooltip(`<b>${loc.name}</b><br>${countLabel}`, { sticky: true })
+    .bindPopup(popupHtml, { maxWidth: 300 })
+    .addTo(map);
+  });
+})();
 </script>
 </body>
 </html>

@@ -15,6 +15,7 @@ import sys
 import json
 import re
 import os
+import unicodedata
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
@@ -28,8 +29,8 @@ OUTPUT_PATH   = Path(__file__).parent / "index.html"  # overwrites in place
 
 MAX_TWEETS      = 12   # max X/Twitter quotes in the tweet widget
 MAX_NEWS_QUOTES = 10   # max press quotes in the news widget
-MAX_TIMELINE_DAYS = 10     # max days shown in the event timeline
-MAX_TIMELINE_PER_DAY = 8   # max entries shown per day
+MAX_TIMELINE_DAYS = 4     # max days shown in the event timeline
+MAX_TIMELINE_PER_DAY = 6   # max entries shown per day
 MAX_NEWS_PER_DAY = 2       # max news-source entries per day (rest filled by X quotes)
 MAX_DELTA       = 5    # max items in the "new since last run" card
 
@@ -492,6 +493,148 @@ def fetch_wti_fred(days: int = 60) -> dict | None:
         return None
 
 
+# ── Haiti location data ───────────────────────────────────────────────────────
+
+HAITI_LOCATIONS: dict[str, tuple[float, float]] = {
+    # Departments
+    "Ouest":               (18.5444, -72.3388),
+    "Nord":                (19.7578, -72.2063),
+    "Nord-Est":            (19.5597, -71.8564),
+    "Nord-Ouest":          (19.8374, -72.8310),
+    "Artibonite":          (19.0744, -72.5366),
+    "Centre":              (19.0000, -71.9500),
+    "Sud":                 (18.2040, -73.3500),
+    "Sud-Est":             (18.2300, -72.3300),
+    "Nippes":              (18.3900, -73.4200),
+    "Grande-Anse":         (18.4432, -74.1198),
+    # Major cities / communes
+    "Port-au-Prince":      (18.5944, -72.3074),
+    "Cap-Haïtien":         (19.7578, -72.2063),
+    "Cap Haitien":         (19.7578, -72.2063),
+    "Gonaïves":            (19.4530, -72.6890),
+    "Gonaives":            (19.4530, -72.6890),
+    "Saint-Marc":          (19.1150, -72.7020),
+    "Jacmel":              (18.2341, -72.5354),
+    "Les Cayes":           (18.2004, -73.7500),
+    "Jérémie":             (18.6500, -74.1167),
+    "Jeremie":             (18.6500, -74.1167),
+    "Hinche":              (19.1478, -71.9878),
+    "Fort-Liberté":        (19.6670, -71.8380),
+    "Miragoâne":           (18.4450, -73.0880),
+    "Miragoane":           (18.4450, -73.0880),
+    "Léogâne":             (18.5124, -72.6330),
+    "Leogane":             (18.5124, -72.6330),
+    "Petit-Goâve":         (18.4330, -72.8670),
+    "Petit-Goave":         (18.4330, -72.8670),
+    "Croix-des-Bouquets":  (18.6060, -72.2280),
+    # Port-au-Prince metro
+    "Delmas":              (18.5444, -72.3072),
+    "Delmas 33":           (18.5430, -72.3100),
+    "Delmas 32":           (18.5435, -72.3090),
+    "Delmas 75":           (18.5510, -72.2980),
+    "Delmas 83":           (18.5520, -72.2960),
+    "Pétion-Ville":        (18.5124, -72.2852),
+    "Petion-Ville":        (18.5124, -72.2852),
+    "Tabarre":             (18.5880, -72.2700),
+    "Cité Soleil":         (18.5700, -72.3300),
+    "Cite Soleil":         (18.5700, -72.3300),
+    "Martissant":          (18.5230, -72.3530),
+    "Carrefour":           (18.5400, -72.4020),
+    "Kenscoff":            (18.4600, -72.2800),
+    "Fontamara":           (18.5270, -72.3610),
+    "Turgeau":             (18.5480, -72.3260),
+    "Bel-Air":             (18.5560, -72.3400),
+    "Bel Air":             (18.5560, -72.3400),
+    "Bourdon":             (18.5350, -72.3200),
+    "Lalue":               (18.5480, -72.3350),
+    "La Plaine":           (18.5950, -72.2380),
+    "Thomassin":           (18.4900, -72.2700),
+    "Vivy Mitchell":       (18.5200, -72.2950),
+    "Route de Frères":     (18.5300, -72.2900),
+    "Frères":              (18.5300, -72.2900),
+    "Juvenat":             (18.5050, -72.2830),
+    "Morne Calvaire":      (18.5000, -72.2950),
+    "Pacot":               (18.5490, -72.3310),
+    "Canapé-Vert":         (18.5410, -72.3230),
+    "Canape-Vert":         (18.5410, -72.3230),
+    "Ruelle Vaillant":     (18.5460, -72.3280),
+    "Solino":              (18.5570, -72.3200),
+    "Nazon":               (18.5530, -72.3150),
+    "Christ-Roi":          (18.5520, -72.3290),
+    "Bas Delmas":          (18.5400, -72.3200),
+    # Northern communes
+    "Limonade":            (19.7060, -72.1120),
+    "Quartier Morin":      (19.7200, -72.1670),
+    "Plaisance":           (19.5980, -72.4650),
+    "Milot":               (19.6080, -72.2200),
+    "Acul du Nord":        (19.7330, -72.3000),
+    # Artibonite
+    "Dessalines":          (19.2850, -72.5050),
+    "Marchand Dessalines": (19.2850, -72.5050),
+    "Verrettes":           (19.0580, -72.4680),
+    "L'Estère":            (19.2120, -72.6500),
+    # South / Grand-Anse
+    "Aquin":               (18.2760, -73.1170),
+    "Cayes":               (18.2004, -73.7500),
+    "Tiburon":             (18.3500, -74.3830),
+    "Dame Marie":          (18.5670, -74.4170),
+    "Anse-à-Veau":         (18.4980, -73.3520),
+}
+
+
+def _normalize(text: str) -> str:
+    """Lowercase + strip accents for fuzzy location matching."""
+    return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()
+
+
+# Pre-compute normalized keys once at import time
+_LOCATIONS_NORM: dict[str, tuple[str, tuple[float, float]]] = {
+    _normalize(k): (k, v) for k, v in HAITI_LOCATIONS.items()
+}
+
+
+def build_map_data(sheets: dict) -> list[dict]:
+    """
+    Count how many tweets/news items mention each known Haiti location.
+    Each quote contributes at most 1 to a location's count (deduped per row).
+    Also collects up to 5 short snippets per location for click-popup display.
+    Returns a list of {name, lat, lon, count, snippets} dicts for locations with ≥1 mention.
+    """
+    from collections import Counter, defaultdict
+    mentions: Counter = Counter()
+    snippets: dict[str, list[str]] = defaultdict(list)
+
+    for sheet_name in ["Quotes", "News Quotes"]:
+        df = sheets.get(sheet_name, pd.DataFrame())
+        if df.empty or "Quote" not in df.columns:
+            continue
+        for raw in df["Quote"].dropna():
+            text = str(raw)
+            text_norm = _normalize(text)
+            seen: set[str] = set()
+            for norm_key, (original_name, _) in _LOCATIONS_NORM.items():
+                if norm_key in text_norm and original_name not in seen:
+                    mentions[original_name] += 1
+                    seen.add(original_name)
+                    # collect a short snippet (first 110 chars of cleaned text)
+                    snippet = text.strip().replace("\n", " ")
+                    if len(snippet) > 110:
+                        snippet = snippet[:110].rstrip() + "…"
+                    snippets[original_name].append(snippet)
+
+    return [
+        {
+            "name": name,
+            "lat": HAITI_LOCATIONS[name][0],
+            "lon": HAITI_LOCATIONS[name][1],
+            "count": count,
+            "snippets": snippets[name][:5],  # cap at 5 to keep popup compact
+        }
+        for name, count in mentions.items()
+        if count > 0
+    ]
+
+
 # ── Fetch front-month WTI futures from Yahoo Finance ─────────────────────────
 
 def fetch_wti_futures(days: int = 60) -> "pd.Series | None":
@@ -518,7 +661,8 @@ def fetch_wti_futures(days: int = 60) -> "pd.Series | None":
 def inject(html: str, tweets: list, news_quotes: list, delta: list,
            x_consensus: str, news_consensus: str,
            header: dict, wti: dict | None, timeline: str = "",
-           signals: dict | None = None) -> str:
+           signals: dict | None = None,
+           map_data: list | None = None) -> str:
 
     # ── Event timeline (full replacement)
     if timeline:
@@ -635,6 +779,14 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
                 html,
             )
 
+    # ── Location map
+    if map_data is not None:
+        map_js = f'const MAP_DATA = {json.dumps(map_data, ensure_ascii=False)};  /* HAITI_MAP_DATA */'
+        html = re.sub(
+            r'const MAP_DATA = \[.*?\];\s*/\* HAITI_MAP_DATA \*/',
+            lambda _: map_js, html, flags=re.S,
+        )
+
     return html
 
 
@@ -699,10 +851,17 @@ def main(excel_path: str):
         wti.pop("series", None)
         wti["futures"] = None
 
-    print("[7/7] Injecting into HTML ...")
+    print("[7/8] Building location map data ...")
+    map_data = build_map_data(sheets)
+    print(f"      → {len(map_data)} locations mentioned: "
+          + ", ".join(f"{d['name']} ({d['count']})" for d in
+                      sorted(map_data, key=lambda x: -x['count'])[:5]))
+
+    print("[8/8] Injecting into HTML ...")
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     updated  = inject(template, tweets, news_quotes, delta,
-                      x_consensus, news_consensus, header, wti, timeline, signals)
+                      x_consensus, news_consensus, header, wti, timeline, signals,
+                      map_data)
     OUTPUT_PATH.write_text(updated, encoding="utf-8")
 
     print(f"\nDone. Open: {OUTPUT_PATH.resolve()}")
