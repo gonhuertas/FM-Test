@@ -81,7 +81,7 @@
 
   /* ── Signal row ── */
   .signal-grid {
-    display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
     gap: 10px; margin-bottom: 24px;
   }
   .signal-card {
@@ -124,8 +124,8 @@
   }
 
   /* ── Location map ── */
-  .map-section { margin-top: 32px; }
-  #haiti-map { height: 440px; border-radius: 8px; border: 1px solid var(--border); }
+  .map-section { margin-top: 28px; margin-bottom: 28px; }
+  #haiti-map { height: 370px; border-radius: 8px; border: 1px solid var(--border); }
   /* Override Leaflet popup/tooltip for dark theme */
   .leaflet-tooltip {
     background: var(--surface); border: 1px solid var(--border2);
@@ -298,71 +298,11 @@
     </span>
   </div>
 
-  <!-- ══ SIGNALS ═════════════════════════════════════════════════════════ -->
-  <!-- PYTHON: regenerate .dot[data-level] values and status/trend text    -->
-  <div class="slabel">Situation signals — last 7 days (one dot per day, oldest → newest)</div>
-  <div class="signal-grid" id="signal-grid">
-
-    <div class="signal-card">
-      <div class="signal-name">Protest activity</div>
-      <div class="dot-row" id="sig-protest-dots">
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="3"></div>
-        <div class="dot" data-level="2"></div>
-        <div class="dot" data-level="2"></div>
-        <div class="dot" data-level="2"></div>
-      </div><!-- #sig-protest-dots -->
-      <div class="signal-status" id="sig-protest-status">Localized transport protests</div>
-      <div class="signal-trend"  id="sig-protest-trend">Ongoing, potential spread</div>
-    </div>
-
-    <div class="signal-card">
-      <div class="signal-name">Gang / security</div>
-      <div class="dot-row" id="sig-security-dots">
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="1"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-      </div><!-- #sig-security-dots -->
-      <div class="signal-status" id="sig-security-status">No violence reported</div>
-      <div class="signal-trend"  id="sig-security-trend">Stable</div>
-    </div>
-
-    <div class="signal-card">
-      <div class="signal-name">Supply disruptions</div>
-      <div class="dot-row" id="sig-supply-dots">
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="3"></div>
-        <div class="dot" data-level="1"></div>
-        <div class="dot" data-level="1"></div>
-        <div class="dot" data-level="2"></div>
-      </div><!-- #sig-supply-dots -->
-      <div class="signal-status" id="sig-supply-status">Black market active</div>
-      <div class="signal-trend"  id="sig-supply-trend">Persistent overpricing</div>
-    </div>
-
-    <div class="signal-card">
-      <div class="signal-name">Intl media pressure</div>
-      <div class="dot-row" id="sig-media-dots">
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-        <div class="dot" data-level="0"></div>
-      </div><!-- #sig-media-dots -->
-      <div class="signal-status" id="sig-media-status">No intl coverage</div>
-      <div class="signal-trend"  id="sig-media-trend">Local only</div>
-    </div>
-
+  <!-- ══ MAP ═════════════════════════════════════════════════════════════ -->
+  <!-- PYTHON: inject MAP_DATA on every run -->
+  <div class="map-section">
+    <div class="slabel">Locations mentioned</div>
+    <div id="haiti-map"></div>
   </div>
 
   <!-- ══ BODY ════════════════════════════════════════════════════════════ -->
@@ -389,6 +329,58 @@
           <canvas id="oilChart"></canvas>
         </div>
       </div>
+
+      <!-- Signals -->
+      <!-- PYTHON: regenerate .dot[data-level] values and status/trend text    -->
+      <div class="slabel">Situation signals — last 7 days (one dot per day, oldest → newest)</div>
+      <div class="signal-grid" id="signal-grid">
+
+        <div class="signal-card">
+          <div class="signal-name">Protest activity</div>
+          <div class="dot-row" id="sig-protest-dots">
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="3"></div>
+            <div class="dot" data-level="2"></div>
+            <div class="dot" data-level="2"></div>
+            <div class="dot" data-level="2"></div>
+          </div><!-- #sig-protest-dots -->
+          <div class="signal-status" id="sig-protest-status">Localized transport protests</div>
+          <div class="signal-trend"  id="sig-protest-trend">Ongoing, potential spread</div>
+        </div>
+
+        <div class="signal-card">
+          <div class="signal-name">Gang / security</div>
+          <div class="dot-row" id="sig-security-dots">
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="1"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+          </div><!-- #sig-security-dots -->
+          <div class="signal-status" id="sig-security-status">No violence reported</div>
+          <div class="signal-trend"  id="sig-security-trend">Stable</div>
+        </div>
+
+        <div class="signal-card">
+          <div class="signal-name">Supply disruptions</div>
+          <div class="dot-row" id="sig-supply-dots">
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="3"></div>
+            <div class="dot" data-level="1"></div>
+            <div class="dot" data-level="1"></div>
+            <div class="dot" data-level="2"></div>
+          </div><!-- #sig-supply-dots -->
+          <div class="signal-status" id="sig-supply-status">Black market active</div>
+          <div class="signal-trend"  id="sig-supply-trend">Persistent overpricing</div>
+        </div>
+
+      </div><!-- #signal-grid -->
 
       <!-- Timeline -->
       <div class="slabel">Event timeline</div>
@@ -670,12 +662,6 @@
 
   </div><!-- .body-grid -->
 
-  <!-- Location mention map -->
-  <!-- PYTHON: inject MAP_DATA on every run -->
-  <div class="map-section">
-    <div class="slabel">Locations mentioned</div>
-    <div id="haiti-map"></div>
-  </div>
 
 </div><!-- .page -->
 
@@ -688,7 +674,7 @@
 const OIL_DATA = {
   labels:  ["9 Feb", "10 Feb", "11 Feb", "12 Feb", "13 Feb", "17 Feb", "18 Feb", "19 Feb", "20 Feb", "23 Feb", "24 Feb", "25 Feb", "26 Feb", "27 Feb", "2 Mar", "3 Mar", "4 Mar", "5 Mar", "6 Mar", "9 Mar", "10 Mar", "11 Mar", "12 Mar", "13 Mar", "16 Mar", "17 Mar", "18 Mar", "19 Mar", "20 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr", "6 Apr", "7 Apr"],
   prices:  [64.53, 64.2, 64.8, 63.08, 63.05, 62.53, 65.33, 66.66, 66.69, 66.36, 65.62, 65.3, 65.1, 66.96, 71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23, 114.01, null],
-  futures: [64.36, 63.96, 64.63, 62.84, 62.89, 62.33, 65.19, 66.43, 66.39, 66.31, 65.63, 65.42, 65.21, 67.02, 71.23, 74.56, 74.66, 81.01, 90.9, 94.77, 83.45, 87.25, 95.73, 98.71, 93.5, 96.21, 96.32, 96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 111.3]
+  futures: [64.36, 63.96, 64.63, 62.84, 62.89, 62.33, 65.19, 66.43, 66.39, 66.31, 65.63, 65.42, 65.21, 67.02, 71.23, 74.56, 74.66, 81.01, 90.9, 94.77, 83.45, 87.25, 95.73, 98.71, 93.5, 96.21, 96.32, 96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 110.77]
 };
 
 const TWEETS = [

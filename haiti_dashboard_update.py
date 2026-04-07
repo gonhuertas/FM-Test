@@ -241,12 +241,12 @@ _SIGNALS_COLS = [
     "protest_level", "protest_status", "protest_trend",
     "security_level", "security_status", "security_trend",
     "supply_level",   "supply_status",   "supply_trend",
-    "media_level",    "media_status",    "media_trend",
+    "media_level",    "media_status",    "media_trend",  # kept for backwards-compat with existing sheets
 ]
 
 def build_signals(signals_df: pd.DataFrame) -> dict | None:
     """
-    Return signal data for all 4 panels.
+    Return signal data for the 3 active panels (protest, security, supply).
     Each entry has: dots (list of 7 ints, oldest→newest), status, trend.
     Returns None if the sheet is missing or empty.
     """
@@ -264,7 +264,7 @@ def build_signals(signals_df: pd.DataFrame) -> dict | None:
         return None
 
     result = {}
-    for sig in ["protest", "security", "supply", "media"]:
+    for sig in ["protest", "security", "supply"]:
         # Last 7 runs, oldest first → that's the dot order (oldest left)
         levels = df[f"{sig}_level"].tolist()[:7][::-1]
         while len(levels) < 7:
