@@ -81,7 +81,7 @@ def extract_tweets(quotes_df: pd.DataFrame, max_n: int = MAX_TWEETS) -> list[dic
         ts  = row["Timestamp"]
 
         # Standard format: "@handle: 'text'" or "• @handle: \"text\""
-        m = re.search(r"@(\w+)[^:]*:\s*[\"'\u2018\u2019\u201c\u201d](.+?)[\"'\u2018\u2019\u201c\u201d]", raw, re.S)
+        m = re.search(r"@(\w+)[^:]*:\s*[\"'\u2018\u2019\u201c\u201d](.+)[\"'\u2018\u2019\u201c\u201d]", raw, re.S)
         if m:
             handle = "@" + m.group(1)
             body   = m.group(2).strip()
@@ -313,7 +313,7 @@ def build_timeline(sheets: dict) -> str:
         if source_type == "x":
             # Expected: "@handle: 'text'" or similar
             m = re.search(
-                r"@(\w+)[^:]*:\s*[\"'\u2018\u2019\u201c\u201d](.+?)[\"'\u2018\u2019\u201c\u201d]",
+                r"@(\w+)[^:]*:\s*[\"'\u2018\u2019\u201c\u201d](.+)[\"'\u2018\u2019\u201c\u201d]",
                 raw, re.S,
             )
             if m:
