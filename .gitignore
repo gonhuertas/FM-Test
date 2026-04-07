@@ -15,8 +15,12 @@ credentials.py
 *.xls
 *.csv
 *.pkl
-data/raw/
-data/processed/
+/data/raw/
+/data/processed/
+
+# Exceptions: BRH processed data needed for Streamlit deployment
+!brh-dashboard/data/processed/brh_ratios.csv
+!brh-dashboard/data/processed/brh_fx_positions.csv
 
 # Output files (charts, tables)
 output/
