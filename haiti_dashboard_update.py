@@ -478,15 +478,38 @@ def fetch_wti_fred(days: int = 60) -> dict | None:
         first  = prices[0]
         pct    = round((latest - first) / first * 100, 1)
         sign   = "+" if pct > 0 else ""
+        s.index = s.index.normalize()  # strip time component for date-alignment
         return {
             "labels":    labels,
             "prices":    prices,
             "price_val": f"${latest:.2f}",
             "change":    f"{sign}{pct}% in {days} days",
             "note":      fmt_date(s.index[-1]) + " · USD/barrel",
+            "series":    s,   # kept for date-alignment with futures; not written to HTML
         }
     except Exception as e:
         print(f"[WTI] CEIC fetch failed: {e}")
+        return None
+
+
+# ── Fetch front-month WTI futures from Yahoo Finance ─────────────────────────
+
+def fetch_wti_futures(days: int = 60) -> "pd.Series | None":
+    """Fetch CL=F (front-month WTI futures) closing prices from Yahoo Finance.
+    Returns a date-normalized pd.Series, or None on failure."""
+    try:
+        import yfinance as yf
+    except ImportError:
+        print("[WTI futures] yfinance not installed — run: python -m pip install yfinance")
+        return None
+    try:
+        df = yf.Ticker("CL=F").history(period="3mo")[["Close"]]
+        df.index = df.index.tz_convert(None).normalize()  # strip tz + time component
+        cutoff = pd.Timestamp.today() - pd.Timedelta(days=days)
+        s = df["Close"][df.index >= cutoff].dropna()
+        return s if not s.empty else None
+    except Exception as e:
+        print(f"[WTI futures] Yahoo fetch failed: {e}")
         return None
 
 
@@ -517,8 +540,9 @@ def inject(html: str, tweets: list, news_quotes: list, delta: list,
     if wti:
         oil_js = (
             f'const OIL_DATA = {{\n'
-            f'  labels: {json.dumps(wti["labels"])},\n'
-            f'  prices: {json.dumps(wti["prices"])}\n'
+            f'  labels:  {json.dumps(wti["labels"])},\n'
+            f'  prices:  {json.dumps(wti["prices"])},\n'
+            f'  futures: {json.dumps(wti.get("futures"))}\n'
             f'}};'
         )
         html = re.sub(r'const OIL_DATA = \{.*?\};', oil_js, html, flags=re.S)
@@ -654,9 +678,26 @@ def main(excel_path: str):
     print("[6/7] Fetching WTI oil prices ...")
     wti = fetch_wti_fred()
     if wti:
-        print(f"      → latest WTI: {wti['price_val']}")
+        print(f"      → CEIC spot: {wti['price_val']}")
     else:
         print("      → CEIC fetch failed; keeping placeholder chart data")
+
+    wti_fut = fetch_wti_futures()
+    if wti_fut is not None:
+        print(f"      → Yahoo futures: {len(wti_fut)} days, latest ${wti_fut.iloc[-1]:.2f}")
+    else:
+        print("      → Yahoo futures fetch failed; chart will show spot line only")
+
+    # Merge CEIC spot + Yahoo futures onto a unified date axis
+    if wti and wti_fut is not None:
+        s_ceic    = wti.pop("series")
+        all_dates = sorted(set(s_ceic.index) | set(wti_fut.index))
+        wti["labels"]  = [str(d.day) + " " + d.strftime("%b") for d in all_dates]
+        wti["prices"]  = [round(float(s_ceic[d]),  2) if d in s_ceic.index  else None for d in all_dates]
+        wti["futures"] = [round(float(wti_fut[d]), 2) if d in wti_fut.index else None for d in all_dates]
+    elif wti:
+        wti.pop("series", None)
+        wti["futures"] = None
 
     print("[7/7] Injecting into HTML ...")
     template = TEMPLATE_PATH.read_text(encoding="utf-8")

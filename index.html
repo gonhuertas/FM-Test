@@ -111,6 +111,12 @@
   .oil-price { font-size: 26px; font-weight: 500; font-family: var(--mono); }
   .oil-change { font-size: 14px; color: var(--red); font-family: var(--mono); }
   .oil-note { font-size: 13px; color: var(--faint); margin-left: auto; font-family: var(--mono); }
+  .oil-legend {
+    display: flex; gap: 14px; font-size: 12px; font-family: var(--mono);
+    margin-bottom: 8px; color: var(--faint);
+  }
+  .leg-ceic    { color: #e05a4a; }
+  .leg-futures { color: #5a9ad4; }
   .oil-chart-wrap {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 6px; padding: 14px 16px;
@@ -351,6 +357,10 @@
           <span class="oil-price" id="oil-price-val">$113.23</span>
           <span class="oil-change" id="oil-change-val">+75.5% in 60 days</span>
           <span class="oil-note"   id="oil-note-val">Apr 2, 2026 · USD/barrel</span>
+        </div>
+        <div class="oil-legend">
+          <span class="leg-ceic">&#9644; EIA spot (CEIC)</span>
+          <span class="leg-futures">&#9644; Front-month futures</span>
         </div>
         <div class="oil-chart-wrap">
           <canvas id="oilChart"></canvas>
@@ -949,8 +959,9 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 const OIL_DATA = {
-  labels: ["9 Feb", "10 Feb", "11 Feb", "12 Feb", "13 Feb", "17 Feb", "18 Feb", "19 Feb", "20 Feb", "23 Feb", "24 Feb", "25 Feb", "26 Feb", "27 Feb", "2 Mar", "3 Mar", "4 Mar", "5 Mar", "6 Mar", "9 Mar", "10 Mar", "11 Mar", "12 Mar", "13 Mar", "16 Mar", "17 Mar", "18 Mar", "19 Mar", "20 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr"],
-  prices: [64.53, 64.2, 64.8, 63.08, 63.05, 62.53, 65.33, 66.66, 66.69, 66.36, 65.62, 65.3, 65.1, 66.96, 71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23]
+  labels:  ["9 Feb", "10 Feb", "11 Feb", "12 Feb", "13 Feb", "17 Feb", "18 Feb", "19 Feb", "20 Feb", "23 Feb", "24 Feb", "25 Feb", "26 Feb", "27 Feb", "2 Mar", "3 Mar", "4 Mar", "5 Mar", "6 Mar", "9 Mar", "10 Mar", "11 Mar", "12 Mar", "13 Mar", "16 Mar", "17 Mar", "18 Mar", "19 Mar", "20 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr", "6 Apr", "7 Apr"],
+  prices:  [64.53, 64.2, 64.8, 63.08, 63.05, 62.53, 65.33, 66.66, 66.69, 66.36, 65.62, 65.3, 65.1, 66.96, 71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23, null, null],
+  futures: [64.36, 63.96, 64.63, 62.84, 62.89, 62.33, 65.19, 66.43, 66.39, 66.31, 65.63, 65.42, 65.21, 67.02, 71.23, 74.56, 74.66, 81.01, 90.9, 94.77, 83.45, 87.25, 95.73, 98.71, 93.5, 96.21, 96.32, 96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 112.21]
 };
 
 const TWEETS = [
@@ -1074,56 +1085,81 @@ const NEWS_QUOTES = [
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* Oil chart */
-const isDark = true;  /* page is always dark-themed */
-new Chart(document.getElementById('oilChart'), {
-  type: 'line',
-  data: {
-    labels: OIL_DATA.labels,
-    datasets: [{
-      data: OIL_DATA.prices,
-      borderColor: isDark ? '#e05a4a' : '#c0392b',
-      borderWidth: 1.5,
-      pointRadius: 2,
-      pointHoverRadius: 5,
-      pointBackgroundColor: isDark ? '#e05a4a' : '#c0392b',
-      pointHoverBackgroundColor: isDark ? '#e05a4a' : '#c0392b',
-      fill: true,
-      backgroundColor: isDark ? 'rgba(224,90,74,0.10)' : 'rgba(192,57,43,0.07)',
-      tension: 0.35,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          title: ctx => OIL_DATA.labels[ctx[0].dataIndex],
-          label: ctx => '$' + ctx.parsed.y.toFixed(2) + ' /bbl'
+(function () {
+  const allVals = [
+    ...OIL_DATA.prices,
+    ...(OIL_DATA.futures || []),
+  ].filter(v => v != null);
+
+  new Chart(document.getElementById('oilChart'), {
+    type: 'line',
+    data: {
+      labels: OIL_DATA.labels,
+      datasets: [
+        {
+          label: 'EIA spot (CEIC)',
+          data: OIL_DATA.prices,
+          borderColor: '#e05a4a',
+          borderWidth: 1.5,
+          pointRadius: 2.5,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#e05a4a',
+          fill: true,
+          backgroundColor: 'rgba(224,90,74,0.10)',
+          tension: 0.35,
+          spanGaps: true,   /* connects weekly EIA points across gap dates */
+        },
+        {
+          label: 'Front-month futures',
+          data: OIL_DATA.futures,
+          borderColor: '#5a9ad4',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: '#5a9ad4',
+          fill: false,
+          tension: 0.35,
+          spanGaps: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => OIL_DATA.labels[ctx[0].dataIndex],
+            label: ctx => {
+              if (ctx.parsed.y == null) return null;
+              const name = ctx.datasetIndex === 0 ? 'Spot' : 'Futures';
+              return name + ': $' + ctx.parsed.y.toFixed(2) + ' /bbl';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
+                   color: '#5a5650',
+                   maxRotation: 0, autoSkip: true, maxTicksLimit: 6 },
+          grid: { display: false }, border: { display: false }
+        },
+        y: {
+          min: Math.floor(Math.min(...allVals) / 5) * 5 - 5,
+          max: Math.ceil( Math.max(...allVals) / 5) * 5 + 5,
+          ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
+                   color: '#5a5650',
+                   callback: v => '$' + v, maxTicksLimit: 4 },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          border: { display: false }
         }
       }
-    },
-    scales: {
-      x: {
-        ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
-                 color: isDark ? '#5a5650' : '#a09d98',
-                 maxRotation: 0, autoSkip: true, maxTicksLimit: 6 },
-        grid: { display: false }, border: { display: false }
-      },
-      y: {
-        min: Math.floor(Math.min(...OIL_DATA.prices) / 5) * 5 - 5,
-        max: Math.ceil( Math.max(...OIL_DATA.prices) / 5) * 5 + 5,
-        ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
-                 color: isDark ? '#5a5650' : '#a09d98',
-                 callback: v => '$' + v, maxTicksLimit: 4 },
-        grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' },
-        border: { display: false }
-      }
     }
-  }
-});
+  });
+})();
 
 /* Tweet widget */
 let tIdx = 0;
