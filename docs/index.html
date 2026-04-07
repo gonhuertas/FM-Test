@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haiti — Oil Price Shock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #191a1b;
+    --surface:  #22252a;
+    --border:   #2e3035;
+    --border2:  #3e4248;
+    --text:     #e8e4dc;
+    --muted:    #8a8680;
+    --faint:    #5a5650;
+    --red:      #e05a4a;
+    --red-bg:   #2a1a18;
+    --red-bd:   #6a2a22;
+    --amber:    #d4940a;
+    --amber-bg: #221a08;
+    --amber-bd: #6a4a10;
+    --blue:     #5a9ad4;
+    --blue-bg:  #0e1e2e;
+    --blue-bd:  #2a4a6a;
+    --green:    #5ab47a;
+    --green-bg: #0e1e16;
+    --green-bd: #2a4a36;
+    --purple:   #9a7ad4;
+    --purple-bg:#1a1226;
+    --purple-bd:#4a3470;
+    --gray-bg:  #242220;
+    --gray-bd:  #3a3830;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 1440px; margin: 0 auto; padding: 32px 36px 70px; }
+
+  /* ── Header ── */
+  .header {
+    display: flex; align-items: baseline; gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px; margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .header-left { display: flex; flex-direction: column; gap: 3px; }
+  .header-topic {
+    font-family: var(--mono);
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .header-title {
+    font-size: 22px; font-weight: 500; color: var(--text);
+  }
+  .header-meta {
+    font-family: var(--mono); font-size: 13px; color: var(--faint);
+    margin-left: auto;
+  }
+  .header-meta span { color: var(--muted); }
+
+  /* ── Section label ── */
+  .slabel {
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #c8c4bc;
+    margin-bottom: 10px;
+  }
+
+  /* ── Signal row ── */
+  .signal-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px; margin-bottom: 24px;
+  }
+  .signal-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 13px 15px;
+  }
+  .signal-name { font-size: 13px; color: #c8c4bc; margin-bottom: 8px; }
+  .dot-row { display: flex; gap: 4px; margin-bottom: 8px; }
+  .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 1px solid #3e3c38; background: #38352f;
+    flex-shrink: 0;
+  }
+  .dot[data-level="1"] { background: #5ab47a; border-color: #3a8455; }  /* green  */
+  .dot[data-level="2"] { background: #d4c040; border-color: #a09020; }  /* yellow */
+  .dot[data-level="3"] { background: #e07830; border-color: #b05020; }  /* orange */
+  .dot[data-level="4"] { background: #c03020; border-color: #901808; }  /* red    */
+  .signal-status { font-size: 14px; font-weight: 500; color: var(--text); }
+  .signal-trend  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Oil chart ── */
+  .oil-section { margin-bottom: 28px; }
+  .oil-header {
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .oil-price { font-size: 26px; font-weight: 500; font-family: var(--mono); }
+  .oil-change { font-size: 14px; color: var(--red); font-family: var(--mono); }
+  .oil-note { font-size: 13px; color: var(--faint); margin-left: auto; font-family: var(--mono); }
+  .oil-legend {
+    display: flex; gap: 14px; font-size: 12px; font-family: var(--mono);
+    margin-bottom: 8px; color: var(--faint);
+  }
+  .leg-ceic    { color: #e05a4a; }
+  .leg-futures { color: #5a9ad4; }
+  .oil-chart-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 16px;
+    position: relative; height: 190px;
+  }
+
+  /* ── Location map ── */
+  .map-section { margin-top: 28px; margin-bottom: 28px; }
+  #haiti-map { height: 340px; border-radius: 8px; border: 1px solid var(--border); }
+  /* Override Leaflet popup/tooltip for dark theme */
+  .leaflet-tooltip {
+    background: var(--surface); border: 1px solid var(--border2);
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    box-shadow: none; padding: 5px 9px;
+  }
+  .leaflet-tooltip::before { border-top-color: var(--border2); }
+  .leaflet-bar a, .leaflet-bar a:hover {
+    background: var(--surface); color: var(--text); border-color: var(--border2);
+  }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border2); box-shadow: none;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .leaflet-popup-content { margin: 10px 12px; }
+  .leaflet-popup-content ul { margin: 6px 0 0; padding-left: 14px; max-width: 260px; }
+  .leaflet-popup-content li { margin-bottom: 5px; font-size: 11px; line-height: 1.4; color: var(--muted); }
+
+  /* ── Main body — two-column layout ── */
+  .body-grid {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 300px;
+    gap: 20px; align-items: start;
+  }
+
+  /* ── Timeline ── */
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .fbtn {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 4px 11px;
+    border-radius: 3px; border: 1px solid var(--border2);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all .12s;
+  }
+  .fbtn:hover { border-color: var(--border2); background: var(--gray-bg); }
+  .fbtn.active { font-weight: 500; }
+  .fbtn.active[data-tag="all"]      { background: var(--gray-bg);   color: var(--text);   border-color: var(--border2); }
+  .fbtn.active[data-tag="protest"]  { background: var(--red-bg);    color: var(--red);    border-color: var(--red-bd); }
+  .fbtn.active[data-tag="violence"] { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-bd); }
+  .fbtn.active[data-tag="supply"]   { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-bd); }
+  .fbtn.active[data-tag="economy"]  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-bd); }
+  .fbtn.active[data-tag="govt"]     { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
+  .fbtn.active[data-tag="media"]    { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
+
+  .tl-group { margin-bottom: 20px; }
+  .tl-date-header {
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .new-badge {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd);
+    border-radius: 3px; padding: 1px 6px;
+  }
+  .tl-event {
+    display: flex; gap: 11px; padding: 8px 8px;
+    border-radius: 5px; margin-bottom: 2px; cursor: default;
+    transition: background .1s;
+  }
+  .tl-event:hover { background: var(--gray-bg); }
+  .ev-tag {
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px;
+    white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    border: 1px solid transparent;
+  }
+  .tag-protest     { background: var(--red-bg);    color: var(--red);    border-color: var(--red-bd); }
+  .tag-violence    { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-bd); }
+  .tag-disruptions { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-bd); }
+  .tag-economy     { background: var(--green-bg);  color: var(--green);  border-color: var(--green-bd); }
+  .tag-govt        { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-bd); }
+  .tag-media       { background: var(--gray-bg);   color: var(--muted);  border-color: var(--border2); }
+  .tag-complaints  { background: #1e1608;          color: #c8900a;       border-color: #5a3e08; }
+  .tag-misc        { background: var(--gray-bg);   color: var(--faint);  border-color: var(--border); }
+  .ev-body { flex: 1; min-width: 0; }
+  .ev-headline { font-size: 15px; color: var(--text); line-height: 1.4; }
+  .ev-source   { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 3px; }
+  .ev-quote {
+    font-size: 14px; color: var(--muted); font-style: italic;
+    margin-top: 6px; padding-left: 10px;
+    border-left: 2px solid var(--border2);
+    line-height: 1.45;
+  }
+
+  /* ── Right column ── */
+  .right-col { display: flex; flex-direction: column; gap: 14px; }
+
+  .delta-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .card-label {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #c8c4bc; margin-bottom: 11px;
+  }
+  .delta-item {
+    font-size: 14px; color: var(--text); line-height: 1.45;
+    padding: 4px 0 4px 14px; position: relative;
+  }
+  .delta-item::before {
+    content: ''; position: absolute; left: 0; top: 11px;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--border2);
+  }
+  .delta-item.is-new::before { background: var(--red); }
+  .delta-item.is-new { color: var(--text); }
+
+  .tweet-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .tweet-handle {
+    font-family: var(--mono); font-size: 14px; font-weight: 500;
+    color: var(--text); margin-bottom: 10px;
+  }
+  .tweet-body {
+    font-size: 15px; color: var(--text); line-height: 1.6;
+    font-style: italic;
+    border-left: 2px solid var(--border2);
+    padding-left: 12px; margin-bottom: 12px;
+    min-height: 90px;
+  }
+  .tweet-date { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .tweet-nav {
+    display: flex; justify-content: space-between; margin-top: 10px;
+    border-top: 1px solid var(--border); padding-top: 9px;
+  }
+  .tweet-nav button {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+    background: none; border: none; cursor: pointer; padding: 2px 4px;
+  }
+  .tweet-nav button:hover { color: var(--text); }
+  .tweet-counter {
+    font-family: var(--mono); font-size: 12px; color: var(--faint);
+    align-self: center;
+  }
+
+  .consensus-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .consensus-text {
+    font-size: 14px; color: var(--muted); line-height: 1.6;
+  }
+
+  @media (max-width: 700px) {
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .body-grid   { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title" id="h-title">Haiti — Oil Price Shock</span>
+      <span class="header-topic">Monitoring the situation</span>
+    </div>
+    <span class="header-meta">
+      Last run: <span id="h-last-run">2026-04-07 16:39</span> ·
+      Search window: <span id="h-window">Mar 30, 2026 – Apr 7, 2026</span>
+    </span>
+  </div>
+
+  <!-- ══ MAP ═════════════════════════════════════════════════════════════ -->
+  <!-- PYTHON: inject MAP_DATA on every run -->
+  <div class="map-section">
+    <div class="slabel">Locations mentioned</div>
+    <div id="haiti-map"></div>
+  </div>
+
+  <!-- ══ BODY ════════════════════════════════════════════════════════════ -->
+  <div class="body-grid">
+
+    <!-- ── Left column: oil chart + timeline ─────────────────────────── -->
+    <div>
+
+      <!-- Oil chart -->
+      <!-- PYTHON: update oil-price-val, oil-change-val, oil-note-val,       -->
+      <!--         and the OIL_DATA object in the script below               -->
+      <div class="oil-section">
+        <div class="slabel">WTI crude — 60-day context</div>
+        <div class="oil-header">
+          <span class="oil-price" id="oil-price-val">$114.01</span>
+          <span class="oil-change" id="oil-change-val">+76.7% in 60 days</span>
+          <span class="oil-note"   id="oil-note-val">Apr 6, 2026 · USD/barrel</span>
+        </div>
+        <div class="oil-legend">
+          <span class="leg-ceic">&#9644; EIA spot (CEIC)</span>
+          <span class="leg-futures">&#9644; Front-month futures</span>
+        </div>
+        <div class="oil-chart-wrap">
+          <canvas id="oilChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Signals -->
+      <!-- PYTHON: regenerate .dot[data-level] values and status/trend text    -->
+      <div class="slabel">Situation signals — last 7 days (one dot per day, oldest → newest)</div>
+      <div class="signal-grid" id="signal-grid">
+
+        <div class="signal-card">
+          <div class="signal-name">Protest activity</div>
+          <div class="dot-row" id="sig-protest-dots">
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="3"></div>
+            <div class="dot" data-level="2"></div>
+            <div class="dot" data-level="2"></div>
+            <div class="dot" data-level="2"></div>
+          </div><!-- #sig-protest-dots -->
+          <div class="signal-status" id="sig-protest-status">Localized transport protests</div>
+          <div class="signal-trend"  id="sig-protest-trend">Ongoing, potential spread</div>
+        </div>
+
+        <div class="signal-card">
+          <div class="signal-name">Gang / security</div>
+          <div class="dot-row" id="sig-security-dots">
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="1"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+          </div><!-- #sig-security-dots -->
+          <div class="signal-status" id="sig-security-status">No violence reported</div>
+          <div class="signal-trend"  id="sig-security-trend">Stable</div>
+        </div>
+
+        <div class="signal-card">
+          <div class="signal-name">Supply disruptions</div>
+          <div class="dot-row" id="sig-supply-dots">
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="0"></div>
+            <div class="dot" data-level="3"></div>
+            <div class="dot" data-level="1"></div>
+            <div class="dot" data-level="1"></div>
+            <div class="dot" data-level="2"></div>
+          </div><!-- #sig-supply-dots -->
+          <div class="signal-status" id="sig-supply-status">Black market active</div>
+          <div class="signal-trend"  id="sig-supply-trend">Persistent overpricing</div>
+        </div>
+
+      </div><!-- #signal-grid -->
+
+      <!-- Timeline -->
+      <div class="slabel">Event timeline</div>
+      <div class="filter-bar" id="filter-bar">
+        <button class="fbtn active" data-tag="all"          onclick="filter(this)">All</button>
+        <button class="fbtn"        data-tag="protest"      onclick="filter(this)">Protest</button>
+        <button class="fbtn"        data-tag="violence"     onclick="filter(this)">Violence</button>
+        <button class="fbtn"        data-tag="complaints"   onclick="filter(this)">Complaints</button>
+        <button class="fbtn"        data-tag="disruptions"  onclick="filter(this)">Disruptions</button>
+        <button class="fbtn"        data-tag="economy"      onclick="filter(this)">Economy</button>
+        <button class="fbtn"        data-tag="govt"         onclick="filter(this)">Government</button>
+        <button class="fbtn"        data-tag="media"        onclick="filter(this)">Media</button>
+        <button class="fbtn"        data-tag="misc"         onclick="filter(this)">Misc</button>
+      </div>
+
+      <!-- PYTHON: inject <div class="tl-group"> blocks here               -->
+      <!-- Each event: data-tags="protest violence supply economy govt media" -->
+      <div id="timeline">
+
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Tuesday, Apr 7, 2026
+            <span class="new-badge">latest</span>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">@Jacquiecharles · X/Twitter</div>
+              <div class="ev-quote">What we&#39;re watching on this Easter Monday: flaming tires and traffic disruptions in Port-au-Prince&#39;s Delmas 33 where bus drivers are protesting the rising price of fuel in #Haiti. This is a very sensitive issue especially against the rising cost of living in the country.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="disruptions">
+            <span class="ev-tag tag-disruptions">Disruptions</span>
+            <div class="ev-body">
+              <div class="ev-source">@metropoleHT · X/Twitter</div>
+              <div class="ev-quote">Public transport drivers in Delmas protested this Monday April 6 against the fuel increase. Barricades, burning tires and blocked roads strongly disrupted traffic in the early morning.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">@vantbefinfo · X/Twitter</div>
+              <div class="ev-quote">At Delmas 33, tension rose sharply with angry drivers starting protest movements, burning tires and blocking roads. Passengers were forced to get off vehicles while minibuses were placed across the road.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">@Kirikounews · X/Twitter</div>
+              <div class="ev-quote">A vast protest movement broke out in Port-au-Prince on Monday April 6, 2026 to denounce the fuel price hike. In the capital, numerous motorcycle drivers blocked roads to express their anger.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="complaints">
+            <span class="ev-tag tag-complaints">Complaints</span>
+            <div class="ev-body">
+              <div class="ev-source">Press</div>
+              <div class="ev-quote">The increase in fuel prices is insensitive, irresponsible, and constitutes a provocation in the current context of insecurity and economic hardship.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">Press</div>
+              <div class="ev-quote">We call for a general mobilization starting Monday, April 7, alongside other groups and organizations.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Monday, Apr 6, 2026
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">General Strike Announced for April 6 in Haiti ... a measure they qualify as unacceptable.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">@fiertefm · X/Twitter</div>
+              <div class="ev-quote">Why impose on them, starting April 6, 2026, an unlimited general strike? ... fight speculation, not the stabilization measure.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="economy">
+            <span class="ev-tag tag-economy">Economy</span>
+            <div class="ev-body">
+              <div class="ev-source">@papposthaiti · X/Twitter</div>
+              <div class="ev-quote">There is no fuel shortage in Haiti. There is an organized shortage. ... calls for the unlimited general strike of April 6, 2026 seem to want to protect it.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="complaints">
+            <span class="ev-tag tag-complaints">Complaints</span>
+            <div class="ev-body">
+              <div class="ev-source">@HaitiInfoProj · X/Twitter</div>
+              <div class="ev-quote">Masly Dorcely ... denounced a decision which he described as &quot;serious&quot; and ... &quot;suicidal&quot; for the economy and the working class.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="complaints">
+            <span class="ev-tag tag-complaints">Complaints</span>
+            <div class="ev-body">
+              <div class="ev-source">Rezo Nòdwès</div>
+              <div class="ev-quote">In a context marked by insecurity, the high cost of living and unemployment, this decision constitutes a provocation.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="complaints">
+            <span class="ev-tag tag-complaints">Complaints</span>
+            <div class="ev-body">
+              <div class="ev-source">Rezo Nòdwès</div>
+              <div class="ev-quote">This increase in fuel prices is insensitive and irresponsible.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Sunday, Apr 5, 2026
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Sharp rise in fuel prices in Haiti: unions denounce a suicidal decision and announce nationwide mobilizations.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="complaints">
+            <span class="ev-tag tag-complaints">Complaints</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Masly Dorcely, Secretary General of COSHARCO, denounced a decision which he described as &quot;serious&quot; and taken to the detriment of the majority of the population. (Masly Dorcely, Secrétaire général de COSHARCO, a dénoncé une décision qu&#39;il qualifie de &quot;grave&quot; et prise au détriment de la majorité de la population.)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="economy">
+            <span class="ev-tag tag-economy">Economy</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">The price of gasoline increases from 560 to 725 gourdes, an increase of 165 gourdes; Diesel prices rise from 620 to 850 gourdes; Kerosene goes from 615 to 845 gourdes.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">He announced that COSHARCO... was calling for a national mobilization starting the following Monday.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="complaints">
+            <span class="ev-tag tag-complaints">Complaints</span>
+            <div class="ev-body">
+              <div class="ev-source">Press</div>
+              <div class="ev-quote">In a context marked by insecurity, the high cost of living, and unemployment, this decision constitutes a provocation.</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="protest">
+            <span class="ev-tag tag-protest">Protest</span>
+            <div class="ev-body">
+              <div class="ev-source">Press</div>
+              <div class="ev-quote">We will not sit idle while the population suffers. We call for a general mobilization to defend the rights of the Haitian people.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-group">
+          <div class="tl-date-header">
+            Saturday, Apr 4, 2026
+          </div>
+          <div class="tl-event" data-tags="economy">
+            <span class="ev-tag tag-economy">Economy</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Merchants in Cayes set the price of gasoline at 800 gourdes per gallon and diesel at 900 gourdes. (@ahpht)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="economy">
+            <span class="ev-tag tag-economy">Economy</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Following the government&#39;s decision to set official petroleum product prices at 725 gourdes per gallon of gasoline, 850 gourdes gas oil, and 845 gourdes kerosene, merchants in Cayes have proposed an upward adjustment. (@ahpht)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="govt">
+            <span class="ev-tag tag-govt">Government</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">Fuel price hike: public transport fares adjusted by the government. (@GazetteHaiti)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="economy">
+            <span class="ev-tag tag-economy">Economy</span>
+            <div class="ev-body">
+              <div class="ev-source">X/Twitter</div>
+              <div class="ev-quote">While tensions in the Middle East weigh on energy markets, effects could be felt far beyond the region. In Haiti... dependence on fuel imports exposes the country to new economic pressures, with potential consequences for households and essential services. (@MarcheLongueMedia)</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="govt">
+            <span class="ev-tag tag-govt">Government</span>
+            <div class="ev-body">
+              <div class="ev-source">iciHaiti</div>
+              <div class="ev-quote">Serge Gabriel Collin, Minister of Economy and Finance, and James Monazard, Minister of Commerce and Industry, acting on the recommendations of the Advisory Council dated March 31, 2026, inform the general public...</div>
+            </div>
+          </div>
+          <div class="tl-event" data-tags="govt">
+            <span class="ev-tag tag-govt">Government</span>
+            <div class="ev-body">
+              <div class="ev-source">HaitiLibre</div>
+              <div class="ev-quote">Having regard to Joint Notice 25-26/001 from the Ministries of Economy and Finance, Commerce, and Industry setting the prices of petroleum products in effect throughout the country as of April 2nd, 2026;</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- #timeline -->
+    </div>
+
+    <!-- ── Right column: delta + tweet + press quotes + consensus ──── -->
+    <div class="right-col">
+
+      <!-- Delta card -->
+      <!-- PYTHON: replace contents of #delta-list on every run           -->
+      <div class="delta-card">
+        <div class="card-label">New since last run</div>
+        <div id="delta-list">
+          <div class="delta-item is-new">April 6 protests in Delmas 33/32/75/83, Route de Frères: drivers burn tires, barricades near National TV, block roads/stations, halt tap-taps to Pétion-Ville, force passengers to walk; potential movements in Miragoâne/Nippes.</div>
+          <div class="delta-item is-new">Economic disparities: fuel gallon exceeds daily wages (350-770G vs 725-850G); DR contrast (295 pesos gas/801 min wage); inconsistent station prices lead to variable fares, unprofitable drivers.</div>
+          <div class="delta-item is-new">Demands: price reversal, official fare guidelines, wage increases, MCI inspections on black market/organized shortages (&#39;yellow gallons&#39; 2-3x prices at intersections).</div>
+          <div class="delta-item is-new">Broader condemnations: RHAJAC calls peaceful mobilization; IMF notes revenue recovery but public prioritizes survival; risks of explosion/social tensions.</div>
+          <div class="delta-item is-new">Disruptions: traffic paralysis, absent transport lines, slowed activities; no violence but &#39;sensitive&#39; issue amid cost of living crisis.</div>
+        </div><!-- #delta-list -->
+      </div>
+
+      <!-- Tweet widget -->
+      <!-- PYTHON: replace the TWEETS array in the script below           -->
+      <div class="tweet-card">
+        <div class="card-label">Voice of the street</div>
+        <div class="tweet-handle" id="tw-handle">@REALITEINFO1</div>
+        <div class="tweet-body"   id="tw-body">The fuel price surge in Haiti has reached an alarming level... the cost of a gallon of fuel now exceeds the daily wage of thousands of workers... working a full day is no longer enough to buy 3.8 liters of fuel.</div>
+        <div class="tweet-date"   id="tw-date">Apr 7, 2026</div>
+        <div class="tweet-nav">
+          <button onclick="prevTweet()">← prev</button>
+          <span class="tweet-counter" id="tw-counter">1 / 12</span>
+          <button onclick="nextTweet()">next →</button>
+        </div>
+      </div>
+
+      <!-- Press quotes widget -->
+      <!-- PYTHON: replace NEWS_QUOTES array in the script below          -->
+      <div class="tweet-card">
+        <div class="card-label">Press quotes</div>
+        <div class="tweet-handle" id="nq-outlet">Press</div>
+        <div class="tweet-body"   id="nq-body">Fuel prices were increased on March 31. The official prices reflect global tensions.</div>
+        <div class="tweet-date"   id="nq-date">Apr 7, 2026</div>
+        <div class="tweet-nav">
+          <button onclick="prevNewsQuote()">← prev</button>
+          <span class="tweet-counter" id="nq-counter">1 / 10</span>
+          <button onclick="nextNewsQuote()">next →</button>
+        </div>
+      </div>
+
+      <!-- X/Twitter consensus card -->
+      <!-- PYTHON: replace #consensus-text on every run                   -->
+      <div class="consensus-card">
+        <div class="card-label">X / social consensus</div>
+        <div class="consensus-text" id="consensus-text">
+          Overwhelming agreement condemns fuel price hikes as exacerbating Haiti&#39;s crises (low wages insufficient for fuel, inflation, poverty, gangs) without adequate wage increases, fare regulations, or anti-black market enforcement, despite government subsidies; April 6 transport protests (burning tires, blockades in Delmas areas, potential Miragoâne) seen as justified but localized responses to economic injustice, with calls for peaceful broader mobilization; consensus on high risks of escalation to 2018-style nationwide unrest, riots, paralysis if unaddressed, though no violence or spread reported; minor acknowledgment of fiscal necessities (IMF) but public demands prioritize reversal and protections over revenue gains.
+        </div>
+      </div>
+
+      <!-- News consensus card -->
+      <!-- PYTHON: replace #news-consensus-text on every run              -->
+      <div class="consensus-card">
+        <div class="card-label">Press consensus</div>
+        <div class="consensus-text" id="news-consensus-text">
+          Outlets agree on April 2 fuel price hikes (gasoline 725 HTG, diesel 850 HTG, kerosene 845 HTG) due to Middle East-driven global oil shocks, COSHARCO-1987&#39;s criticism highlighting socioeconomic strains, emergence of protests in Delmas and Port-au-Prince on April 7, transport fare surges, limited regional overpricing and impacts, and government mitigative decree; uniform reporting with no violence, shortages, or disputes on facts.
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- .body-grid -->
+
+
+</div><!-- .page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   DATA LAYER — PYTHON REPLACES THESE OBJECTS ON EVERY RUN
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const OIL_DATA = {
+  labels:  ["9 Feb", "10 Feb", "11 Feb", "12 Feb", "13 Feb", "17 Feb", "18 Feb", "19 Feb", "20 Feb", "23 Feb", "24 Feb", "25 Feb", "26 Feb", "27 Feb", "2 Mar", "3 Mar", "4 Mar", "5 Mar", "6 Mar", "9 Mar", "10 Mar", "11 Mar", "12 Mar", "13 Mar", "16 Mar", "17 Mar", "18 Mar", "19 Mar", "20 Mar", "23 Mar", "24 Mar", "25 Mar", "26 Mar", "27 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr", "6 Apr", "7 Apr"],
+  prices:  [64.53, 64.2, 64.8, 63.08, 63.05, 62.53, 65.33, 66.66, 66.69, 66.36, 65.62, 65.3, 65.1, 66.96, 71.13, 74.48, 74.58, 80.88, 90.77, 94.65, 83.71, 86.8, 95.61, 98.48, 93.39, 96.01, 96.12, 96.11, 98.71, 89.33, 93.18, 91.51, 96.18, 101.26, 104.69, 102.86, 101.9, 113.23, 114.01, null],
+  futures: [64.36, 63.96, 64.63, 62.84, 62.89, 62.33, 65.19, 66.43, 66.39, 66.31, 65.63, 65.42, 65.21, 67.02, 71.23, 74.56, 74.66, 81.01, 90.9, 94.77, 83.45, 87.25, 95.73, 98.71, 93.5, 96.21, 96.32, 96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 110.77]
+};
+
+const TWEETS = [
+  {
+    "handle": "@REALITEINFO1",
+    "date": "Apr 7, 2026",
+    "body": "The fuel price surge in Haiti has reached an alarming level... the cost of a gallon of fuel now exceeds the daily wage of thousands of workers... working a full day is no longer enough to buy 3.8 liters of fuel."
+  },
+  {
+    "handle": "@mbduvalier",
+    "date": "Apr 7, 2026",
+    "body": "This Easter Monday, we are witnessing scenes of violence and serious disruptions in Delmas 33, Port-au-Prince, where bus drivers are protesting against the fuel price increase in Haiti. It is a very sensitive issue, especially as the cost of living rises in the country."
+  },
+  {
+    "handle": "@richardsenecal",
+    "date": "Apr 7, 2026",
+    "body": "INFO Haiti: tension in Delmas 33, drivers protest against the fuel increase."
+  },
+  {
+    "handle": "@maghaiti",
+    "date": "Apr 7, 2026",
+    "body": "Vivid tensions broke out this Monday April 6 in Delmas 33, where drivers protested against the increase in fuel prices... marked by burning tires, blocked roads and disrupted traffic... The demonstrators denounce an unsustainable measure in the face of high living costs and demand its withdrawal."
+  },
+  {
+    "handle": "@cassendylafond",
+    "date": "Apr 7, 2026",
+    "body": "RD Regular Gasoline 295 pesos, Minimum wage 801 pesos. Haiti Galon gaz 725 goud, Minimum wage 685 goud. It’s not SOH that caused this."
+  },
+  {
+    "handle": "@REALITEINFO1",
+    "date": "Apr 7, 2026",
+    "body": "Tension is rising a notch in Haiti... drivers are preparing to take action in the next few hours in Miragoâne to denounce the new surge in fuel prices... burning tires, blocked roads, paralyzed traffic... this new crisis risks aggravating an already explosive situation."
+  },
+  {
+    "handle": "@SkandalNews",
+    "date": "Apr 7, 2026",
+    "body": "The @RHAJAC1 denounces: in Haiti, the gallon of fuel exceeds the daily wage (350–770 Gdes). Gasoline 725 Gdes, Diesel 850 Gdes, Kerosene 845 Gdes. The Sec. @DjovanyMICHEL01 calls for a peaceful mobilization to correct this economic injustice."
+  },
+  {
+    "handle": "@johnny_pie6556",
+    "date": "Apr 7, 2026",
+    "body": "The Haitian people have not yet digested the fuel price hike. Today, there are many protests in the streets... PM Alix Didier Fils-aimé, the Haitian people await your results..."
+  },
+  {
+    "handle": "@haiti_boiii",
+    "date": "Apr 7, 2026",
+    "body": "Taxi and motorcycle drivers are protesting in the streets of Haiti. The government raised gas prices but didn’t provide guidance on how much drivers should charge passengers... With fares so inconsistent, many drivers struggle to cover food, housing, and other necessities. Some passengers even walk instead of paying higher fares, leaving drivers going home without earning anything."
+  },
+  {
+    "handle": "@CherlineEditor",
+    "date": "Apr 7, 2026",
+    "body": "Fuel increase in #Haiti: drivers block several axes in Delmas"
+  },
+  {
+    "handle": "@PresseInfos1",
+    "date": "Apr 7, 2026",
+    "body": "Drivers demonstrated this April 6 in Delmas against the fuel price increase decided by the government of Alix Didier Fils-Aimé. Gasoline goes from 560 to 725 gourdes."
+  },
+  {
+    "handle": "@VoixLibreHT",
+    "date": "Apr 7, 2026",
+    "body": "In Delmas 83, tires are set on fire to protest against the fuel price increase in the country."
+  }
+];
+
+const NEWS_QUOTES = [
+  {
+    "outlet": "Press",
+    "date": "Apr 7, 2026",
+    "body": "Fuel prices were increased on March 31. The official prices reflect global tensions."
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 7, 2026",
+    "body": "The authorities' decision to increase domestic fuel prices at the pump will reduce foregone revenues."
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 7, 2026",
+    "body": "Protests in Delmas against the rise in petroleum product prices."
+  },
+  {
+    "outlet": "Public transportation fares have sharply increased",
+    "date": "Apr 7, 2026",
+    "body": "by up to 100% for some routes."
+  },
+  {
+    "outlet": "Press",
+    "date": "Apr 7, 2026",
+    "body": "The increase in fuel prices, announced by the authorities and in effect since April 2."
+  },
+  {
+    "outlet": "Augmentation du prix du carburant",
+    "date": "Apr 7, 2026",
+    "body": "entre souffrance sociale et indifférence des autorités"
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 7, 2026",
+    "body": "protests have erupted in Delmas following the fuel price hike"
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 7, 2026",
+    "body": "insensitive and irresponsible, constituting a provocation"
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 7, 2026",
+    "body": "series of mobilization movements starting April 7"
+  },
+  {
+    "outlet": "Le Nouvelliste",
+    "date": "Apr 7, 2026",
+    "body": "government issues decree to cushion impact of oil shock without bankrupting the state"
+  }
+];
+
+const MAP_DATA = [{"name": "Les Cayes", "lat": 18.2004, "lon": -73.75, "count": 10, "snippets": ["• '@ONews1ereTV: \"Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans…", "- '@ONews1ereTV: \"Les Cayes: rush for fuel before the increase, the population at the end of their rope.\" (Les…", "- @ONews1ereTV: \"Les Cayes: rush for fuel before the hike, the population at its limit.\" (Les Cayes : ruée ver…", "@lequotidien509: 'In Les Cayes, merchants set the price of the gasoline gallon at 800 gourdes and diesel at 90…", "@lequotidien509: 'In Les Cayes, merchants set the price of gasoline at 800 gourdes and diesel at 900 gourdes,…"]}, {"name": "Cayes", "lat": 18.2004, "lon": -73.75, "count": 12, "snippets": ["• '@ONews1ereTV: \"Les Cayes — Carburant : hors de contrôle total, les stations-service fixent leurs prix sans…", "- '@ONews1ereTV: \"Les Cayes: rush for fuel before the increase, the population at the end of their rope.\" (Les…", "- @ONews1ereTV: \"Les Cayes: rush for fuel before the hike, the population at its limit.\" (Les Cayes : ruée ver…", "Merchants in Cayes set the price of gasoline at 800 gourdes per gallon and diesel at 900 gourdes. (@ahpht)", "Following the government's decision to set official petroleum product prices at 725 gourdes per gallon of gaso…"]}, {"name": "Port-au-Prince", "lat": 18.5944, "lon": -72.3074, "count": 13, "snippets": ["• '@metropoleHT: \"A Port-au-Prince, plusieurs stations-service ne proposent que du diesel et les chauffeurs pe…", "6. @TheNancyRoc: \"#Haiti The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame. ⛽ Shortage or…", "7. @LatamData: \"HAITI | Government imposes austerity measures including banning new vehicle purchases and limi…", "- @Florida1sttake: 'Around this time 2018 ish Jovnel increased gas prices and the opposition burned down PAP […", "- \"Des tensions opposent chauffeurs et passagers dans les rues de Port-au-Prince depuis l’entrée en vigueur...…"]}, {"name": "Sud", "lat": 18.204, "lon": -73.35, "count": 1, "snippets": ["3. @grandsudhaiti: \"#URGENT❌ While more than 6.7 million people struggle to feed themselves, the State unscrup…"]}, {"name": "Carrefour", "lat": 18.54, "lon": -72.402, "count": 3, "snippets": ["6. @TheNancyRoc: \"#Haiti The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame. ⛽ Shortage or…", "Le Nouvelliste: 'The Carrefour/Port-au-Prince route partially paralyzed: fuel to blame.'", "Le Nouvelliste: 'In Carrefour, one of the rare gas stations selling gasoline at the new price.'"]}, {"name": "Artibonite", "lat": 19.0744, "lon": -72.5366, "count": 1, "snippets": ["- @metropoleHT: \"Massacre in Artibonite + fuel increase: Haiti facing a major double crisis\" (original: \"Massa…"]}, {"name": "Delmas", "lat": 18.5444, "lon": -72.3072, "count": 20, "snippets": ["@Jacquiecharles: 'What we're watching on this Easter Monday: flaming tires and traffic disruptions in Port-au-…", "@metropoleHT: 'Public transport drivers in Delmas protested this Monday April 6 against the fuel increase. Bar…", "@vantbefinfo: 'At Delmas 33, tension rose sharply with angry drivers starting protest movements, burning tires…", "@maghaiti: 'Vivid tensions erupted this Monday April 6 at Delmas 33 where drivers protested fuel price increas…", "@HCI_ht: 'Protest movements against fuel price increases disrupted traffic in Delmas and various capital areas…"]}, {"name": "Delmas 33", "lat": 18.543, "lon": -72.31, "count": 8, "snippets": ["@Jacquiecharles: 'What we're watching on this Easter Monday: flaming tires and traffic disruptions in Port-au-…", "@vantbefinfo: 'At Delmas 33, tension rose sharply with angry drivers starting protest movements, burning tires…", "@maghaiti: 'Vivid tensions erupted this Monday April 6 at Delmas 33 where drivers protested fuel price increas…", "@maghaiti: 'Vivid tensions broke out this Monday April 6 in Delmas 33, where drivers protested against the fue…", "@SkandalNews: 'Delmas 33 paralyzed: bus drivers protest against the fuel price increase (gasoline: 725 gdes, d…"]}, {"name": "Petion-Ville", "lat": 18.5124, "lon": -72.2852, "count": 3, "snippets": ["@HCI_ht: 'Protest movements against fuel price increases disrupted traffic in Delmas and various capital areas…", "@Antenne_509: 'Peaceful protest for now against fuel price increase in Delmas and Rte de Frères. The protester…", "@HCI_ht: 'Protests against the fuel price increase have disrupted traffic in Delmas and various areas of the c…"]}, {"name": "Delmas 83", "lat": 18.552, "lon": -72.296, "count": 1, "snippets": ["@VoixLibreHT: 'In Delmas 83, tires are set on fire to protest against the fuel price increase in the country.'"]}, {"name": "Frères", "lat": 18.53, "lon": -72.29, "count": 1, "snippets": ["@Antenne_509: 'Peaceful protest for now against fuel price increase in Delmas and Rte de Frères. The protester…"]}, {"name": "Delmas 32", "lat": 18.5435, "lon": -72.309, "count": 1, "snippets": ["@Radio_Metronome: 'In Delmas, the mobilization of public transport drivers and motorcyclists continues. In Del…"]}, {"name": "Miragoane", "lat": 18.445, "lon": -73.088, "count": 1, "snippets": ["@REALITEINFO1: 'Tension is rising a notch in Haiti... drivers are preparing to take action in the next few hou…"]}, {"name": "Nord", "lat": 19.7578, "lon": -72.2063, "count": 3, "snippets": ["Rezo Nòdwès: 'Les inspecteurs dans le Nord-Est veillent à ce que les stocks soient vendus aux nouveaux prix.'", "Inspectors from the Ministry of Commerce and Industry (MCI) in Nord-Est verify and validate stored fuel quanti…", "Le Nouvelliste: 'in Nord-Est, a gallon of gasoline is sold at 850 gourdes and diesel at 950 gourdes'"]}, {"name": "Nord-Est", "lat": 19.5597, "lon": -71.8564, "count": 3, "snippets": ["Rezo Nòdwès: 'Les inspecteurs dans le Nord-Est veillent à ce que les stocks soient vendus aux nouveaux prix.'", "Inspectors from the Ministry of Commerce and Industry (MCI) in Nord-Est verify and validate stored fuel quanti…", "Le Nouvelliste: 'in Nord-Est, a gallon of gasoline is sold at 850 gourdes and diesel at 950 gourdes'"]}];  /* HAITI_MAP_DATA */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PRESENTATION LAYER — do not edit below
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Oil chart */
+(function () {
+  const allVals = [
+    ...OIL_DATA.prices,
+    ...(OIL_DATA.futures || []),
+  ].filter(v => v != null);
+
+  new Chart(document.getElementById('oilChart'), {
+    type: 'line',
+    data: {
+      labels: OIL_DATA.labels,
+      datasets: [
+        {
+          label: 'EIA spot (CEIC)',
+          data: OIL_DATA.prices,
+          borderColor: '#e05a4a',
+          borderWidth: 1.5,
+          pointRadius: 2.5,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#e05a4a',
+          fill: true,
+          backgroundColor: 'rgba(224,90,74,0.10)',
+          tension: 0.35,
+          spanGaps: true,   /* connects weekly EIA points across gap dates */
+        },
+        {
+          label: 'Front-month futures',
+          data: OIL_DATA.futures,
+          borderColor: '#5a9ad4',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: '#5a9ad4',
+          fill: false,
+          tension: 0.35,
+          spanGaps: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => OIL_DATA.labels[ctx[0].dataIndex],
+            label: ctx => {
+              if (ctx.parsed.y == null) return null;
+              const name = ctx.datasetIndex === 0 ? 'Spot' : 'Futures';
+              return name + ': $' + ctx.parsed.y.toFixed(2) + ' /bbl';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
+                   color: '#5a5650',
+                   maxRotation: 0, autoSkip: true, maxTicksLimit: 6 },
+          grid: { display: false }, border: { display: false }
+        },
+        y: {
+          min: Math.floor(Math.min(...allVals) / 5) * 5 - 5,
+          max: Math.ceil( Math.max(...allVals) / 5) * 5 + 5,
+          ticks: { font: { size: 10, family: "'IBM Plex Mono'" },
+                   color: '#5a5650',
+                   callback: v => '$' + v, maxTicksLimit: 4 },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+})();
+
+/* Tweet widget */
+let tIdx = 0;
+function renderTweet() {
+  const t = TWEETS[tIdx];
+  document.getElementById('tw-handle').textContent  = t.handle;
+  document.getElementById('tw-body').textContent    = t.body;
+  document.getElementById('tw-date').textContent    = t.date;
+  document.getElementById('tw-counter').textContent = (tIdx + 1) + ' / ' + TWEETS.length;
+}
+function nextTweet() { tIdx = (tIdx + 1) % TWEETS.length; renderTweet(); }
+function prevTweet() { tIdx = (tIdx - 1 + TWEETS.length) % TWEETS.length; renderTweet(); }
+
+/* Press quotes widget */
+let nIdx = 0;
+function renderNewsQuote() {
+  if (!NEWS_QUOTES.length) return;
+  const q = NEWS_QUOTES[nIdx];
+  document.getElementById('nq-outlet').textContent  = q.outlet;
+  document.getElementById('nq-body').textContent    = q.body;
+  document.getElementById('nq-date').textContent    = q.date;
+  document.getElementById('nq-counter').textContent = (nIdx + 1) + ' / ' + NEWS_QUOTES.length;
+}
+function nextNewsQuote() { nIdx = (nIdx + 1) % NEWS_QUOTES.length; renderNewsQuote(); }
+function prevNewsQuote() { nIdx = (nIdx - 1 + NEWS_QUOTES.length) % NEWS_QUOTES.length; renderNewsQuote(); }
+
+/* Timeline filter */
+function filter(btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const tag = btn.dataset.tag;
+  document.querySelectorAll('.tl-event').forEach(ev => {
+    ev.style.display = (tag === 'all' || (ev.dataset.tags || '').includes(tag)) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.tl-group').forEach(g => {
+    const anyVisible = [...g.querySelectorAll('.tl-event')].some(e => e.style.display !== 'none');
+    g.style.display = anyVisible ? 'block' : 'none';
+  });
+}
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* Haiti location map */
+(function () {
+  const map = L.map('haiti-map', {
+    center: [18.97, -72.85],
+    zoom: 8,
+    zoomControl: true,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map);
+
+  if (!MAP_DATA || MAP_DATA.length === 0) {
+    /* No data yet — show a placeholder note */
+    document.getElementById('haiti-map').insertAdjacentHTML(
+      'beforeend',
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
+      'color:#5a5650;font-family:var(--mono);font-size:13px;pointer-events:none;z-index:1000;">' +
+      'No location mentions found</div>'
+    );
+    return;
+  }
+
+  MAP_DATA.forEach(loc => {
+    const countLabel = `${loc.count} mention${loc.count !== 1 ? 's' : ''}`;
+
+    // Build popup: header + bulleted snippet list (if any)
+    const snippetHtml = (loc.snippets && loc.snippets.length)
+      ? '<ul>' + loc.snippets.map(s => `<li>${s}</li>`).join('') + '</ul>'
+      : '';
+    const popupHtml = `<b>${loc.name}</b><br><span style="color:var(--muted)">${countLabel}</span>${snippetHtml}`;
+
+    L.circle([loc.lat, loc.lon], {
+      radius:      3000 + loc.count * 1500,
+      color:       '#e05a4a',
+      fillColor:   '#e05a4a',
+      fillOpacity: 0.30,
+      weight:      1,
+    })
+    .bindTooltip(`<b>${loc.name}</b><br>${countLabel}`, { sticky: true })
+    .bindPopup(popupHtml, { maxWidth: 300 })
+    .addTo(map);
+  });
+})();
+</script>
+</body>
+</html>

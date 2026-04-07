@@ -25,7 +25,7 @@ from pathlib import Path
 
 DEFAULT_EXCEL = Path(__file__).parent / "output" / "x_search_log.xlsx"
 TEMPLATE_PATH = Path(__file__).parent / "index.html"
-OUTPUT_PATH   = Path(__file__).parent / "index.html"  # overwrites in place
+OUTPUT_PATH   = Path(__file__).parent.parent / "docs" / "index.html"  # served by GitHub Pages
 
 MAX_TWEETS      = 12   # max X/Twitter quotes in the tweet widget
 MAX_NEWS_QUOTES = 10   # max press quotes in the news widget
