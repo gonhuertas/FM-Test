@@ -22,9 +22,11 @@ RAW_DIR = Path(__file__).parent.parent / "data" / "raw"
 
 # ── Full list of URLs scraped from the BRH website ───────────────────────────
 # Source: https://www.brh.ht/supervision-bancaire/rapports-statistiques-2/
-# Last scraped: March 2026.  Add new entries at the top when new reports appear.
+# Last scraped: April 2026.  Add new entries at the top when new reports appear.
 
 URLS = [
+    # 2026
+    "https://www.brh.ht/wp-content/uploads/rap-stats-trim-1-26_-V2.xlsx",
     # 2025
     "https://www.brh.ht/wp-content/uploads/rap-stats-trim-1-25.xlsx",
     "https://www.brh.ht/wp-content/uploads/rap-stats-trim-2-25-provisoire.xlsx",
