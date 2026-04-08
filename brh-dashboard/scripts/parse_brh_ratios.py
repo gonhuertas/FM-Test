@@ -60,7 +60,12 @@ MONTH_MAP: dict[str, int] = {
 }
 
 # ── Metric definitions ────────────────────────────────────────────────────────
-# Row numbers are 1-indexed and stable across ALL reports (2000–2025, verified).
+# Row numbers are 1-indexed and match the NEW (post-Dec 2006) BRH report layout.
+#
+# Layout change: between Sept and Dec 2006, BRH added 6 rows to the deposit-rate
+# section, shifting the last 6 metrics ("lower" section) down by 6 rows.
+# Metrics marked layout_sensitive=True use row - 6 in the old layout.
+# See detect_layout_offset() for detection logic.
 #
 # period_type:
 #   "year_end" — balance-sheet / stock metric at the fiscal year-end date
@@ -80,18 +85,21 @@ METRICS: list[dict] = [
     {"row": 41, "name": "roe_q",               "label": "ROE (quarterly, annualised)",            "period_type": "quarter",  "unit": "ratio"},
     {"row": 48, "name": "nim_q",               "label": "Net Interest Margin (quarterly)",        "period_type": "quarter",  "unit": "ratio"},
     {"row": 54, "name": "avg_loan_yield_q",    "label": "Average Loan Yield (quarterly)",         "period_type": "quarter",  "unit": "ratio"},
-    {"row": 66, "name": "avg_deposit_rate_q",  "label": "Average Deposit Rate (quarterly)",       "period_type": "quarter",  "unit": "ratio"},
-    {"row": 74, "name": "cost_to_income_q",    "label": "Cost-to-Income (quarterly)",             "period_type": "quarter",  "unit": "ratio"},
-    {"row": 80, "name": "productivity_q",      "label": "Employee Productivity / quarter (HTG '000)", "period_type": "quarter", "unit": "HTG_thousands"},
+    {"row": 66, "name": "avg_deposit_rate_q",  "label": "Average Deposit Rate (quarterly)",       "period_type": "quarter",  "unit": "ratio",        "layout_sensitive": True},
+    {"row": 74, "name": "cost_to_income_q",    "label": "Cost-to-Income (quarterly)",             "period_type": "quarter",  "unit": "ratio",        "layout_sensitive": True},
+    {"row": 80, "name": "productivity_q",      "label": "Employee Productivity / quarter (HTG '000)", "period_type": "quarter", "unit": "HTG_thousands", "layout_sensitive": True},
     # ── RENTABILITÉ — cumulative ──────────────────────────────────────────────
     {"row": 37, "name": "roa_cumul",           "label": "ROA (fiscal year cumulative)",           "period_type": "cumul",    "unit": "ratio"},
     {"row": 43, "name": "roe_cumul",           "label": "ROE (fiscal year cumulative)",           "period_type": "cumul",    "unit": "ratio"},
     {"row": 50, "name": "nim_cumul",           "label": "Net Interest Margin (cumulative)",       "period_type": "cumul",    "unit": "ratio"},
     {"row": 56, "name": "avg_loan_yield_c",    "label": "Average Loan Yield (cumulative)",        "period_type": "cumul",    "unit": "ratio"},
-    {"row": 68, "name": "avg_deposit_rate_c",  "label": "Average Deposit Rate (cumulative)",      "period_type": "cumul",    "unit": "ratio"},
-    {"row": 76, "name": "cost_to_income_c",    "label": "Cost-to-Income (cumulative)",            "period_type": "cumul",    "unit": "ratio"},
-    {"row": 82, "name": "productivity_c",      "label": "Employee Productivity / year (HTG '000)", "period_type": "cumul",  "unit": "HTG_thousands"},
+    {"row": 68, "name": "avg_deposit_rate_c",  "label": "Average Deposit Rate (cumulative)",      "period_type": "cumul",    "unit": "ratio",        "layout_sensitive": True},
+    {"row": 76, "name": "cost_to_income_c",    "label": "Cost-to-Income (cumulative)",            "period_type": "cumul",    "unit": "ratio",        "layout_sensitive": True},
+    {"row": 82, "name": "productivity_c",      "label": "Employee Productivity / year (HTG '000)", "period_type": "cumul",  "unit": "HTG_thousands", "layout_sensitive": True},
 ]
+
+# Row offset applied to layout_sensitive metrics in the old (pre-Dec 2006) format.
+_OLD_LAYOUT_OFFSET = -6
 
 # Fragments that must appear in specific rows as a structural sanity check
 EXPECTED_LABELS: dict[int, str] = {
@@ -203,11 +211,28 @@ def validate_structure(cells: dict, sheet_name: str) -> bool:
     return True
 
 
+def detect_layout_offset(cells: dict) -> int:
+    """Return the row offset to apply to layout_sensitive metrics.
+
+    BRH added 6 rows to the deposit-rate section between Sept and Dec 2006,
+    shifting avg_deposit_rate, cost_to_income, and productivity down by 6.
+
+    Detection: scan column 1 for 'productivit'. In the old layout it appears
+    at row 73; in the new layout at row 79. If found at row <= 76, old layout
+    → return -6. Otherwise return 0 (no offset needed).
+    """
+    for (r, c), val in cells.items():
+        if c == 1 and isinstance(val, str) and "productivit" in val.lower():
+            return _OLD_LAYOUT_OFFSET if r <= 76 else 0
+    return 0  # default to new layout if label not found
+
+
 def parse_sheet(cells: dict, date: pd.Timestamp, bank_cols: dict[int, str]) -> list[dict]:
     """Extract all metric × bank combinations from a pre-loaded cell dict."""
+    layout_offset = detect_layout_offset(cells)
     records = []
     for metric in METRICS:
-        r = metric["row"]
+        r = metric["row"] + (layout_offset if metric.get("layout_sensitive") else 0)
         for col, bank in bank_cols.items():
             value = safe_float(cells.get((r, col)))
             # Zero is not a valid ratio — treat as missing (inactive bank or N/A)
