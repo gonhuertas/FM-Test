@@ -15,6 +15,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.io as pio
 from plotly.subplots import make_subplots
 import streamlit as st
 
@@ -139,7 +140,48 @@ OVERVIEW_METRICS = [
     "roe_cumul",
 ]
 
-PLOTLY_TEMPLATE = "plotly_white"
+# ── Custom Plotly theme ───────────────────────────────────────────────────────
+
+_FONT_STACK = (
+    "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+)
+_AXIS_STYLE = dict(
+    showgrid=True,
+    gridcolor="#e5e7eb",
+    gridwidth=1,
+    zeroline=False,
+    showline=True,
+    linecolor="#d1d5db",
+    tickfont=dict(size=11, color="#6b7280"),
+    title_font=dict(size=11, color="#6b7280"),
+)
+
+pio.templates["brh"] = go.layout.Template(
+    layout=go.Layout(
+        font=dict(family=_FONT_STACK, size=12, color="#374151"),
+        paper_bgcolor="white",
+        plot_bgcolor="#f8fafc",
+        colorway=[
+            "#1a4f8a", "#e05c2a", "#2d8a4e", "#7c3aed",
+            "#d97706", "#0891b2", "#be185d", "#475569",
+        ],
+        xaxis=_AXIS_STYLE,
+        yaxis={**_AXIS_STYLE, "showline": False},
+        hoverlabel=dict(
+            bgcolor="white",
+            bordercolor="#d1d5db",
+            font=dict(size=12, color="#111827"),
+        ),
+        legend=dict(
+            bgcolor="rgba(255,255,255,0)",
+            borderwidth=0,
+            font=dict(size=11),
+        ),
+        margin=dict(t=32, b=32, l=48, r=32),
+    )
+)
+
+PLOTLY_TEMPLATE = "plotly_white+brh"
 
 
 # ── Data helpers ──────────────────────────────────────────────────────────────
@@ -228,7 +270,7 @@ def line_chart(
         labels={"y": cfg["unit"], "date": ""},
         template=PLOTLY_TEMPLATE,
     )
-    fig.update_traces(line_color="#2c7bb6", marker_color="#2c7bb6")
+    fig.update_traces(line_color="#1a4f8a", marker_color="#1a4f8a", marker_size=5)
     if show_warning and cfg.get("warning_line") is not None:
         fig.add_hline(
             y=cfg["warning_line"],
@@ -241,6 +283,52 @@ def line_chart(
     return fig
 
 
+# ── KPI card helpers ──────────────────────────────────────────────────────────
+
+def kpi_card_html(
+    label: str,
+    value_str: str,
+    delta_str: str,
+    delta_improved: bool,
+    is_alert: bool,
+    description: str = "",
+) -> str:
+    """Styled KPI card with delta badge (used for metrics with a comparison period)."""
+    accent = "#c0392b" if is_alert else "#1a4f8a"
+    badge = (
+        "background:#d1fae5;color:#065f46" if delta_improved
+        else "background:#fee2e2;color:#991b1b"
+    )
+    tip = f' title="{description}"' if description else ""
+    return (
+        f'<div{tip} style="background:white;border-radius:8px;padding:18px 20px 14px;'
+        f'border:1px solid #e8ecf0;border-top:3px solid {accent};'
+        f'box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:4px;">'
+        f'<p style="margin:0 0 4px;font-size:.7rem;font-weight:600;'
+        f'letter-spacing:.05em;text-transform:uppercase;color:#6b7280;">{label}</p>'
+        f'<p style="margin:0 0 10px;font-size:1.85rem;font-weight:700;'
+        f'color:#111827;line-height:1.1;">{value_str}</p>'
+        f'<span style="font-size:.77rem;font-weight:600;padding:2px 9px;'
+        f'border-radius:10px;{badge}">{delta_str}</span>'
+        f'</div>'
+    )
+
+
+def kpi_simple_card_html(label: str, value_str: str, description: str = "") -> str:
+    """Styled KPI card without a delta badge (used for count/name metrics)."""
+    tip = f' title="{description}"' if description else ""
+    return (
+        f'<div{tip} style="background:white;border-radius:8px;padding:18px 20px 16px;'
+        f'border:1px solid #e8ecf0;border-top:3px solid #1a4f8a;'
+        f'box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:4px;">'
+        f'<p style="margin:0 0 4px;font-size:.7rem;font-weight:600;'
+        f'letter-spacing:.05em;text-transform:uppercase;color:#6b7280;">{label}</p>'
+        f'<p style="margin:0;font-size:1.85rem;font-weight:700;'
+        f'color:#111827;line-height:1.1;">{value_str}</p>'
+        f'</div>'
+    )
+
+
 # ── App ───────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -248,6 +336,51 @@ def main() -> None:
         page_title="Haiti BRH — Banking System Monitor",
         layout="wide",
         initial_sidebar_state="collapsed",
+    )
+
+    # ── Global CSS ────────────────────────────────────────────────────────────
+    st.markdown(
+        """
+        <style>
+        /* Page padding */
+        [data-testid="stAppViewContainer"] > .main .block-container {
+            padding-top: 1.8rem;
+            max-width: 1280px;
+        }
+
+        /* Title */
+        h1 { letter-spacing: -0.02em; color: #0f172a !important; }
+
+        /* Subheaders */
+        h2 { letter-spacing: -0.01em; color: #1e293b !important; }
+        h3 { color: #1e293b !important; }
+
+        /* Tabs */
+        [data-testid="stTabs"] button[role="tab"] {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #6b7280;
+            padding: 8px 18px;
+        }
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+            color: #1a4f8a;
+            font-weight: 600;
+        }
+
+        /* Divider */
+        hr { border-color: #e5e7eb; margin: 1.25rem 0; }
+
+        /* Caption / small text */
+        [data-testid="stCaptionContainer"] p {
+            color: #9ca3af;
+            font-size: 0.78rem;
+        }
+
+        /* Sidebar */
+        [data-testid="stSidebar"] { background: #f8fafc; }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.title("Haiti — Banking System Monitor")
@@ -289,17 +422,32 @@ def main() -> None:
             cfg = METRIC_CONFIG[mkey]
             s = system_series(df, mkey)
             if s.empty:
-                cols[i].metric(cfg["label"], "N/A")
+                cols[i].markdown(
+                    kpi_simple_card_html(cfg["label"], "N/A"), unsafe_allow_html=True
+                )
                 continue
-            val_now = s.iloc[-1]["value"]
+            val_now  = s.iloc[-1]["value"]
             val_prev = s.iloc[-2]["value"] if len(s) > 1 else val_now
             delta_val = (val_now - val_prev) * cfg["scale"]
-            cols[i].metric(
-                label=cfg["label"],
-                value=fmt(val_now, cfg),
-                delta=f"{delta_val:+.2f}{cfg['unit']}",
-                delta_color=delta_color(val_now, val_prev, cfg["higher_is_worse"]),
-                help=cfg["description"],
+            improved = val_now < val_prev if cfg["higher_is_worse"] else val_now > val_prev
+            # Is the current level past the warning threshold?
+            is_alert = False
+            if cfg.get("warning_line") is not None:
+                scaled = val_now * cfg["scale"]
+                is_alert = (
+                    scaled > cfg["warning_line"] if cfg["higher_is_worse"]
+                    else scaled < cfg["warning_line"]
+                )
+            cols[i].markdown(
+                kpi_card_html(
+                    label=cfg["label"],
+                    value_str=fmt(val_now, cfg),
+                    delta_str=f"{delta_val:+.2f}{cfg['unit']}",
+                    delta_improved=improved,
+                    is_alert=is_alert,
+                    description=cfg["description"],
+                ),
+                unsafe_allow_html=True,
             )
 
         st.divider()
@@ -442,7 +590,7 @@ def main() -> None:
                     mode="lines+markers",
                     name=title,
                     showlegend=False,
-                    line_color="#2c7bb6",
+                    line_color="#1a4f8a",
                 ),
                 row=row + 1, col=col + 1,
             )
@@ -468,7 +616,7 @@ def main() -> None:
                 template=PLOTLY_TEMPLATE,
                 height=280,
             )
-            fig_sp.update_traces(fillcolor="rgba(44,123,182,0.15)", line_color="#2c7bb6")
+            fig_sp.update_traces(fillcolor="rgba(26,79,138,0.12)", line_color="#1a4f8a")
             fig_sp.update_layout(margin=dict(t=8, b=8))
             st.plotly_chart(fig_sp, use_container_width=True)
 
@@ -530,26 +678,22 @@ CBNA = Citibank National Association (ceased operations in Haiti ~2024).
             )
 
             k1, k2, k3, k4 = st.columns(4)
-            k1.metric(
-                "Banks reporting (latest month)",
-                n_banks_latest,
-                help=f"Latest data: {latest_fx_date.strftime('%B %Y')}",
-            )
-            k2.metric(
-                "Banks with breach — latest month",
-                n_breach_latest,
-                help="Banks that exceeded the Circulaire limit ≥1 day in the latest month",
-            )
-            k3.metric(
-                "Total breach-days (all history)",
-                f"{total_breach_days:,}",
-                help="Sum of all days_exceeded across all banks and months since Oct 1999",
-            )
-            k4.metric(
-                "Most violations (all time)",
-                worst_bank,
-                help="Bank with the highest cumulative days_exceeded since 1999",
-            )
+            k1.markdown(kpi_simple_card_html(
+                "Banks reporting (latest month)", str(n_banks_latest),
+                f"Latest data: {latest_fx_date.strftime('%B %Y')}",
+            ), unsafe_allow_html=True)
+            k2.markdown(kpi_simple_card_html(
+                "Banks with breach — latest month", str(n_breach_latest),
+                "Banks that exceeded the Circulaire limit ≥1 day in the latest month",
+            ), unsafe_allow_html=True)
+            k3.markdown(kpi_simple_card_html(
+                "Total breach-days (all history)", f"{total_breach_days:,}",
+                "Sum of all days_exceeded across all banks and months since Oct 1999",
+            ), unsafe_allow_html=True)
+            k4.markdown(kpi_simple_card_html(
+                "Most violations (all time)", worst_bank,
+                "Bank with the highest cumulative days_exceeded since 1999",
+            ), unsafe_allow_html=True)
 
             st.divider()
 
