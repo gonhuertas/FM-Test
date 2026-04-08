@@ -66,9 +66,11 @@ class WebSearchResult(BaseModel):
 
 TOPIC = "haiti fuel prices"  # ← change this
 
-FROM_DATE = datetime(2026, 4, 4)
-FROM_DATE_NEWS = datetime(2026, 4, 4)
-TO_DATE   = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+from datetime import timedelta
+_today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+FROM_DATE      = _today - timedelta(days=1)  # yesterday. use "FROM_DATE = datetime(2026, 4, 7)" for an absolute date if needed
+FROM_DATE_NEWS = _today - timedelta(days=1)  # yesterday
+TO_DATE        = _today
 
 MODEL      = "grok-4-1-fast"
 MULTI_PASS = 0  # 0 = single search (testing); 1 = multiple passes + synthesis
@@ -76,7 +78,7 @@ N_RUNS     = 2  # number of passes when MULTI_PASS = 1
 
 PRIOR_RUNS = 3  # how many past runs to load as context for Grok
 
-EXCEL_PATH = Path("output/x_search_log.xlsx")
+EXCEL_PATH = Path(__file__).parent / "output" / "x_search_log.xlsx"
 
 # Domains to search for news coverage
 NEWS_DOMAINS = [
