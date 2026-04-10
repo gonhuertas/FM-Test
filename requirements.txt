@@ -2,3 +2,5 @@ streamlit
 plotly
 pandas
 openpyxl
+requests
+beautifulsoup4
