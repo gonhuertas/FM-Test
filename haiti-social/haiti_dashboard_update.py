@@ -12,7 +12,7 @@ Optional, for live WTI prices:
 """
 
 import sys
-import json
+import json 
 import re
 import os
 import unicodedata
