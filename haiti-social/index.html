@@ -954,7 +954,7 @@ function filter(btn) {
     const popupHtml = `<b>${loc.name}</b><br><span style="color:var(--muted)">${countLabel}</span>${snippetHtml}`;
 
     L.circle([loc.lat, loc.lon], {
-      radius:      3000 + loc.count * 1500,
+      radius:      1800 + loc.count * 900,
       color:       '#e05a4a',
       fillColor:   '#e05a4a',
       fillOpacity: 0.30,
